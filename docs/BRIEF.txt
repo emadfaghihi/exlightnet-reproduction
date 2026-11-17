@@ -1,0 +1,103 @@
+ROLE AND GOAL
+Implement a faithful, honest reproduction of the paper "ExLightNet: A Lightweight and Explainable 1D-CNN for Real-Time Intrusion Detection in Resource-Constrained IoT Sensor Networks" (Sensors 2026, 26, 7023). The PDF is at ./paper/exlightnet.pdf. Read it fully first. This brief is the authoritative spec wherever the paper is ambiguous or internally inconsistent. If you cannot extract the PDF text, rely on this brief and say so in REPORT.md.
+
+Deliverables: (1) Python package + CLI, (2) pytest tests, (3) an executed Jupyter notebook, (4) REPORT.md, (5) deliverables.zip.
+
+GROUND RULES
+1. Never copy numbers from the paper into results. Every reported number is computed by code. Paper numbers live only in a clearly labelled PAPER_REPORTED dict used for side-by-side comparison.
+2. The test set is used once per trained model, for final reporting only. All selection (epoch, alpha mode, etc.) uses validation only.
+3. Every data-dependent step (median imputation, constant-column removal, one-hot vocabulary, MI ranking, z-score) is fit on the TRAIN split only.
+4. Report mean +/- std over 5 seeds (42..46) for every model, plus the seed-42 row. Never headline a "best seed".
+5. If a gate fails, do not patch around it: stop that branch, record it in REPORT.md, continue with independent work.
+6. Do not tune to hit paper numbers. Documented deviations are fine.
+7. CPU only. PyTorch, scikit-learn, xgboost, shap, nbformat, pytest. Pin versions in requirements.txt. Set seeds for python/numpy/torch, deterministic algorithms where feasible, num_workers=0.
+8. Work phase by phase in the order below; commit after each phase if git is available.
+
+REPO LAYOUT
+src/exlightnet/{data.py, preprocess.py, model.py, losses.py, train.py, baselines.py, quantize.py, bench.py, explain.py, run_all.py}
+tests/, notebooks/ExLightNet_reproduction.ipynb, scripts/bench_pi.py, results/, requirements.txt, README.md, REPORT.md
+
+PHASE 1 - DATA (./data/RT_IOT2022.csv; if absent try ucimlrepo id 942, else fail with a clear message)
+- Inspect real columns and label spellings; normalise case. Label column is probably Attack_type. Drop the index column.
+- Benign = Thing_Speak, MQTT_Publish, Wipro_bulb* (match by prefix). The other 9 classes = attack.
+- GATE D1: 123,117 rows; counts: DOS_SYN_Hping 94659, Thing_Speak 8108, ARP_poisioning 7750, MQTT_Publish 4146, NMAP_UDP_SCAN 2590, NMAP_XMAS_TREE_SCAN 2010, NMAP_OS_DETECTION 2000, NMAP_TCP_scan 1002, DDOS_Slowloris 534, Wipro_bulb 253, Metasploit_Brute_Force_SSH 37, NMAP_FIN_SCAN 28. Binary: 12,507 normal / 110,610 attack.
+- Split: stratified by the 12-class label, train_test_split(test_size=0.30, random_state=42) then test_size=0.50 on the remainder, random_state=42.
+- GATE D2: sizes exactly 86,181 / 18,468 / 18,468; test supports include DOS_SYN_Hping 14,199, SSH brute force 5, FIN scan 4.
+
+PHASE 2 - PREPROCESSING (train-fit only)
+1. Replace +/-inf by NaN; fill with per-feature TRAIN medians.
+2. One-hot proto and service (vocabulary from train; unseen values -> all zeros). Drop columns constant on train (bwd_URG_flag_count expected). Log candidate count (paper says 93 before pruning).
+3. Rank features by mutual_info_classif(random_state=42) against the BINARY target on train. Keep top-40 in DESCENDING MI order; position i holds the i-th ranked feature. Save artifacts/mi_ranking.json.
+4. z-score the 40 columns with train mean/std. Cache arrays to disk.
+- GATE P1 (report only, do not force equality): overlap and rank correlation with the paper's Table 4: fwd_pkts_payload.avg, fwd_pkts_payload.max, fwd_subflow_bytes, flow_pkts_payload.tot, flow_pkts_payload.std, fwd_pkts_payload.tot, flow_pkts_payload.avg, flow_pkts_payload.max, flow_iat.min, bwd_subflow_bytes, bwd_pkts_payload.tot, bwd_pkts_payload.avg, bwd_pkts_payload.max, flow_iat.tot, flow_iat.max, flow_duration, active.max, active.tot, active.avg, fwd_iat.min, payload_bytes_per_second, active.min, fwd_pkts_per_sec, flow_pkts_per_sec, fwd_iat.max, bwd_pkts_per_sec, fwd_iat.tot, bwd_pkts_payload.std, flow_iat.avg, fwd_iat.avg, bwd_iat.tot, bwd_iat.max, fwd_header_size_tot, bwd_header_size_tot, bwd_iat.avg, flow_iat.std, id.resp_p, bwd_header_size_max, bwd_header_size_min, bwd_data_pkts_tot.
+
+PHASE 3 - MODEL (exact)
+Input (B,1,40). No padding anywhere. ALL Conv1d use bias=False.
+- Stem: Conv1d(1,48,k=3) -> BatchNorm1d(48) -> ReLU. Length 40->38.
+- Block 48->96: depthwise Conv1d(48,48,k=3,groups=48) -> pointwise Conv1d(48,96,k=1) -> BatchNorm1d(96) -> ReLU -> SE(96). Length 38->36. No BN/activation between depthwise and pointwise.
+- Block 96->144: same pattern with SE(144). Length 36->34.
+- SE(C, r=4): global average pool over length -> Linear(C, C//4) (bias) -> ReLU -> Linear(C//4, C) (bias) -> Sigmoid -> channel-wise scale.
+- Head: concat(global avg pool, global max pool) = 288 dims -> Linear(288, K) with bias.
+- K=12 for the multiclass model. The binary model uses K=2 (two logits, argmax; p_attack = softmax[1]).
+- GATE M1 (hard assert + unit test): trainable parameters = 38,328 (K=12), 35,438 (K=2), 23,052 for the 12-class model without SE. Hand count for K=12: stem 240, block1 9,672, block2 24,948, head 3,468. If the assert fails, investigate and tell me; do not adjust numbers to fit silently.
+- The per-stage parameter numbers printed in the paper's Figure 3 are inconsistent with its own total; ignore them.
+
+PHASE 4 - TRAINING RECIPE
+- Focal loss, gamma=2, per-class alpha.
+- Sampler: torch WeightedRandomSampler, replacement=True, num_samples=len(train). Use PER-SAMPLE weight = f_c^(-1/2), where f_c is the class frequency in train. (A literal per-class probability proportional to f_c^(-1/2) would oversample the rarest class ~1350x; the paper states ~30x for the rarest class with 20 train flows vs ~359x fully balanced.)
+- GATE T1 (unit test): expected epoch multiplicity of the rarest class is about 30x (+/-15%) for the tempered sampler and about 359x for the fully balanced one (weight f_c^-1).
+- Alpha is unspecified in the paper. Implement alpha_mode in {inv_freq (default), sqrt_inv_freq, effective_num (beta=0.999), none}, normalised to mean 1. Choose the default by VALIDATION macro-F1 on seed 42 only (small sweep), then freeze for all seeds and record in REPORT.md.
+- Adam (betas 0.9/0.999), lr 1.5e-3, weight_decay 1e-4 (plain Adam L2), batch 512, CosineAnnealingLR with T_max = max_epochs. Max epochs 30 (12-class) / 20 (binary). Early stopping patience 6 on validation macro-F1; restore the best checkpoint.
+- Log per-epoch train loss and val macro-F1 to CSV. Binary: attack = 1; threshold fixed at argmax (0.5), no threshold tuning.
+
+PHASE 5 - BASELINES (same split, same 40 features, same recipe for deep models, 5 seeds)
+- MLP: 40-128-64-K with ReLU (this reproduces the paper's 14,284 / 13,634 parameters).
+- BiLSTM: bidirectional, hidden 32 per direction so the head input is 64 (inferred from the paper's parameter difference between K=2 and K=12); layer count is not determinable, so choose one, log the parameter count, document.
+- Std-CNN: 3 conv blocks (64/128/256, k=3, BN, ReLU) + pooling + Linear. Do not target a specific parameter count; log it.
+- RandomForest: 300 trees, class_weight="balanced", random_state=seed. XGBoost: 400 trees, max_depth=8, hist, balanced sample weights, random_state=seed.
+- KD variant: optional and lowest priority.
+
+PHASE 6 - METRICS AND OUTPUTS
+- Per (task, model, seed): accuracy, macro precision, macro recall, weighted F1, macro F1, AUC (binary: from p_attack; multiclass: micro OvR), per-class P/R/F1/support, confusion matrix, params, serialized size (bytes), latency.
+- Binary extras: attack recall, miss count, FP count, FPR, confusion matrix at 0.5.
+- Save results/*.json and results/summary.csv (mean +/- std).
+
+PHASE 7 - ABLATIONS (12-class, >=3 seeds, preferably 5)
+Full model; without SE; standard convolution with the same channel widths in place of depthwise+pointwise (log its parameter count; the paper's 59,484 could not be reproduced by hand, so do not force it); fully balanced sampler (f^-1); no sampler (shuffle, focal loss only); top-20 features; (KD optional). State whether each difference exceeds seed std.
+
+PHASE 8 - QUANTISATION
+- Per-output-channel symmetric INT8 weight-only for every Conv1d and Linear weight: s_j = max|W_j|/127 (eps clamp), q = clip(round(W/s), -127, 127). BN parameters and biases stay FP32.
+- Evaluate with dequantised weights and float compute. Report metric deltas and max abs weight error.
+- GATE Q1: 12-class macro-F1 drop <= 0.01 and binary drop ~0.
+- Save the INT8 artefact as .npz (int8 weights + fp32 scales + fp32 rest). Report byte sizes of the FP32 torch.save file and the INT8 file (paper: ~162 KB -> ~37 KB).
+- This is weight-only: do NOT claim an INT8 compute speedup. Optional stretch: true static INT8 via ONNX Runtime, reported separately and clearly labelled.
+
+PHASE 9 - EFFICIENCY
+- torch.set_num_threads(1), batch size 1, 100 warm-up + 1000 timed single-flow inferences; report mean/median/p95 for ExLightNet FP32, ExLightNet INT8-weight, Std-CNN, BiLSTM, MLP, RF (n_jobs=1), XGBoost. Record CPU model, library versions, peak RSS.
+- Do NOT extrapolate multi-core throughput by multiplying by cores; if throughput is reported, measure it with real worker processes.
+- scripts/bench_pi.py: standalone script (numpy + the .npz artefact only) that I can run on a Raspberry Pi.
+
+PHASE 10 - EXPLAINABILITY
+- shap.DeepExplainer on the FP32 model; background = 200 random train flows; explain = 300 random test flows (fixed seed). Handle shap output-shape differences across versions; BN in eval mode; if DeepExplainer fails, fall back to GradientExplainer and say so.
+- Outputs: global mean|phi| (over samples and classes) bar chart of the top 15 with feature names; beeswarm for the top 10 (predicted class).
+- Checks: (a) additivity error; (b) deletion faithfulness: remove features in descending |phi| for the predicted class by setting them to 0 in z-space; report mean predicted-class probability after 0/10/20 removals, normalised deletion-AUC, and a random-order baseline (mean of 20 permutations); (c) Spearman rho and top-5 overlap between FP32 and dequantised-INT8 global rankings on the top 15; (d) two local examples (a correct DOS_SYN_Hping flow and a NMAP_OS_DETECTION flow) with the top-5 signed contributions and feature names.
+
+PHASE 11 - LEAKAGE STRESS TEST (stretch, do last; label as a PROXY)
+The corpus has no session IDs, so flows from one attack run may be split across partitions. Build a proxy group-aware split: within each class, cluster flows (MiniBatchKMeans on z-scored features, up to 10 clusters per class, fewer for tiny classes) and assign WHOLE clusters to train/val/test at about 70/15/15 per class. Rerun ExLightNet, MLP, Std-CNN, RF, XGBoost (3 seeds) and report the metric drop versus the paper-style split. Do not describe it as equivalent to a campaign-disjoint split.
+
+TESTS (pytest)
+parameter counts (38,328 / 35,438 / 23,052); forward shapes (40->38->36->34); sampler multiplicity; split sizes (skip if data missing); preprocessing no-leak (fitted stats equal train-only stats and are unchanged when val/test values change); quantisation roundtrip (|W - W_hat| <= s/2 + eps per channel); focal loss equals cross-entropy when gamma=0 and alpha=1; SHAP additivity on a tiny batch.
+
+NOTEBOOK (notebooks/ExLightNet_reproduction.ipynb)
+- Build with nbformat; execute with nbconvert or papermill; deliver WITH outputs. Import from the package; no duplicated logic.
+- RUN_MODE="fast": 1 seed, <=8 epochs, reduced SHAP, whole notebook <= ~15 min on a laptop CPU. RUN_MODE="full": load cached results produced by `python -m exlightnet.run_all --mode full`. Restart-and-Run-All must succeed.
+- Sections: 0 env info; 1 data + gates D1/D2; 2 preprocessing + MI vs paper Table 4; 3 model summary + gate M1; 4 live training (fast); 5 binary results; 6 12-class results, confusion matrix, per-class table; 7 baselines (mean +/- std); 8 ablations; 9 quantisation; 10 latency; 11 SHAP; 12 ours-vs-paper table (paper values labelled as quoted); 13 deviations and limitations.
+- Each section ends with 1-3 sentences of interpretation that only claim what the displayed numbers support.
+
+REPORT.md (required)
+Implemented vs not implemented; every assumption and deviation (alpha formula, baseline details, MI settings, one-hot handling, shap fallback); gate table with pass/fail and the actual numbers; ours-vs-paper results with seeds; anything in the paper that looked inconsistent while implementing; exact reproduction commands, runtime, hardware.
+
+Known paper issues (document them, do not silently "fix"): sampler formula ambiguity; the sampler gives no accuracy gain in the paper's own ablation; Figure 3 per-stage parameter counts do not sum to the stated total; the Std-CNN control is described with inconsistent widths; the top SHAP features sit in the lower half of the MI ranking; the headline 12-class macro-F1 is the best of three seeds (3-seed mean 0.835 +/- 0.023).
+
+FINAL STEP
+Run pytest and the fast notebook, then create deliverables.zip (src, tests, executed notebook, results with plots, REPORT.md, requirements.txt, README.md; no dataset). In your final message list gate results and anything you could not do.
