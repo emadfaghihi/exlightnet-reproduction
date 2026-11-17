@@ -1,0 +1,186 @@
+FFF                                                                      [100%]
+=================================== FAILURES ===================================
+____ test_failed_deep_prerequisite_continues_independent_tree_branch[alpha] ____
+
+tmp_path = PosixPath('/tmp/pytest-of-mparsict/pytest-15/test_failed_deep_prerequisite_0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7feda83fce10>
+failing = 'alpha'
+
+    @pytest.mark.parametrize("failing", ["alpha", "M1", "T1"])
+    def test_failed_deep_prerequisite_continues_independent_tree_branch(tmp_path, monkeypatch, failing):
+        import exlightnet.run_all as runner
+        arrays = {"x_" + p: np.zeros((4, 40), dtype="float32") for p in ("train", "val", "test")}
+        arrays.update({"y12_" + p: np.array([0, 1, 0, 1]) for p in ("train", "val", "test")})
+        class Preprocessor:
+            def compare_table4(self):
+                return {"gate": "P1", "report_only": True}
+        # External boundaries: fixture data and deliberate selection failure. Real
+        # runner dispatch/finalization operates; _run_one records which job survives.
+        monkeypatch.setattr(runner, "prepare_data", lambda root: (arrays, ["a", "b"], Preprocessor(), {"fingerprint": "fixture", "gates": []}))
+        monkeypatch.setattr(runner, "sampler_gate", lambda y: {"gate": "T1", "pass": True})
+        def failed_selection(*args, **kwargs):
+            raise ValueError("alpha fixture failure")
+        monkeypatch.setattr(runner, "choose_alpha", failed_selection)
+        if failing == "M1":
+            def failed_model_gate():
+                raise AssertionError("M1 fixture count 38329")
+            monkeypatch.setattr(runner, "model_gate", failed_model_gate)
+        if failing == "T1":
+            monkeypatch.setattr(runner, "sampler_gate", lambda y: {"gate": "T1", "pass": False, "actual": {"tempered_multiplicity": 999}})
+        observed = []
+        def record_run(task, name, *args):
+            observed.append(name)
+            raise RuntimeError("stop before fixture tree training")
+        monkeypatch.setattr(runner, "_run_one", record_run)
+        result = run(tmp_path, models=("exlightnet", "random_forest"), tasks=("multiclass",), ablations=False, explanations=False)
+        assert observed == ["random_forest"]
+        assert any(("alpha" if failing in ("alpha", "M1") else "sampler") in f["branch"] for f in result["failures"])
+        assert (tmp_path / "REPORT.md").exists()
+>       assert (tmp_path / "results/summary.csv").exists()
+E       AssertionError: assert False
+E        +  where False = exists()
+E        +    where exists = (PosixPath('/tmp/pytest-of-mparsict/pytest-15/test_failed_deep_prerequisite_0') / 'results/summary.csv').exists
+
+tests/test_recovery.py:89: AssertionError
+----------------------------- Captured stdout call -----------------------------
+Alpha selection: multiclass, validation only
+STOP alpha/multiclass and dependent deep-model branches: alpha fixture failure
+Training/final reporting: fast/multiclass/random_forest/42
+STOP multiclass/random_forest/42: stop before fixture tree training
+Finished fast: 0 results, 2 stopped branches; /tmp/pytest-of-mparsict/pytest-15/test_failed_deep_prerequisite_0/results/fast
+------------------------------ Captured log call -------------------------------
+WARNING  matplotlib.style.core:core.py:213 In /home/mparsict/projects/me/exlightnet/.venv/lib/python3.11/site-packages/matplotlib/mpl-data/stylelib/classic.mplstyle: 'parseString' deprecated - use 'parse_string'
+WARNING  matplotlib.style.core:core.py:213 In /home/mparsict/projects/me/exlightnet/.venv/lib/python3.11/site-packages/matplotlib/mpl-data/stylelib/classic.mplstyle: 'resetCache' deprecated - use 'reset_cache'
+WARNING  matplotlib.style.core:core.py:213 In /home/mparsict/projects/me/exlightnet/.venv/lib/python3.11/site-packages/matplotlib/mpl-data/stylelib/classic.mplstyle: 'parseString' deprecated - use 'parse_string'
+WARNING  matplotlib.style.core:core.py:213 In /home/mparsict/projects/me/exlightnet/.venv/lib/python3.11/site-packages/matplotlib/mpl-data/stylelib/classic.mplstyle: 'resetCache' deprecated - use 'reset_cache'
+WARNING  matplotlib.style.core:core.py:213 In /home/mparsict/projects/me/exlightnet/.venv/lib/python3.11/site-packages/matplotlib/mpl-data/stylelib/classic.mplstyle: 'parseString' deprecated - use 'parse_string'
+WARNING  matplotlib.style.core:core.py:213 In /home/mparsict/projects/me/exlightnet/.venv/lib/python3.11/site-packages/matplotlib/mpl-data/stylelib/classic.mplstyle: 'resetCache' deprecated - use 'reset_cache'
+WARNING  matplotlib.style.core:core.py:213 In /home/mparsict/projects/me/exlightnet/.venv/lib/python3.11/site-packages/matplotlib/mpl-data/stylelib/classic.mplstyle: 'parseString' deprecated - use 'parse_string'
+WARNING  matplotlib.style.core:core.py:213 In /home/mparsict/projects/me/exlightnet/.venv/lib/python3.11/site-packages/matplotlib/mpl-data/stylelib/classic.mplstyle: 'resetCache' deprecated - use 'reset_cache'
+_____ test_failed_deep_prerequisite_continues_independent_tree_branch[M1] ______
+
+tmp_path = PosixPath('/tmp/pytest-of-mparsict/pytest-15/test_failed_deep_prerequisite_1')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7feda697dad0>
+failing = 'M1'
+
+    @pytest.mark.parametrize("failing", ["alpha", "M1", "T1"])
+    def test_failed_deep_prerequisite_continues_independent_tree_branch(tmp_path, monkeypatch, failing):
+        import exlightnet.run_all as runner
+        arrays = {"x_" + p: np.zeros((4, 40), dtype="float32") for p in ("train", "val", "test")}
+        arrays.update({"y12_" + p: np.array([0, 1, 0, 1]) for p in ("train", "val", "test")})
+        class Preprocessor:
+            def compare_table4(self):
+                return {"gate": "P1", "report_only": True}
+        # External boundaries: fixture data and deliberate selection failure. Real
+        # runner dispatch/finalization operates; _run_one records which job survives.
+        monkeypatch.setattr(runner, "prepare_data", lambda root: (arrays, ["a", "b"], Preprocessor(), {"fingerprint": "fixture", "gates": []}))
+        monkeypatch.setattr(runner, "sampler_gate", lambda y: {"gate": "T1", "pass": True})
+        def failed_selection(*args, **kwargs):
+            raise ValueError("alpha fixture failure")
+        monkeypatch.setattr(runner, "choose_alpha", failed_selection)
+        if failing == "M1":
+            def failed_model_gate():
+                raise AssertionError("M1 fixture count 38329")
+            monkeypatch.setattr(runner, "model_gate", failed_model_gate)
+        if failing == "T1":
+            monkeypatch.setattr(runner, "sampler_gate", lambda y: {"gate": "T1", "pass": False, "actual": {"tempered_multiplicity": 999}})
+        observed = []
+        def record_run(task, name, *args):
+            observed.append(name)
+            raise RuntimeError("stop before fixture tree training")
+        monkeypatch.setattr(runner, "_run_one", record_run)
+        result = run(tmp_path, models=("exlightnet", "random_forest"), tasks=("multiclass",), ablations=False, explanations=False)
+        assert observed == ["random_forest"]
+        assert any(("alpha" if failing in ("alpha", "M1") else "sampler") in f["branch"] for f in result["failures"])
+        assert (tmp_path / "REPORT.md").exists()
+>       assert (tmp_path / "results/summary.csv").exists()
+E       AssertionError: assert False
+E        +  where False = exists()
+E        +    where exists = (PosixPath('/tmp/pytest-of-mparsict/pytest-15/test_failed_deep_prerequisite_1') / 'results/summary.csv').exists
+
+tests/test_recovery.py:89: AssertionError
+----------------------------- Captured stdout call -----------------------------
+STOP ExLightNet architecture and dependent alpha/deep branches: M1 fixture count 38329
+Training/final reporting: fast/multiclass/random_forest/42
+STOP multiclass/random_forest/42: stop before fixture tree training
+Finished fast: 0 results, 2 stopped branches; /tmp/pytest-of-mparsict/pytest-15/test_failed_deep_prerequisite_1/results/fast
+_____ test_failed_deep_prerequisite_continues_independent_tree_branch[T1] ______
+
+tmp_path = PosixPath('/tmp/pytest-of-mparsict/pytest-15/test_failed_deep_prerequisite_2')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7feda69b5110>
+failing = 'T1'
+
+    @pytest.mark.parametrize("failing", ["alpha", "M1", "T1"])
+    def test_failed_deep_prerequisite_continues_independent_tree_branch(tmp_path, monkeypatch, failing):
+        import exlightnet.run_all as runner
+        arrays = {"x_" + p: np.zeros((4, 40), dtype="float32") for p in ("train", "val", "test")}
+        arrays.update({"y12_" + p: np.array([0, 1, 0, 1]) for p in ("train", "val", "test")})
+        class Preprocessor:
+            def compare_table4(self):
+                return {"gate": "P1", "report_only": True}
+        # External boundaries: fixture data and deliberate selection failure. Real
+        # runner dispatch/finalization operates; _run_one records which job survives.
+        monkeypatch.setattr(runner, "prepare_data", lambda root: (arrays, ["a", "b"], Preprocessor(), {"fingerprint": "fixture", "gates": []}))
+        monkeypatch.setattr(runner, "sampler_gate", lambda y: {"gate": "T1", "pass": True})
+        def failed_selection(*args, **kwargs):
+            raise ValueError("alpha fixture failure")
+        monkeypatch.setattr(runner, "choose_alpha", failed_selection)
+        if failing == "M1":
+            def failed_model_gate():
+                raise AssertionError("M1 fixture count 38329")
+            monkeypatch.setattr(runner, "model_gate", failed_model_gate)
+        if failing == "T1":
+            monkeypatch.setattr(runner, "sampler_gate", lambda y: {"gate": "T1", "pass": False, "actual": {"tempered_multiplicity": 999}})
+        observed = []
+        def record_run(task, name, *args):
+            observed.append(name)
+            raise RuntimeError("stop before fixture tree training")
+        monkeypatch.setattr(runner, "_run_one", record_run)
+        result = run(tmp_path, models=("exlightnet", "random_forest"), tasks=("multiclass",), ablations=False, explanations=False)
+        assert observed == ["random_forest"]
+        assert any(("alpha" if failing in ("alpha", "M1") else "sampler") in f["branch"] for f in result["failures"])
+        assert (tmp_path / "REPORT.md").exists()
+>       assert (tmp_path / "results/summary.csv").exists()
+E       AssertionError: assert False
+E        +  where False = exists()
+E        +    where exists = (PosixPath('/tmp/pytest-of-mparsict/pytest-15/test_failed_deep_prerequisite_2') / 'results/summary.csv').exists
+
+tests/test_recovery.py:89: AssertionError
+----------------------------- Captured stdout call -----------------------------
+STOP tempered-sampler training branches: Gate T1 failed: {'tempered_multiplicity': 999}. Dependent branch stopped.
+Training/final reporting: fast/multiclass/random_forest/42
+STOP multiclass/random_forest/42: stop before fixture tree training
+Finished fast: 0 results, 2 stopped branches; /tmp/pytest-of-mparsict/pytest-15/test_failed_deep_prerequisite_2/results/fast
+=============================== warnings summary ===============================
+tests/test_recovery.py::test_failed_deep_prerequisite_continues_independent_tree_branch[alpha]
+  /home/mparsict/projects/me/exlightnet/.venv/lib/python3.11/site-packages/matplotlib/_fontconfig_pattern.py:64: PyparsingDeprecationWarning: 'oneOf' deprecated - use 'one_of'
+    prop = Group((name + Suppress("=") + comma_separated(value)) | oneOf(_CONSTANTS))
+
+tests/test_recovery.py::test_failed_deep_prerequisite_continues_independent_tree_branch[alpha]
+tests/test_recovery.py::test_failed_deep_prerequisite_continues_independent_tree_branch[alpha]
+tests/test_recovery.py::test_failed_deep_prerequisite_continues_independent_tree_branch[alpha]
+tests/test_recovery.py::test_failed_deep_prerequisite_continues_independent_tree_branch[alpha]
+tests/test_recovery.py::test_failed_deep_prerequisite_continues_independent_tree_branch[alpha]
+tests/test_recovery.py::test_failed_deep_prerequisite_continues_independent_tree_branch[alpha]
+  /home/mparsict/projects/me/exlightnet/.venv/lib/python3.11/site-packages/matplotlib/_fontconfig_pattern.py:85: PyparsingDeprecationWarning: 'parseString' deprecated - use 'parse_string'
+    parse = parser.parseString(pattern)
+
+tests/test_recovery.py::test_failed_deep_prerequisite_continues_independent_tree_branch[alpha]
+tests/test_recovery.py::test_failed_deep_prerequisite_continues_independent_tree_branch[alpha]
+tests/test_recovery.py::test_failed_deep_prerequisite_continues_independent_tree_branch[alpha]
+tests/test_recovery.py::test_failed_deep_prerequisite_continues_independent_tree_branch[alpha]
+tests/test_recovery.py::test_failed_deep_prerequisite_continues_independent_tree_branch[alpha]
+tests/test_recovery.py::test_failed_deep_prerequisite_continues_independent_tree_branch[alpha]
+  /home/mparsict/projects/me/exlightnet/.venv/lib/python3.11/site-packages/matplotlib/_fontconfig_pattern.py:89: PyparsingDeprecationWarning: 'resetCache' deprecated - use 'reset_cache'
+    parser.resetCache()
+
+tests/test_recovery.py::test_failed_deep_prerequisite_continues_independent_tree_branch[alpha]
+  /home/mparsict/projects/me/exlightnet/.venv/lib/python3.11/site-packages/matplotlib/_mathtext.py:45: PyparsingDeprecationWarning: 'enablePackrat' deprecated - use 'enable_packrat'
+    ParserElement.enablePackrat()
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_recovery.py::test_failed_deep_prerequisite_continues_independent_tree_branch[alpha]
+FAILED tests/test_recovery.py::test_failed_deep_prerequisite_continues_independent_tree_branch[M1]
+FAILED tests/test_recovery.py::test_failed_deep_prerequisite_continues_independent_tree_branch[T1]
+3 failed, 14 warnings in 2.79s

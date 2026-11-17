@@ -1,0 +1,52 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+___________ test_missing_seed42_is_explicit_and_fallback_is_labelled ___________
+
+tmp_path = PosixPath('/tmp/pytest-of-mparsict/pytest-10/test_missing_seed42_is_explici0')
+capsys = <_pytest.capture.CaptureFixture object at 0x7fa2ba108810>
+
+    def test_missing_seed42_is_explicit_and_fallback_is_labelled(tmp_path, capsys):
+        row = score_predictions(np.array([0, 1]), np.array([[.9, .1], [.1, .9]]), ["normal", "attack"])
+        row.update(task="binary", model="exlightnet", seed=43)
+        write_json(tmp_path / "results/full/results.json", [row])
+>       show_task(tmp_path, "full", "binary")
+
+tests/test_notebook.py:12: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+root = PosixPath('/tmp/pytest-of-mparsict/pytest-10/test_missing_seed42_is_explici0')
+mode = 'full', task = 'binary'
+
+    def show_task(root, mode, task):
+        directory = Path(root) / "results" / mode
+        rows = [r for r in read_json(directory / "results.json") if r["task"] == task and r["model"] == "exlightnet"]
+        if not rows:
+            print(f"No completed {task} ExLightNet runs; inspect failures.json.")
+            return
+        summary = summarize(rows)
+        display(summary[["model", "n_seeds", "macro_f1_mean", "macro_f1_std", "macro_f1_seed42", "accuracy_mean", "macro_recall_mean", "auc_mean"]])
+        row = next((r for r in rows if r["seed"] == 42), rows[0])
+        display(pd.DataFrame(row["per_class"]).T)
+        if task == "binary":
+            display(pd.DataFrame([{k: row[k] for k in ("attack_recall", "miss_count", "fp_count", "fpr", "threshold")}]))
+        path = directory / "plots" / f"{task}_confusion.png"
+        if path.exists():
+            display(Image(filename=str(path)))
+>       print(f"Across {len(rows)} seed(s), mean macro-F1 is {summary.iloc[0].macro_f1_mean:.6f}; seed 42 is {summary.iloc[0].macro_f1_seed42:.6f}. "
+              + ("A single seed cannot estimate variation." if len(rows) == 1 else f"Sample SD is {summary.iloc[0].macro_f1_std:.6f}."))
+E       TypeError: unsupported format string passed to NoneType.__format__
+
+src/exlightnet/notebook.py:39: TypeError
+----------------------------- Captured stdout call -----------------------------
+        model n_seeds macro_f1_mean  ... accuracy_mean macro_recall_mean auc_mean
+0  exlightnet       1           1.0  ...           1.0               1.0      1.0
+
+[1 rows x 8 columns]
+        precision  recall   f1  support
+normal        1.0     1.0  1.0      1.0
+attack        1.0     1.0  1.0      1.0
+   attack_recall  miss_count  fp_count  fpr  threshold
+0            1.0           0         0  0.0        0.5
+=========================== short test summary info ============================
+FAILED tests/test_notebook.py::test_missing_seed42_is_explicit_and_fallback_is_labelled
+1 failed in 1.16s

@@ -1,0 +1,17 @@
+{
+  "best_epoch": 11,
+  "best_val_macro_f1": 0.9866186785831585,
+  "epochs_run": 17,
+  "training_seconds": 1394.6993826859998,
+  "config": {
+    "seed": 44,
+    "max_epochs": 20,
+    "batch_size": 512,
+    "patience": 6,
+    "lr": 0.0015,
+    "weight_decay": 0.0001,
+    "alpha_mode": "effective_num",
+    "sampler": "tempered",
+    "threads": 1
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "gate": "Q1",
+  "task": "multiclass",
+  "seed": 42,
+  "pass": true,
+  "actual": {
+    "fp32_macro_f1": 0.5836595981643584,
+    "w8_macro_f1": 0.5817009710183444,
+    "delta": -0.0019586271460140248,
+    "fp32_bytes": 163832,
+    "max_abs_weight_error": 0.002306520938873291,
+    "int8_bytes": 56234,
+    "quantized_weight_tensors": 10,
+    "compute": "FP32 with dequantized W8 weights"
+  },
+  "criterion": "drop <=0.01"
+}

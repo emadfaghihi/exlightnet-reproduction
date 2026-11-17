@@ -1,0 +1,82 @@
+[
+  {
+    "variant": "balanced",
+    "paired_seeds": [
+      42,
+      43,
+      44,
+      45,
+      46
+    ],
+    "delta_macro_f1": -0.040085642036770786,
+    "paired_delta_std": 0.03972045997260938,
+    "full_seed_std": 0.01946329900844065,
+    "exceeds_full_seed_std": true,
+    "exceeds_paired_seed_std": true,
+    "interpretation": "comparison with seed SD, not a significance test"
+  },
+  {
+    "variant": "no_sampler",
+    "paired_seeds": [
+      42,
+      43,
+      44,
+      45,
+      46
+    ],
+    "delta_macro_f1": -0.001958084780446656,
+    "paired_delta_std": 0.053311308250923284,
+    "full_seed_std": 0.01946329900844065,
+    "exceeds_full_seed_std": false,
+    "exceeds_paired_seed_std": false,
+    "interpretation": "comparison with seed SD, not a significance test"
+  },
+  {
+    "variant": "no_se",
+    "paired_seeds": [
+      42,
+      43,
+      44,
+      45,
+      46
+    ],
+    "delta_macro_f1": -0.01958398847665439,
+    "paired_delta_std": 0.033123131160565186,
+    "full_seed_std": 0.01946329900844065,
+    "exceeds_full_seed_std": true,
+    "exceeds_paired_seed_std": false,
+    "interpretation": "comparison with seed SD, not a significance test"
+  },
+  {
+    "variant": "standard_conv",
+    "paired_seeds": [
+      42,
+      43,
+      44,
+      45,
+      46
+    ],
+    "delta_macro_f1": 0.015280744934418111,
+    "paired_delta_std": 0.013249887279081399,
+    "full_seed_std": 0.01946329900844065,
+    "exceeds_full_seed_std": false,
+    "exceeds_paired_seed_std": true,
+    "interpretation": "comparison with seed SD, not a significance test"
+  },
+  {
+    "variant": "top20",
+    "paired_seeds": [
+      42,
+      43,
+      44,
+      45,
+      46
+    ],
+    "delta_macro_f1": -0.268742936751889,
+    "paired_delta_std": 0.019631361678655503,
+    "full_seed_std": 0.01946329900844065,
+    "exceeds_full_seed_std": true,
+    "exceeds_paired_seed_std": true,
+    "interpretation": "comparison with seed SD, not a significance test"
+  }
+]

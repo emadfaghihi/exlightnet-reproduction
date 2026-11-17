@@ -1,0 +1,31 @@
+{
+  "status": "restored",
+  "guardian_pid": 1050020,
+  "started_at": "2026-11-17T05:26:43.656284+00:00",
+  "automatic_restore_after_seconds": 1800,
+  "paused": [
+    {
+      "pid": 5639,
+      "name": "jetbrains-toolb",
+      "start_ticks": "5156",
+      "paused_at": "2026-11-17T05:26:43.656535+00:00",
+      "resumed_at": "2026-11-17T05:39:01.905548+00:00"
+    },
+    {
+      "pid": 530482,
+      "name": "htop",
+      "start_ticks": "2134300",
+      "paused_at": "2026-11-17T05:26:43.657068+00:00",
+      "resumed_at": "2026-11-17T05:39:01.905729+00:00"
+    },
+    {
+      "pid": 9345,
+      "name": "code",
+      "start_ticks": "9702",
+      "paused_at": "2026-11-17T05:26:43.657357+00:00",
+      "resumed_at": "2026-11-17T05:39:01.905972+00:00"
+    }
+  ],
+  "authorization": "User authorized stopping background apps; preserve VS Code and terminal/tunnel",
+  "finished_at": "2026-11-17T05:39:01.905994+00:00"
+}

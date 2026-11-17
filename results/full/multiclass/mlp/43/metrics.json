@@ -1,0 +1,319 @@
+{
+  "task": "multiclass",
+  "model": "mlp",
+  "seed": 43,
+  "params": 14284,
+  "serialized_bytes": 59444,
+  "training": {
+    "best_epoch": 10,
+    "best_val_macro_f1": 0.8356387489390369,
+    "epochs_run": 16,
+    "training_seconds": 28.030795796999882,
+    "config": {
+      "seed": 43,
+      "max_epochs": 30,
+      "batch_size": 512,
+      "patience": 6,
+      "lr": 0.0015,
+      "weight_decay": 0.0001,
+      "alpha_mode": "none",
+      "sampler": "tempered",
+      "threads": 1
+    }
+  },
+  "recipe": {
+    "seed": 43,
+    "max_epochs": 30,
+    "batch_size": 512,
+    "patience": 6,
+    "lr": 0.0015,
+    "weight_decay": 0.0001,
+    "alpha_mode": "none",
+    "sampler": "tempered",
+    "threads": 1
+  },
+  "data_fingerprint": "dfba90bd116f9288bc72a837160516984ba773b11904e98561c80cda7dedcf5c",
+  "features": 40,
+  "fingerprint": "01b4622abd262c3ba8906223de989ba817391851df75d28efb2d87f191e25a1b",
+  "accuracy": 0.9765540394195364,
+  "macro_precision": 0.8286508790530643,
+  "macro_recall": 0.878409176035137,
+  "weighted_f1": 0.9741828461813555,
+  "macro_f1": 0.8326996017597265,
+  "auc": 0.9994654137913,
+  "auc_definition": "micro OvR",
+  "per_class": {
+    "arp_poisioning": {
+      "precision": 0.9488054607508533,
+      "recall": 0.9569707401032702,
+      "f1": 0.9528706083976007,
+      "support": 1162
+    },
+    "ddos_slowloris": {
+      "precision": 0.7766990291262136,
+      "recall": 1.0,
+      "f1": 0.8743169398907104,
+      "support": 80
+    },
+    "dos_syn_hping": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 14199
+    },
+    "metasploit_brute_force_ssh": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 5
+    },
+    "mqtt_publish": {
+      "precision": 1.0,
+      "recall": 0.9967845659163987,
+      "f1": 0.998389694041868,
+      "support": 622
+    },
+    "nmap_fin_scan": {
+      "precision": 0.5,
+      "recall": 0.75,
+      "f1": 0.6,
+      "support": 4
+    },
+    "nmap_os_detection": {
+      "precision": 0.6533333333333333,
+      "recall": 0.16333333333333333,
+      "f1": 0.2613333333333333,
+      "support": 300
+    },
+    "nmap_tcp_scan": {
+      "precision": 0.9259259259259259,
+      "recall": 0.9933774834437086,
+      "f1": 0.9584664536741214,
+      "support": 151
+    },
+    "nmap_udp_scan": {
+      "precision": 0.9399477806788512,
+      "recall": 0.9254498714652957,
+      "f1": 0.9326424870466321,
+      "support": 389
+    },
+    "nmap_xmas_tree_scan": {
+      "precision": 0.519455252918288,
+      "recall": 0.8841059602649006,
+      "f1": 0.6544117647058824,
+      "support": 302
+    },
+    "thing_speak": {
+      "precision": 0.9796437659033079,
+      "recall": 0.9498355263157895,
+      "f1": 0.964509394572025,
+      "support": 1216
+    },
+    "wipro_bulb": {
+      "precision": 0.7,
+      "recall": 0.9210526315789473,
+      "f1": 0.7954545454545454,
+      "support": 38
+    }
+  },
+  "confusion_matrix": [
+    [
+      1112,
+      2,
+      0,
+      0,
+      0,
+      2,
+      0,
+      3,
+      14,
+      0,
+      24,
+      5
+    ],
+    [
+      0,
+      80,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      14199,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      5,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      1,
+      0,
+      0,
+      0,
+      620,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0
+    ],
+    [
+      1,
+      0,
+      0,
+      0,
+      0,
+      3,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      49,
+      5,
+      0,
+      246,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      150,
+      0,
+      1,
+      0,
+      0
+    ],
+    [
+      8,
+      20,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      360,
+      0,
+      0,
+      0
+    ],
+    [
+      2,
+      0,
+      0,
+      0,
+      0,
+      0,
+      26,
+      4,
+      3,
+      267,
+      0,
+      0
+    ],
+    [
+      48,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      2,
+      0,
+      1155,
+      10
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      3,
+      0,
+      0,
+      35
+    ]
+  ],
+  "latency_mean_ms": 0.045174529000000005,
+  "latency_median_ms": 0.0444675,
+  "latency_p95_ms": 0.045834,
+  "warmup": 100,
+  "iterations": 1000,
+  "batch_size": 1,
+  "threads": 1,
+  "input_partition": "train",
+  "peak_rss_bytes": 386772992,
+  "rss_scope": "benchmark-only process lifetime across preceding benchmarked models; no training",
+  "benchmark_context": {
+    "campaign": "20261117T052645467310-1050022",
+    "stage": "benchmark_only",
+    "pid": 1050022,
+    "processes": 1,
+    "idle_cpu": {
+      "max_busy_fraction": 0.05,
+      "consecutive_windows": 3,
+      "sample_interval_s": 1.0,
+      "quiet_window_busy_fractions": [
+        0.01001669449081803,
+        0.03015075376884422,
+        0.038461538461538464
+      ],
+      "wait_seconds": 5.001885914000013,
+      "observed_windows": 5
+    },
+    "timestamp": "2026-11-17T05:32:11.127060+00:00",
+    "model_fingerprint": "01b4622abd262c3ba8906223de989ba817391851df75d28efb2d87f191e25a1b"
+  }
+}

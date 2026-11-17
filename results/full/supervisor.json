@@ -1,0 +1,6 @@
+{
+  "pid": 569714,
+  "started_at": "2026-11-16T11:29:02.174301+00:00",
+  "log": "results/full/logs/pipeline_supervisor.log",
+  "resume": "completed caches reused; interrupted training restarted; frozen alpha reused"
+}

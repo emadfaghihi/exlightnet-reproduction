@@ -1,0 +1,11 @@
+{
+  "fingerprint": "dfba90bd116f9288bc72a837160516984ba773b11904e98561c80cda7dedcf5c",
+  "settings": {
+    "data_sha256": "7572b790d53e08babdaf9b08dabaaf20dcc2282e8f1926fe7e9470ae1e7286bb",
+    "preprocessing_format": 1,
+    "split_seed": 42,
+    "mi": "binary,3-neighbors,one-hot-discrete,seed42",
+    "top_k": 40
+  },
+  "arrays_sha256": "9b7f94b115658b4bcf15e35e675eb24305893c85468fbf220e02810066bb7758"
+}

@@ -1,0 +1,18 @@
+{
+  "status": "complete",
+  "metadata": {
+    "task": "binary",
+    "model": "exlightnet_w8",
+    "seed": 42,
+    "params": 35438,
+    "serialized_bytes": 53468,
+    "fingerprint": "36fa2199682a8b9ad660735ebd0b8611cd0a25fec04cb7bf79b6d3684665afde",
+    "quantization": {
+      "max_abs_weight_error": 0.0021119117736816406,
+      "int8_bytes": 53468,
+      "quantized_weight_tensors": 10,
+      "compute": "FP32 with dequantized W8 weights"
+    }
+  },
+  "test_prediction_passes": 1
+}

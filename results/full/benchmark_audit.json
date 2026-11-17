@@ -1,0 +1,19 @@
+{
+  "verified_at": "2026-11-17T05:40:56.996236+00:00",
+  "campaign": "20261117T052645467310-1050022",
+  "timed_models": 95,
+  "pid": 1050022,
+  "processes": 1,
+  "threads": 1,
+  "warmups_per_model": 100,
+  "timings_per_model": 1000,
+  "input_partition": "train",
+  "cpu_idle_windows_verified": 285,
+  "max_quiet_window_busy_fraction": 0.05,
+  "receipts_unchanged": 95,
+  "latency_summary_groups": 19,
+  "single_cached_aggregation_verified": true,
+  "five_single_thread_workers_overlapped": true,
+  "paused_background_apps_restored": true,
+  "failures": []
+}

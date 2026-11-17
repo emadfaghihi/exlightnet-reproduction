@@ -1,0 +1,105 @@
+{
+  "task": "binary",
+  "model": "bilstm",
+  "seed": 44,
+  "params": 9090,
+  "serialized_bytes": 39452,
+  "training": {
+    "best_epoch": 18,
+    "best_val_macro_f1": 0.9641152333430316,
+    "epochs_run": 20,
+    "training_seconds": 698.3465460689986,
+    "config": {
+      "seed": 44,
+      "max_epochs": 20,
+      "batch_size": 512,
+      "patience": 6,
+      "lr": 0.0015,
+      "weight_decay": 0.0001,
+      "alpha_mode": "effective_num",
+      "sampler": "tempered",
+      "threads": 1
+    }
+  },
+  "recipe": {
+    "seed": 44,
+    "max_epochs": 20,
+    "batch_size": 512,
+    "patience": 6,
+    "lr": 0.0015,
+    "weight_decay": 0.0001,
+    "alpha_mode": "effective_num",
+    "sampler": "tempered",
+    "threads": 1
+  },
+  "data_fingerprint": "dfba90bd116f9288bc72a837160516984ba773b11904e98561c80cda7dedcf5c",
+  "features": 40,
+  "fingerprint": "1d4e0bf369fdf0548d6a10a3cbd1c26f3d1ceb4383c477f306cdc3544129c21e",
+  "accuracy": 0.9863006281134936,
+  "macro_precision": 0.9541845406299485,
+  "macro_recall": 0.9727555139990912,
+  "weighted_f1": 0.9864378513966061,
+  "macro_f1": 0.9632266119220806,
+  "auc": 0.9981743102489345,
+  "auc_definition": "p_attack",
+  "per_class": {
+    "normal": {
+      "precision": 0.913397860417728,
+      "recall": 0.9557569296375267,
+      "f1": 0.9340974212034384,
+      "support": 1876
+    },
+    "attack": {
+      "precision": 0.994971220842169,
+      "recall": 0.9897540983606558,
+      "f1": 0.9923558026407228,
+      "support": 16592
+    }
+  },
+  "confusion_matrix": [
+    [
+      1793,
+      83
+    ],
+    [
+      170,
+      16422
+    ]
+  ],
+  "attack_recall": 0.9897540983606558,
+  "miss_count": 170,
+  "fp_count": 83,
+  "fpr": 0.044243070362473345,
+  "threshold": 0.5,
+  "decision_rule": "argmax of two softmax logits; ties select normal",
+  "latency_mean_ms": 0.31887834699999995,
+  "latency_median_ms": 0.314274,
+  "latency_p95_ms": 0.34248605,
+  "warmup": 100,
+  "iterations": 1000,
+  "batch_size": 1,
+  "threads": 1,
+  "input_partition": "train",
+  "peak_rss_bytes": 361480192,
+  "rss_scope": "benchmark-only process lifetime across preceding benchmarked models; no training",
+  "benchmark_context": {
+    "campaign": "20261117T052645467310-1050022",
+    "stage": "benchmark_only",
+    "pid": 1050022,
+    "processes": 1,
+    "idle_cpu": {
+      "max_busy_fraction": 0.05,
+      "consecutive_windows": 3,
+      "sample_interval_s": 1.0,
+      "quiet_window_busy_fractions": [
+        0.030303030303030304,
+        0.0033444816053511705,
+        0.01658374792703151
+      ],
+      "wait_seconds": 9.002704442002141,
+      "observed_windows": 9
+    },
+    "timestamp": "2026-11-17T05:28:31.271737+00:00",
+    "model_fingerprint": "1d4e0bf369fdf0548d6a10a3cbd1c26f3d1ceb4383c477f306cdc3544129c21e"
+  }
+}

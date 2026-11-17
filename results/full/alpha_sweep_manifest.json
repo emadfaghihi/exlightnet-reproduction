@@ -1,0 +1,13 @@
+{
+  "seconds": 2671.9628458939987,
+  "tasks": [
+    "binary",
+    "multiclass"
+  ],
+  "seed": 42,
+  "sweep_max_epochs": 8,
+  "test_used": false,
+  "processes": 1,
+  "threads": 1,
+  "data_fingerprint": "dfba90bd116f9288bc72a837160516984ba773b11904e98561c80cda7dedcf5c"
+}

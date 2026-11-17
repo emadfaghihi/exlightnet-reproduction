@@ -1,0 +1,62 @@
+[
+  {
+    "variant": "balanced",
+    "paired_seeds": [
+      42
+    ],
+    "delta_macro_f1": -0.10622442071210342,
+    "paired_delta_std": null,
+    "full_seed_std": null,
+    "exceeds_full_seed_std": null,
+    "exceeds_paired_seed_std": null,
+    "interpretation": "comparison with seed SD, not a significance test"
+  },
+  {
+    "variant": "no_sampler",
+    "paired_seeds": [
+      42
+    ],
+    "delta_macro_f1": 0.06793822057763987,
+    "paired_delta_std": null,
+    "full_seed_std": null,
+    "exceeds_full_seed_std": null,
+    "exceeds_paired_seed_std": null,
+    "interpretation": "comparison with seed SD, not a significance test"
+  },
+  {
+    "variant": "no_se",
+    "paired_seeds": [
+      42
+    ],
+    "delta_macro_f1": 0.02552872443144394,
+    "paired_delta_std": null,
+    "full_seed_std": null,
+    "exceeds_full_seed_std": null,
+    "exceeds_paired_seed_std": null,
+    "interpretation": "comparison with seed SD, not a significance test"
+  },
+  {
+    "variant": "standard_conv",
+    "paired_seeds": [
+      42
+    ],
+    "delta_macro_f1": 0.032450016049767716,
+    "paired_delta_std": null,
+    "full_seed_std": null,
+    "exceeds_full_seed_std": null,
+    "exceeds_paired_seed_std": null,
+    "interpretation": "comparison with seed SD, not a significance test"
+  },
+  {
+    "variant": "top20",
+    "paired_seeds": [
+      42
+    ],
+    "delta_macro_f1": -0.1785177351358968,
+    "paired_delta_std": null,
+    "full_seed_std": null,
+    "exceeds_full_seed_std": null,
+    "exceeds_paired_seed_std": null,
+    "interpretation": "comparison with seed SD, not a significance test"
+  }
+]

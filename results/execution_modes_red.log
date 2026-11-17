@@ -1,0 +1,91 @@
+FFFFF.                                                                   [100%]
+=================================== FAILURES ===================================
+_________________ test_cache_only_refuses_to_train_or_evaluate _________________
+
+tmp_path = PosixPath('/tmp/pytest-of-mparsict/pytest-17/test_cache_only_refuses_to_tra0')
+
+    def test_cache_only_refuses_to_train_or_evaluate(tmp_path):
+        with pytest.raises(RuntimeError, match="cache-only"):
+>           _run_one("binary", "exlightnet", 42, small_arrays(), [], {"chosen": "none"}, {"fingerprint": "fixture"}, tmp_path, 20, cache_only=True)
+E           TypeError: _run_one() got an unexpected keyword argument 'cache_only'
+
+tests/test_execution_modes.py:22: TypeError
+_______________ test_skip_benchmark_suppresses_all_timing_calls ________________
+
+tmp_path = PosixPath('/tmp/pytest-of-mparsict/pytest-17/test_skip_benchmark_suppresses0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f4d4e561010>
+
+    def test_skip_benchmark_suppresses_all_timing_calls(tmp_path, monkeypatch):
+        import exlightnet.run_all as runner
+        class PP:
+            def compare_table4(self):
+                return {"gate": "P1", "report_only": True}
+        monkeypatch.setattr(runner, "prepare_data", lambda root: (small_arrays(), ["normal", "attack"], PP(), {"fingerprint": "fixture", "gates": []}))
+        monkeypatch.setattr(runner, "sampler_gate", lambda y: {"gate": "T1", "pass": True})
+        monkeypatch.setattr(runner, "choose_alpha", lambda *args: {"chosen": "none", "sweep_max_epochs": 1, "candidates": []})
+        def no_benchmark(*args, **kwargs):
+            pytest.fail("--skip-benchmark must not time models")
+        monkeypatch.setattr(runner, "benchmark", no_benchmark)
+>       run(tmp_path, models=("mlp",), tasks=("binary",), epochs=1, ablations=False, explanations=False, skip_benchmark=True)
+E       TypeError: run() got an unexpected keyword argument 'skip_benchmark'
+
+tests/test_execution_modes.py:38: TypeError
+_________ test_seed_worker_requires_precomputed_alpha_and_single_seed __________
+
+tmp_path = PosixPath('/tmp/pytest-of-mparsict/pytest-17/test_seed_worker_requires_prec0')
+
+    def test_seed_worker_requires_precomputed_alpha_and_single_seed(tmp_path):
+        with pytest.raises(ValueError, match="one seed"):
+>           run(tmp_path, mode="full", seeds=[42, 43], seed_worker=True, skip_benchmark=True)
+E           TypeError: run() got an unexpected keyword argument 'seed_worker'
+
+tests/test_execution_modes.py:45: TypeError
+_________________ test_alpha_only_does_not_train_final_models __________________
+
+tmp_path = PosixPath('/tmp/pytest-of-mparsict/pytest-17/test_alpha_only_does_not_train0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f4d4e52df90>
+
+    def test_alpha_only_does_not_train_final_models(tmp_path, monkeypatch):
+        import exlightnet.run_all as runner
+        class PP:
+            def compare_table4(self):
+                return {"gate": "P1", "report_only": True}
+        monkeypatch.setattr(runner, "prepare_data", lambda root: (small_arrays(), [], PP(), {"fingerprint": "fixture", "gates": []}))
+        monkeypatch.setattr(runner, "sampler_gate", lambda y: {"gate": "T1", "pass": True})
+        seen = []
+        def selection(task, *args):
+            seen.append(task)
+            return {"chosen": "none", "sweep_max_epochs": 8, "candidates": []}
+        monkeypatch.setattr(runner, "choose_alpha", selection)
+        monkeypatch.setattr(runner, "_run_one", lambda *args, **kwargs: pytest.fail("alpha-only cannot evaluate final models"))
+>       result = run(tmp_path, mode="full", alpha_only=True, skip_benchmark=True)
+E       TypeError: run() got an unexpected keyword argument 'alpha_only'
+
+tests/test_execution_modes.py:65: TypeError
+_____________ test_archive_collection_excludes_dataset_and_caches ______________
+
+tmp_path = PosixPath('/tmp/pytest-of-mparsict/pytest-17/test_archive_collection_exclud0')
+
+    def test_archive_collection_excludes_dataset_and_caches(tmp_path):
+        for name in ("src/exlightnet/model.py", "data/RT_IOT2022.csv", "artifacts/cache_arrays.npz", "artifacts/preprocessor.json", ".venv/secret.py", "results/fast/results.json", "results/fast/binary/random_forest/42/model.pkl"):
+            path = tmp_path / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text("test fixture")
+        files = {str(p.relative_to(tmp_path)) for p in load_script().collect_files(tmp_path)}
+        assert "src/exlightnet/model.py" in files
+        assert "artifacts/preprocessor.json" in files
+        assert "results/fast/results.json" in files
+        assert "artifacts/cache_arrays.npz" not in files
+        assert not any(f.startswith(("data/", ".venv/")) for f in files)
+>       assert not any(f.endswith(".pkl") for f in files)
+E       assert not True
+E        +  where True = any(<generator object test_archive_collection_excludes_dataset_and_caches.<locals>.<genexpr> at 0x7f4d4e4eb140>)
+
+tests/test_packaging.py:26: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_execution_modes.py::test_cache_only_refuses_to_train_or_evaluate
+FAILED tests/test_execution_modes.py::test_skip_benchmark_suppresses_all_timing_calls
+FAILED tests/test_execution_modes.py::test_seed_worker_requires_precomputed_alpha_and_single_seed
+FAILED tests/test_execution_modes.py::test_alpha_only_does_not_train_final_models
+FAILED tests/test_packaging.py::test_archive_collection_excludes_dataset_and_caches
+5 failed, 1 passed in 116.85s (0:01:56)

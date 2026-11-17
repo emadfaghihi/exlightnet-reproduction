@@ -1,0 +1,74 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+__________ test_deep_failure_is_detected_before_full_explanation_work __________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fb5e6423550>
+
+    def test_deep_failure_is_detected_before_full_explanation_work(monkeypatch):
+        import shap
+        class Square(torch.nn.Module):
+            def forward(self, x):
+                return x.square()
+        model = torch.nn.Sequential(torch.nn.Linear(4, 2), Square()).eval()
+        with torch.no_grad():
+            model[0].weight.fill_(1.)
+            model[0].bias.zero_()
+        observed = []
+        original = shap.DeepExplainer.shap_values
+        def measured(self, inputs, *args, **kwargs):
+            observed.append(len(inputs))
+            return original(self, inputs, *args, **kwargs)
+        monkeypatch.setattr(shap.DeepExplainer, "shap_values", measured)
+        result = explain_attributions(model, np.zeros((3, 4), dtype="float32"), np.ones((8, 4), dtype="float32"), nsamples=16)
+        assert result["method"] == "GradientExplainer"
+>       assert observed == [2]
+E       assert [8] == [2]
+E         
+E         At index 0 diff: 8 != 2
+E         Use -v to get more diff
+
+tests/test_explain.py:78: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  matplotlib.style.core:core.py:213 In /home/mparsict/projects/me/exlightnet/.venv/lib/python3.11/site-packages/matplotlib/mpl-data/stylelib/classic.mplstyle: 'parseString' deprecated - use 'parse_string'
+WARNING  matplotlib.style.core:core.py:213 In /home/mparsict/projects/me/exlightnet/.venv/lib/python3.11/site-packages/matplotlib/mpl-data/stylelib/classic.mplstyle: 'resetCache' deprecated - use 'reset_cache'
+WARNING  matplotlib.style.core:core.py:213 In /home/mparsict/projects/me/exlightnet/.venv/lib/python3.11/site-packages/matplotlib/mpl-data/stylelib/classic.mplstyle: 'parseString' deprecated - use 'parse_string'
+WARNING  matplotlib.style.core:core.py:213 In /home/mparsict/projects/me/exlightnet/.venv/lib/python3.11/site-packages/matplotlib/mpl-data/stylelib/classic.mplstyle: 'resetCache' deprecated - use 'reset_cache'
+WARNING  matplotlib.style.core:core.py:213 In /home/mparsict/projects/me/exlightnet/.venv/lib/python3.11/site-packages/matplotlib/mpl-data/stylelib/classic.mplstyle: 'parseString' deprecated - use 'parse_string'
+WARNING  matplotlib.style.core:core.py:213 In /home/mparsict/projects/me/exlightnet/.venv/lib/python3.11/site-packages/matplotlib/mpl-data/stylelib/classic.mplstyle: 'resetCache' deprecated - use 'reset_cache'
+WARNING  matplotlib.style.core:core.py:213 In /home/mparsict/projects/me/exlightnet/.venv/lib/python3.11/site-packages/matplotlib/mpl-data/stylelib/classic.mplstyle: 'parseString' deprecated - use 'parse_string'
+WARNING  matplotlib.style.core:core.py:213 In /home/mparsict/projects/me/exlightnet/.venv/lib/python3.11/site-packages/matplotlib/mpl-data/stylelib/classic.mplstyle: 'resetCache' deprecated - use 'reset_cache'
+=============================== warnings summary ===============================
+tests/test_explain.py::test_deep_failure_is_detected_before_full_explanation_work
+  /home/mparsict/projects/me/exlightnet/.venv/lib/python3.11/site-packages/matplotlib/_fontconfig_pattern.py:64: PyparsingDeprecationWarning: 'oneOf' deprecated - use 'one_of'
+    prop = Group((name + Suppress("=") + comma_separated(value)) | oneOf(_CONSTANTS))
+
+tests/test_explain.py::test_deep_failure_is_detected_before_full_explanation_work
+tests/test_explain.py::test_deep_failure_is_detected_before_full_explanation_work
+tests/test_explain.py::test_deep_failure_is_detected_before_full_explanation_work
+tests/test_explain.py::test_deep_failure_is_detected_before_full_explanation_work
+tests/test_explain.py::test_deep_failure_is_detected_before_full_explanation_work
+tests/test_explain.py::test_deep_failure_is_detected_before_full_explanation_work
+  /home/mparsict/projects/me/exlightnet/.venv/lib/python3.11/site-packages/matplotlib/_fontconfig_pattern.py:85: PyparsingDeprecationWarning: 'parseString' deprecated - use 'parse_string'
+    parse = parser.parseString(pattern)
+
+tests/test_explain.py::test_deep_failure_is_detected_before_full_explanation_work
+tests/test_explain.py::test_deep_failure_is_detected_before_full_explanation_work
+tests/test_explain.py::test_deep_failure_is_detected_before_full_explanation_work
+tests/test_explain.py::test_deep_failure_is_detected_before_full_explanation_work
+tests/test_explain.py::test_deep_failure_is_detected_before_full_explanation_work
+tests/test_explain.py::test_deep_failure_is_detected_before_full_explanation_work
+  /home/mparsict/projects/me/exlightnet/.venv/lib/python3.11/site-packages/matplotlib/_fontconfig_pattern.py:89: PyparsingDeprecationWarning: 'resetCache' deprecated - use 'reset_cache'
+    parser.resetCache()
+
+tests/test_explain.py::test_deep_failure_is_detected_before_full_explanation_work
+  /home/mparsict/projects/me/exlightnet/.venv/lib/python3.11/site-packages/matplotlib/_mathtext.py:45: PyparsingDeprecationWarning: 'enablePackrat' deprecated - use 'enable_packrat'
+    ParserElement.enablePackrat()
+
+tests/test_explain.py: 909 warnings
+  /home/mparsict/projects/me/exlightnet/.venv/lib/python3.11/site-packages/shap/plots/colors/_colorconv.py:819: DeprecationWarning: Converting `np.inexact` or `np.floating` to a dtype is deprecated. The current result is `float64` which is not strictly correct.
+    if np.issubdtype(dtype_in, np.dtype(dtype).type):
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_explain.py::test_deep_failure_is_detected_before_full_explanation_work
+1 failed, 923 warnings in 3.94s

@@ -1,0 +1,58 @@
+{
+  "stage": "benchmark_only",
+  "campaign": "20261117T052645467310-1050022",
+  "started_at": "2026-11-17T05:26:45.467288+00:00",
+  "finished_at": "2026-11-17T05:39:01.037188+00:00",
+  "seconds": 735.5698863359976,
+  "pid": 1050022,
+  "processes": 1,
+  "threads": 1,
+  "environment": {
+    "platform": "Linux-6.1.0-32-amd64-x86_64-with-glibc2.36",
+    "cpu": "Intel(R) Core(TM) i5-8500 CPU @ 3.00GHz",
+    "python": "3.11.2",
+    "versions": {
+      "numpy": "1.26.4",
+      "pandas": "2.2.3",
+      "scipy": "1.14.1",
+      "torch": "2.6.0+cpu",
+      "scikit-learn": "1.6.1",
+      "xgboost-cpu": "2.1.4",
+      "shap": "0.46.0",
+      "nbformat": "5.10.4",
+      "nbconvert": "7.16.6",
+      "pytest": "8.3.5"
+    },
+    "cuda_used": false,
+    "torch_threads": 1,
+    "torch_interop_threads": 1,
+    "threadpools": [
+      {
+        "api": "blas",
+        "library": "openblas",
+        "threads": 1
+      },
+      {
+        "api": "openmp",
+        "library": "openmp",
+        "threads": 1
+      },
+      {
+        "api": "blas",
+        "library": "openblas",
+        "threads": 1
+      },
+      {
+        "api": "openmp",
+        "library": "openmp",
+        "threads": 1
+      }
+    ]
+  },
+  "measured_models": 95,
+  "attempted_models": 95,
+  "failed_models": 0,
+  "skipped_models": 0,
+  "gated_out_models": 0,
+  "failures": []
+}

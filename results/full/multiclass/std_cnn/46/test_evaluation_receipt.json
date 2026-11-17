@@ -1,0 +1,42 @@
+{
+  "status": "complete",
+  "metadata": {
+    "task": "multiclass",
+    "model": "std_cnn",
+    "seed": 46,
+    "params": 127052,
+    "serialized_bytes": 517226,
+    "training": {
+      "best_epoch": 3,
+      "best_val_macro_f1": 0.6079682479451426,
+      "epochs_run": 9,
+      "training_seconds": 983.0730435659971,
+      "config": {
+        "seed": 46,
+        "max_epochs": 30,
+        "batch_size": 512,
+        "patience": 6,
+        "lr": 0.0015,
+        "weight_decay": 0.0001,
+        "alpha_mode": "none",
+        "sampler": "tempered",
+        "threads": 1
+      }
+    },
+    "recipe": {
+      "seed": 46,
+      "max_epochs": 30,
+      "batch_size": 512,
+      "patience": 6,
+      "lr": 0.0015,
+      "weight_decay": 0.0001,
+      "alpha_mode": "none",
+      "sampler": "tempered",
+      "threads": 1
+    },
+    "data_fingerprint": "dfba90bd116f9288bc72a837160516984ba773b11904e98561c80cda7dedcf5c",
+    "features": 40,
+    "fingerprint": "974a6e0373a338e42de934828e58b8333672b0bab36577559410106fa2623c99"
+  },
+  "test_prediction_passes": 1
+}

@@ -1,0 +1,4 @@
+Alpha selection: binary, validation only
+Training/final reporting: fast/binary/mlp/42
+Finished fast: 1 results, 0 stopped branches; /home/mparsict/projects/me/exlightnet/results/fast
+{'stage': 'seed_worker', 'pid': 3, 'threads': 1, 'shared_publications_unchanged': True}

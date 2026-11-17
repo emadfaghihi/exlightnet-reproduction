@@ -1,0 +1,98 @@
+{
+  "task": "binary",
+  "model": "exlightnet_w8",
+  "seed": 46,
+  "params": 35438,
+  "serialized_bytes": 49892,
+  "fingerprint": "1ac6d4b72487737b5db5d56e6fa586fcc5fc356c4ef7b1043c1e8c6ced98138a",
+  "quantization": {
+    "max_abs_weight_error": 0.0023192763328552246,
+    "int8_bytes": 49892,
+    "quantized_weight_tensors": 10,
+    "compute": "FP32 with dequantized W8 weights",
+    "size_breakdown": {
+      "weights_only_int8_bytes": 34560,
+      "scales_fp32_bytes": 2936,
+      "rest_fp32_bytes": 5828,
+      "metadata_array_bytes": 10468,
+      "total_array_payload_bytes": 53792,
+      "compressed_members_bytes": {
+        "weights": 31048,
+        "scales": 3622,
+        "rest": 7357,
+        "metadata": 1843
+      },
+      "zip_container_bytes": 6022,
+      "full_artifact_bytes": 49892,
+      "definition": "weights-only is raw int8 tensor payload; full artifact includes scales, FP32 state, metadata, NPY headers and ZIP container"
+    }
+  },
+  "accuracy": 0.9953974442278536,
+  "macro_precision": 0.98818098752202,
+  "macro_recall": 0.9865646068801879,
+  "weighted_f1": 0.9953936281146221,
+  "macro_f1": 0.9873710677838696,
+  "auc": 0.9977854466046266,
+  "auc_definition": "p_attack",
+  "per_class": {
+    "normal": {
+      "precision": 0.9791332263242376,
+      "recall": 0.9754797441364605,
+      "f1": 0.9773030707610146,
+      "support": 1876
+    },
+    "attack": {
+      "precision": 0.9972287487198024,
+      "recall": 0.9976494696239151,
+      "f1": 0.9974390648067247,
+      "support": 16592
+    }
+  },
+  "confusion_matrix": [
+    [
+      1830,
+      46
+    ],
+    [
+      39,
+      16553
+    ]
+  ],
+  "attack_recall": 0.9976494696239151,
+  "miss_count": 39,
+  "fp_count": 46,
+  "fpr": 0.024520255863539446,
+  "threshold": 0.5,
+  "decision_rule": "argmax of two softmax logits; ties select normal",
+  "downstream_stopped": false,
+  "latency_mean_ms": 0.5947308389999999,
+  "latency_median_ms": 0.5909945,
+  "latency_p95_ms": 0.6356593,
+  "warmup": 100,
+  "iterations": 1000,
+  "batch_size": 1,
+  "threads": 1,
+  "input_partition": "train",
+  "peak_rss_bytes": 616890368,
+  "rss_scope": "benchmark-only process lifetime across preceding benchmarked models; no training",
+  "benchmark_context": {
+    "campaign": "20261117T052645467310-1050022",
+    "stage": "benchmark_only",
+    "pid": 1050022,
+    "processes": 1,
+    "idle_cpu": {
+      "max_busy_fraction": 0.05,
+      "consecutive_windows": 3,
+      "sample_interval_s": 1.0,
+      "quiet_window_busy_fractions": [
+        0.02847571189279732,
+        0.03826955074875208,
+        0.00667779632721202
+      ],
+      "wait_seconds": 5.002014192999923,
+      "observed_windows": 5
+    },
+    "timestamp": "2026-11-17T05:38:25.680496+00:00",
+    "model_fingerprint": "1ac6d4b72487737b5db5d56e6fa586fcc5fc356c4ef7b1043c1e8c6ced98138a"
+  }
+}

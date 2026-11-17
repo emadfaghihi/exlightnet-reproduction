@@ -1,0 +1,33 @@
+{
+  "gate": "Q1",
+  "task": "multiclass",
+  "seed": 42,
+  "pass": true,
+  "actual": {
+    "fp32_macro_f1": 0.824796327203707,
+    "w8_macro_f1": 0.8253071812641015,
+    "delta": 0.0005108540603945277,
+    "fp32_bytes": 163832,
+    "max_abs_weight_error": 0.0024102330207824707,
+    "int8_bytes": 55271,
+    "quantized_weight_tensors": 10,
+    "compute": "FP32 with dequantized W8 weights",
+    "size_breakdown": {
+      "weights_only_int8_bytes": 37440,
+      "scales_fp32_bytes": 2976,
+      "rest_fp32_bytes": 5868,
+      "metadata_array_bytes": 10472,
+      "total_array_payload_bytes": 56756,
+      "compressed_members_bytes": {
+        "weights": 36417,
+        "scales": 3658,
+        "rest": 7331,
+        "metadata": 1843
+      },
+      "zip_container_bytes": 6022,
+      "full_artifact_bytes": 55271,
+      "definition": "weights-only is raw int8 tensor payload; full artifact includes scales, FP32 state, metadata, NPY headers and ZIP container"
+    }
+  },
+  "criterion": "drop <=0.01"
+}

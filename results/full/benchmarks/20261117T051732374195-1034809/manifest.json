@@ -1,0 +1,66 @@
+{
+  "stage": "benchmark_only",
+  "campaign": "20261117T051732374195-1034809",
+  "started_at": "2026-11-17T05:17:32.374165+00:00",
+  "finished_at": "2026-11-17T05:22:32.475681+00:00",
+  "seconds": 300.10150266599885,
+  "pid": 1034809,
+  "processes": 1,
+  "threads": 1,
+  "environment": {
+    "platform": "Linux-6.1.0-32-amd64-x86_64-with-glibc2.36",
+    "cpu": "Intel(R) Core(TM) i5-8500 CPU @ 3.00GHz",
+    "python": "3.11.2",
+    "versions": {
+      "numpy": "1.26.4",
+      "pandas": "2.2.3",
+      "scipy": "1.14.1",
+      "torch": "2.6.0+cpu",
+      "scikit-learn": "1.6.1",
+      "xgboost-cpu": "2.1.4",
+      "shap": "0.46.0",
+      "nbformat": "5.10.4",
+      "nbconvert": "7.16.6",
+      "pytest": "8.3.5"
+    },
+    "cuda_used": false,
+    "torch_threads": 1,
+    "torch_interop_threads": 1,
+    "threadpools": [
+      {
+        "api": "blas",
+        "library": "openblas",
+        "threads": 1
+      },
+      {
+        "api": "openmp",
+        "library": "openmp",
+        "threads": 1
+      },
+      {
+        "api": "blas",
+        "library": "openblas",
+        "threads": 1
+      },
+      {
+        "api": "openmp",
+        "library": "openmp",
+        "threads": 1
+      }
+    ]
+  },
+  "measured_models": 0,
+  "attempted_models": 1,
+  "failed_models": 1,
+  "skipped_models": 94,
+  "gated_out_models": 0,
+  "failures": [
+    {
+      "branch": "benchmark/binary/exlightnet/42",
+      "error_type": "IdleCPUUnavailable",
+      "reason": "CPU did not remain idle (<= 5% busy) for 3 windows within 300.0s",
+      "stage": "benchmark_only",
+      "campaign": "20261117T051732374195-1034809"
+    }
+  ]
+}

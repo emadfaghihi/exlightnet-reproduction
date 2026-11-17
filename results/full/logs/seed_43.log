@@ -1,0 +1,25 @@
+Alpha selection: binary, validation only
+Alpha selection: multiclass, validation only
+Training/final reporting: full/binary/exlightnet/43
+Training/final reporting: full/binary/mlp/43
+Training/final reporting: full/binary/bilstm/43
+Alpha selection: binary, validation only
+Alpha selection: multiclass, validation only
+Training/final reporting: full/binary/exlightnet/43
+Training/final reporting: full/binary/mlp/43
+Training/final reporting: full/binary/bilstm/43
+Training/final reporting: full/binary/std_cnn/43
+Training/final reporting: full/binary/random_forest/43
+Training/final reporting: full/binary/xgboost/43
+Training/final reporting: full/multiclass/exlightnet/43
+Training/final reporting: full/multiclass/mlp/43
+Training/final reporting: full/multiclass/bilstm/43
+Training/final reporting: full/multiclass/std_cnn/43
+Training/final reporting: full/multiclass/random_forest/43
+Training/final reporting: full/multiclass/xgboost/43
+Ablation: no_se/43
+Ablation: standard_conv/43
+Ablation: balanced/43
+Ablation: no_sampler/43
+Ablation: top20/43
+Finished full: 19 results, 0 stopped branches; /home/mparsict/projects/me/exlightnet/results/full

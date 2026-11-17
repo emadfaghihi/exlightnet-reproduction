@@ -1,0 +1,105 @@
+Waiting for the existing one-time alpha sweep
+Frozen alpha ready; starting the parallel pipeline
+Waiting for RAM: 1171 MiB available; 3072 MiB required before five workers
+Waiting for RAM: 1387 MiB available; 3072 MiB required before five workers
+Waiting for RAM: 1940 MiB available; 3072 MiB required before five workers
+Waiting for RAM: 1958 MiB available; 3072 MiB required before five workers
+Waiting for RAM: 1970 MiB available; 3072 MiB required before five workers
+Waiting for RAM: 1970 MiB available; 3072 MiB required before five workers
+Waiting for RAM: 1961 MiB available; 3072 MiB required before five workers
+Waiting for RAM: 1940 MiB available; 3072 MiB required before five workers
+Waiting for RAM: 1977 MiB available; 3072 MiB required before five workers
+Waiting for RAM: 1974 MiB available; 3072 MiB required before five workers
+Waiting for RAM: 1992 MiB available; 3072 MiB required before five workers
+Waiting for RAM: 1948 MiB available; 3072 MiB required before five workers
+Waiting for RAM: 2012 MiB available; 3072 MiB required before five workers
+Waiting for RAM: 1224 MiB available; 3072 MiB required before five workers
+Waiting for RAM: 1118 MiB available; 3072 MiB required before five workers
+Waiting for RAM: 1095 MiB available; 3072 MiB required before five workers
+Waiting for RAM: 612 MiB available; 3072 MiB required before five workers
+Waiting for RAM: 1347 MiB available; 3072 MiB required before five workers
+Waiting for RAM: 1277 MiB available; 3072 MiB required before five workers
+Waiting for RAM: 1310 MiB available; 3072 MiB required before five workers
+Waiting for RAM: 1339 MiB available; 3072 MiB required before five workers
+Waiting for RAM: 1461 MiB available; 3072 MiB required before five workers
+Waiting for RAM: 1480 MiB available; 3072 MiB required before five workers
+Waiting for RAM: 1392 MiB available; 3072 MiB required before five workers
+Waiting for RAM: 1313 MiB available; 3072 MiB required before five workers
+Waiting for RAM: 1423 MiB available; 3072 MiB required before five workers
+Waiting for RAM: 1501 MiB available; 3072 MiB required before five workers
+Waiting for RAM: 1640 MiB available; 3072 MiB required before five workers
+Waiting for RAM: 1364 MiB available; 3072 MiB required before five workers
+Waiting for RAM: 1435 MiB available; 3072 MiB required before five workers
+Waiting for RAM: 1106 MiB available; 3072 MiB required before five workers
+Waiting for RAM: 1580 MiB available; 3072 MiB required before five workers
+Waiting for RAM: 1585 MiB available; 3072 MiB required before five workers
+Waiting for RAM: 1574 MiB available; 3072 MiB required before five workers
+Waiting for RAM: 1597 MiB available; 3072 MiB required before five workers
+Waiting for RAM: 1332 MiB available; 3072 MiB required before five workers
+Waiting for RAM: 1384 MiB available; 3072 MiB required before five workers
+Waiting for RAM: 1371 MiB available; 3072 MiB required before five workers
+Waiting for RAM: 1420 MiB available; 3072 MiB required before five workers
+Waiting for RAM: 1424 MiB available; 3072 MiB required before five workers
+Waiting for RAM: 1440 MiB available; 3072 MiB required before five workers
+Waiting for RAM: 1512 MiB available; 3072 MiB required before five workers
+Started single-thread seed processes: 42=6, 43=7, 44=8, 45=9, 46=10
+Seed progress: 42:running (0/19 results); 43:running (0/19 results); 44:running (0/19 results); 45:running (0/19 results); 46:running (0/19 results)
+Seed progress: 42:running (0/19 results); 43:running (0/19 results); 44:running (0/19 results); 45:running (0/19 results); 46:running (0/19 results)
+Seed progress: 42:running (0/19 results); 43:running (0/19 results); 44:running (0/19 results); 45:running (0/19 results); 46:running (0/19 results)
+Seed progress: 42:running (0/19 results); 43:running (0/19 results); 44:running (0/19 results); 45:running (0/19 results); 46:running (0/19 results)
+Seed progress: 42:running (0/19 results); 43:running (0/19 results); 44:running (0/19 results); 45:running (0/19 results); 46:running (0/19 results)
+Seed progress: 42:running (0/19 results); 43:running (0/19 results); 44:running (0/19 results); 45:running (0/19 results); 46:running (0/19 results)
+Seed progress: 42:running (0/19 results); 43:running (0/19 results); 44:running (0/19 results); 45:running (0/19 results); 46:running (0/19 results)
+Seed progress: 42:running (0/19 results); 43:running (0/19 results); 44:running (0/19 results); 45:running (0/19 results); 46:running (0/19 results)
+Seed progress: 42:running (0/19 results); 43:running (0/19 results); 44:running (0/19 results); 45:running (0/19 results); 46:running (0/19 results)
+Seed progress: 42:running (0/19 results); 43:running (0/19 results); 44:running (0/19 results); 45:running (0/19 results); 46:running (0/19 results)
+Seed progress: 42:running (0/19 results); 43:running (0/19 results); 44:running (0/19 results); 45:running (0/19 results); 46:running (0/19 results)
+Seed progress: 42:running (0/19 results); 43:running (0/19 results); 44:running (0/19 results); 45:running (0/19 results); 46:running (0/19 results)
+Seed progress: 42:running (0/19 results); 43:running (0/19 results); 44:running (0/19 results); 45:running (0/19 results); 46:running (0/19 results)
+Seed progress: 42:running (0/19 results); 43:running (0/19 results); 44:running (0/19 results); 45:running (0/19 results); 46:running (0/19 results)
+Seed progress: 42:running (0/19 results); 43:running (0/19 results); 44:running (0/19 results); 45:running (0/19 results); 46:running (0/19 results)
+Seed progress: 42:running (0/19 results); 43:running (0/19 results); 44:running (0/19 results); 45:running (0/19 results); 46:running (0/19 results)
+Seed progress: 42:running (0/19 results); 43:running (0/19 results); 44:running (0/19 results); 45:running (0/19 results); 46:running (0/19 results)
+Seed progress: 42:running (0/19 results); 43:running (0/19 results); 44:running (0/19 results); 45:running (0/19 results); 46:running (0/19 results)
+Seed progress: 42:running (0/19 results); 43:running (0/19 results); 44:running (0/19 results); 45:running (0/19 results); 46:running (0/19 results)
+Seed progress: 42:running (0/19 results); 43:running (0/19 results); 44:running (0/19 results); 45:running (0/19 results); 46:running (0/19 results)
+Seed progress: 42:running (0/19 results); 43:running (0/19 results); 44:running (0/19 results); 45:running (0/19 results); 46:running (0/19 results)
+Seed progress: 42:running (0/19 results); 43:running (0/19 results); 44:running (0/19 results); 45:running (0/19 results); 46:running (0/19 results)
+Seed progress: 42:running (0/19 results); 43:running (0/19 results); 44:running (0/19 results); 45:running (0/19 results); 46:running (0/19 results)
+Seed progress: 42:running (0/19 results); 43:running (0/19 results); 44:running (0/19 results); 45:running (0/19 results); 46:running (0/19 results)
+Seed progress: 42:running (0/19 results); 43:running (0/19 results); 44:running (0/19 results); 45:running (0/19 results); 46:running (0/19 results)
+Seed progress: 42:running (0/19 results); 43:running (0/19 results); 44:running (0/19 results); 45:running (0/19 results); 46:running (0/19 results)
+Seed progress: 42:running (0/19 results); 43:running (0/19 results); 44:running (0/19 results); 45:running (0/19 results); 46:running (0/19 results)
+Seed progress: 42:running (0/19 results); 43:running (0/19 results); 44:running (0/19 results); 45:running (0/19 results); 46:running (0/19 results)
+Seed progress: 42:running (0/19 results); 43:running (0/19 results); 44:running (0/19 results); 45:running (0/19 results); 46:running (0/19 results)
+Seed progress: 42:running (0/19 results); 43:running (0/19 results); 44:running (0/19 results); 45:running (0/19 results); 46:running (0/19 results)
+Seed progress: 42:running (0/19 results); 43:running (0/19 results); 44:running (0/19 results); 45:running (0/19 results); 46:running (0/19 results)
+Seed progress: 42:running (0/19 results); 43:running (0/19 results); 44:running (0/19 results); 45:running (0/19 results); 46:running (0/19 results)
+Seed progress: 42:running (0/19 results); 43:running (0/19 results); 44:running (0/19 results); 45:running (0/19 results); 46:running (0/19 results)
+Seed progress: 42:running (0/19 results); 43:running (0/19 results); 44:running (0/19 results); 45:running (0/19 results); 46:running (0/19 results)
+Seed progress: 42:running (0/19 results); 43:running (0/19 results); 44:running (0/19 results); 45:running (0/19 results); 46:running (0/19 results)
+Seed progress: 42:running (0/19 results); 43:running (0/19 results); 44:running (0/19 results); 45:running (0/19 results); 46:running (0/19 results)
+Seed progress: 42:running (0/19 results); 43:running (0/19 results); 44:running (0/19 results); 45:running (0/19 results); 46:running (0/19 results)
+Seed progress: 42:running (0/19 results); 43:running (0/19 results); 44:running (0/19 results); 45:running (0/19 results); 46:running (0/19 results)
+Seed progress: 42:running (0/19 results); 43:running (0/19 results); 44:running (0/19 results); 45:running (0/19 results); 46:running (0/19 results)
+Seed progress: 42:running (0/19 results); 43:running (0/19 results); 44:running (0/19 results); 45:running (0/19 results); 46:running (0/19 results)
+Seed progress: 42:running (0/19 results); 43:running (0/19 results); 44:running (0/19 results); 45:running (0/19 results); 46:running (0/19 results)
+Seed progress: 42:running (0/19 results); 43:running (0/19 results); 44:running (0/19 results); 45:running (0/19 results); 46:running (0/19 results)
+Seed progress: 42:running (0/19 results); 43:running (0/19 results); 44:running (0/19 results); 45:running (0/19 results); 46:running (0/19 results)
+Seed progress: 42:running (0/19 results); 43:running (0/19 results); 44:running (0/19 results); 45:running (0/19 results); 46:running (0/19 results)
+Seed progress: 42:running (0/19 results); 43:running (0/19 results); 44:running (0/19 results); 45:running (0/19 results); 46:running (0/19 results)
+Seed progress: 42:running (0/19 results); 43:running (0/19 results); 44:running (0/19 results); 45:running (0/19 results); 46:running (0/19 results)
+Seed progress: 42:running (0/19 results); 43:running (0/19 results); 44:running (0/19 results); 45:running (0/19 results); 46:running (0/19 results)
+Seed progress: 42:running (0/19 results); 43:running (0/19 results); 44:running (1/19 results); 45:running (0/19 results); 46:running (0/19 results)
+Seed progress: 42:running (0/19 results); 43:running (0/19 results); 44:running (2/19 results); 45:running (0/19 results); 46:running (0/19 results)
+Seed progress: 42:running (0/19 results); 43:running (0/19 results); 44:running (2/19 results); 45:running (0/19 results); 46:running (0/19 results)
+Seed progress: 42:running (0/19 results); 43:running (0/19 results); 44:running (2/19 results); 45:running (0/19 results); 46:running (0/19 results)
+Seed progress: 42:running (0/19 results); 43:running (0/19 results); 44:running (2/19 results); 45:running (0/19 results); 46:running (0/19 results)
+Seed progress: 42:running (0/19 results); 43:running (0/19 results); 44:running (2/19 results); 45:running (0/19 results); 46:running (0/19 results)
+Seed progress: 42:running (0/19 results); 43:running (0/19 results); 44:running (2/19 results); 45:running (0/19 results); 46:running (0/19 results)
+Seed progress: 42:running (0/19 results); 43:running (0/19 results); 44:running (2/19 results); 45:running (0/19 results); 46:running (0/19 results)
+Seed progress: 42:running (0/19 results); 43:running (0/19 results); 44:running (2/19 results); 45:running (0/19 results); 46:running (0/19 results)
+Seed progress: 42:running (1/19 results); 43:running (1/19 results); 44:running (2/19 results); 45:running (1/19 results); 46:running (2/19 results)
+Seed progress: 42:running (2/19 results); 43:running (2/19 results); 44:running (2/19 results); 45:running (2/19 results); 46:running (2/19 results)
+Seed progress: 42:running (2/19 results); 43:running (2/19 results); 44:running (2/19 results); 45:running (2/19 results); 46:running (2/19 results)
+Seed progress: 42:running (2/19 results); 43:running (2/19 results); 44:running (2/19 results); 45:running (2/19 results); 46:running (2/19 results)

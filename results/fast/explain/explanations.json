@@ -1,0 +1,463 @@
+{
+  "fp32": {
+    "expected_logits": [
+      0.48368221521377563,
+      -0.45818692445755005,
+      1.987909197807312,
+      -0.40659067034721375,
+      -1.8483222723007202,
+      -1.5828405618667603,
+      -2.439669370651245,
+      -2.008460760116577,
+      -2.767707347869873,
+      -2.202711820602417,
+      0.17056265473365784,
+      0.542900800704956
+    ],
+    "method": "GradientExplainer",
+    "fallback_reason": "AssertionError: The SHAP explanations do not sum up to the model's output! This is either because of a rounding error or because an operator in your computation graph was not fully supported. If the sum difference of %f is significant compared to the scale of your model outputs, please post as a github issue, with a reproducible example so we can debug it. Used framework: pytorch - Max. diff: 1.507496914308831 - Tolerance: 0.01",
+    "warnings": [
+      "unrecognized nn.Module: AdaptiveMaxPool1d"
+    ],
+    "nsamples_gradient": 64,
+    "additivity_max_abs": 2.352273098904563,
+    "additivity_mean_abs": 0.32402057832028397,
+    "additivity_relative_mean": 1.8901179816492135,
+    "output_space": "logits; additivity checked separately for each class"
+  },
+  "dequantized_int8": {
+    "expected_logits": [
+      0.4796050786972046,
+      -0.44468653202056885,
+      1.977308750152588,
+      -0.4066421389579773,
+      -1.8552658557891846,
+      -1.5813918113708496,
+      -2.4393486976623535,
+      -2.0009994506835938,
+      -2.7692456245422363,
+      -2.2072184085845947,
+      0.16930904984474182,
+      0.5451518297195435
+    ],
+    "method": "GradientExplainer",
+    "fallback_reason": "AssertionError: The SHAP explanations do not sum up to the model's output! This is either because of a rounding error or because an operator in your computation graph was not fully supported. If the sum difference of %f is significant compared to the scale of your model outputs, please post as a github issue, with a reproducible example so we can debug it. Used framework: pytorch - Max. diff: 0.7400688089746836 - Tolerance: 0.01",
+    "warnings": [
+      "unrecognized nn.Module: AdaptiveMaxPool1d"
+    ],
+    "nsamples_gradient": 64,
+    "additivity_max_abs": 2.362959878228474,
+    "additivity_mean_abs": 0.3354329959236417,
+    "additivity_relative_mean": 1.7913070304395649,
+    "output_space": "logits; additivity checked separately for each class"
+  },
+  "background_size": 16,
+  "random_test_size": 12,
+  "test_indices": [
+    10237,
+    15845,
+    1700,
+    13999,
+    16390,
+    15280,
+    11663,
+    5110,
+    12937,
+    3051,
+    4194,
+    1178
+  ],
+  "background_train_indices": [
+    37817,
+    7690,
+    8115,
+    63405,
+    60094,
+    56403,
+    45369,
+    65594,
+    67743,
+    61832,
+    37312,
+    7406,
+    73986,
+    84076,
+    66689,
+    17361
+  ],
+  "global": [
+    {
+      "rank": 1,
+      "feature": "bwd_iat.avg",
+      "mean_abs_phi": 0.44193033620755584
+    },
+    {
+      "rank": 2,
+      "feature": "fwd_iat.avg",
+      "mean_abs_phi": 0.37081730910277383
+    },
+    {
+      "rank": 3,
+      "feature": "flow_iat.avg",
+      "mean_abs_phi": 0.2340299748458431
+    },
+    {
+      "rank": 4,
+      "feature": "fwd_pkts_per_sec",
+      "mean_abs_phi": 0.22635273127942326
+    },
+    {
+      "rank": 5,
+      "feature": "bwd_header_size_min",
+      "mean_abs_phi": 0.21541802140493102
+    },
+    {
+      "rank": 6,
+      "feature": "bwd_iat.max",
+      "mean_abs_phi": 0.21531395325589486
+    },
+    {
+      "rank": 7,
+      "feature": "flow_pkts_per_sec",
+      "mean_abs_phi": 0.17221456323301365
+    },
+    {
+      "rank": 8,
+      "feature": "flow_iat.std",
+      "mean_abs_phi": 0.1597541200656261
+    },
+    {
+      "rank": 9,
+      "feature": "fwd_iat.max",
+      "mean_abs_phi": 0.15317718915355027
+    },
+    {
+      "rank": 10,
+      "feature": "bwd_pkts_per_sec",
+      "mean_abs_phi": 0.14196984015941516
+    },
+    {
+      "rank": 11,
+      "feature": "bwd_header_size_max",
+      "mean_abs_phi": 0.130503757887653
+    },
+    {
+      "rank": 12,
+      "feature": "flow_pkts_payload.avg",
+      "mean_abs_phi": 0.12827517691209056
+    },
+    {
+      "rank": 13,
+      "feature": "bwd_pkts_payload.std",
+      "mean_abs_phi": 0.12770277494855814
+    },
+    {
+      "rank": 14,
+      "feature": "payload_bytes_per_second",
+      "mean_abs_phi": 0.12048701426158392
+    },
+    {
+      "rank": 15,
+      "feature": "flow_iat.max",
+      "mean_abs_phi": 0.10346433038331422
+    },
+    {
+      "rank": 16,
+      "feature": "bwd_pkts_payload.avg",
+      "mean_abs_phi": 0.09853448419483059
+    },
+    {
+      "rank": 17,
+      "feature": "flow_pkts_payload.std",
+      "mean_abs_phi": 0.09824002073974691
+    },
+    {
+      "rank": 18,
+      "feature": "fwd_pkts_payload.avg",
+      "mean_abs_phi": 0.09317642014407627
+    },
+    {
+      "rank": 19,
+      "feature": "bwd_pkts_payload.max",
+      "mean_abs_phi": 0.07722777868816612
+    },
+    {
+      "rank": 20,
+      "feature": "flow_pkts_payload.max",
+      "mean_abs_phi": 0.058214977099326895
+    },
+    {
+      "rank": 21,
+      "feature": "fwd_pkts_payload.max",
+      "mean_abs_phi": 0.049659331848893075
+    },
+    {
+      "rank": 22,
+      "feature": "fwd_iat.tot",
+      "mean_abs_phi": 0.047051437543402484
+    },
+    {
+      "rank": 23,
+      "feature": "active.min",
+      "mean_abs_phi": 0.04581078499127005
+    },
+    {
+      "rank": 24,
+      "feature": "bwd_iat.tot",
+      "mean_abs_phi": 0.03648964220438969
+    },
+    {
+      "rank": 25,
+      "feature": "id.resp_p",
+      "mean_abs_phi": 0.023096199922524086
+    },
+    {
+      "rank": 26,
+      "feature": "fwd_subflow_bytes",
+      "mean_abs_phi": 0.018436304606362794
+    },
+    {
+      "rank": 27,
+      "feature": "fwd_header_size_tot",
+      "mean_abs_phi": 0.01839313020234232
+    },
+    {
+      "rank": 28,
+      "feature": "flow_duration",
+      "mean_abs_phi": 0.017000630949092113
+    },
+    {
+      "rank": 29,
+      "feature": "bwd_header_size_tot",
+      "mean_abs_phi": 0.016079788963721413
+    },
+    {
+      "rank": 30,
+      "feature": "active.max",
+      "mean_abs_phi": 0.014559122200326981
+    },
+    {
+      "rank": 31,
+      "feature": "active.avg",
+      "mean_abs_phi": 0.013646484208433582
+    },
+    {
+      "rank": 32,
+      "feature": "bwd_subflow_bytes",
+      "mean_abs_phi": 0.013139850637211745
+    },
+    {
+      "rank": 33,
+      "feature": "flow_iat.tot",
+      "mean_abs_phi": 0.011374729910868365
+    },
+    {
+      "rank": 34,
+      "feature": "bwd_pkts_payload.tot",
+      "mean_abs_phi": 0.006040229543843966
+    },
+    {
+      "rank": 35,
+      "feature": "flow_pkts_payload.tot",
+      "mean_abs_phi": 0.005025659194530582
+    },
+    {
+      "rank": 36,
+      "feature": "active.tot",
+      "mean_abs_phi": 0.0022738716834498703
+    },
+    {
+      "rank": 37,
+      "feature": "bwd_data_pkts_tot",
+      "mean_abs_phi": 0.002224752094982656
+    },
+    {
+      "rank": 38,
+      "feature": "fwd_pkts_payload.tot",
+      "mean_abs_phi": 0.0017275035585128781
+    },
+    {
+      "rank": 39,
+      "feature": "flow_iat.min",
+      "mean_abs_phi": 5.1583839755364554e-05
+    },
+    {
+      "rank": 40,
+      "feature": "fwd_iat.min",
+      "mean_abs_phi": 2.5519928920631724e-05
+    }
+  ],
+  "quantization_stability": {
+    "spearman_top15_fp32_feature_set": 0.9964285714285712,
+    "top5_overlap": 4
+  },
+  "deletion": {
+    "mean_probability_curve": [
+      0.832952082157135,
+      0.7291701436042786,
+      0.6792572140693665,
+      0.7009977698326111,
+      0.6741964221000671,
+      0.6640452742576599,
+      0.6540800333023071,
+      0.6635240316390991,
+      0.6500491499900818,
+      0.6510946750640869,
+      0.6494689583778381,
+      0.6428716778755188,
+      0.6427609324455261,
+      0.6375046372413635,
+      0.6324731707572937,
+      0.6231643557548523,
+      0.6138347387313843,
+      0.6075551509857178,
+      0.6001643538475037,
+      0.6091225743293762,
+      0.6027548909187317,
+      0.588800847530365,
+      0.597204864025116,
+      0.5946168303489685,
+      0.5940170884132385,
+      0.5891136527061462,
+      0.5874946713447571,
+      0.5866411924362183,
+      0.5804811120033264,
+      0.5718424320220947,
+      0.5663038492202759,
+      0.5560845732688904,
+      0.5429871678352356,
+      0.5336964130401611,
+      0.529507577419281,
+      0.5214125514030457,
+      0.5195288062095642,
+      0.49711868166923523,
+      0.498308390378952,
+      0.4970676004886627,
+      0.4924851953983307
+    ],
+    "random_mean_probability_curve": [
+      0.8329523205757141,
+      0.8162311315536499,
+      0.8037475347518921,
+      0.7885932326316833,
+      0.775043249130249,
+      0.7612926363945007,
+      0.7482195496559143,
+      0.7355682849884033,
+      0.7289231419563293,
+      0.712419867515564,
+      0.704768717288971,
+      0.7001690864562988,
+      0.6885977387428284,
+      0.6861463785171509,
+      0.6759676337242126,
+      0.673581063747406,
+      0.6689912676811218,
+      0.6618740558624268,
+      0.6548940539360046,
+      0.651557981967926,
+      0.6418148279190063,
+      0.6354702711105347,
+      0.6343708634376526,
+      0.6310468316078186,
+      0.6250336766242981,
+      0.6227697134017944,
+      0.6172265410423279,
+      0.6111184358596802,
+      0.6072173714637756,
+      0.604834258556366,
+      0.6047181487083435,
+      0.597877025604248,
+      0.5929693579673767,
+      0.5890761017799377,
+      0.5827844738960266,
+      0.5791369676589966,
+      0.5728314518928528,
+      0.569703996181488,
+      0.5568949580192566,
+      0.5367743968963623,
+      0.4924851357936859
+    ],
+    "probability_after_removals": {
+      "0": 0.832952082157135,
+      "10": 0.6494689583778381,
+      "20": 0.6027548909187317
+    },
+    "normalized_auc": 0.6035759449005127,
+    "random_normalized_auc": 0.6578243970870972,
+    "definition": "probability AUC integrated over fraction of all features removed (0..1); not divided by starting probability",
+    "random_permutations": 20,
+    "mask_value": "zero in train-fitted z-space"
+  },
+  "local_examples": [
+    {
+      "true_class": "dos_syn_hping",
+      "predicted_class": "dos_syn_hping",
+      "correct": true,
+      "test_position": 0,
+      "probability": 0.8430706858634949,
+      "top5": [
+        {
+          "feature": "bwd_iat.avg",
+          "signed_logit_phi": 1.9774124628549767,
+          "z_value": -0.07581867277622223
+        },
+        {
+          "feature": "bwd_iat.max",
+          "signed_logit_phi": 1.170660817388596,
+          "z_value": -0.0933314710855484
+        },
+        {
+          "feature": "fwd_iat.avg",
+          "signed_logit_phi": -0.9937715815889577,
+          "z_value": -0.12744927406311035
+        },
+        {
+          "feature": "flow_iat.avg",
+          "signed_logit_phi": -0.6831166287963182,
+          "z_value": -0.15764069557189941
+        },
+        {
+          "feature": "flow_pkts_per_sec",
+          "signed_logit_phi": 0.5854046593905473,
+          "z_value": 1.874710202217102
+        }
+      ]
+    },
+    {
+      "true_class": "nmap_os_detection",
+      "predicted_class": "nmap_xmas_tree_scan",
+      "correct": false,
+      "test_position": 44,
+      "probability": 0.3322300910949707,
+      "top5": [
+        {
+          "feature": "flow_pkts_payload.avg",
+          "signed_logit_phi": 1.4606639625940947,
+          "z_value": -1.2944403886795044
+        },
+        {
+          "feature": "flow_pkts_payload.std",
+          "signed_logit_phi": 0.4748805698849553,
+          "z_value": -1.0291452407836914
+        },
+        {
+          "feature": "fwd_pkts_payload.avg",
+          "signed_logit_phi": 0.40471937656610424,
+          "z_value": -2.2081925868988037
+        },
+        {
+          "feature": "fwd_pkts_payload.max",
+          "signed_logit_phi": 0.37075497868490076,
+          "z_value": -0.9954687356948853
+        },
+        {
+          "feature": "flow_pkts_payload.max",
+          "signed_logit_phi": 0.2862804773247851,
+          "z_value": -0.6824842095375061
+        }
+      ]
+    }
+  ],
+  "seconds": 11.891688386998794
+}

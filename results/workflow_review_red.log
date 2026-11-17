@@ -1,0 +1,251 @@
+..FFFF                                                                   [100%]
+=================================== FAILURES ===================================
+______________ test_benchmark_lock_is_shared_across_fast_and_full ______________
+
+tmp_path = PosixPath('/tmp/pytest-of-mparsict/pytest-24/test_benchmark_lock_is_shared_0')
+
+    def test_benchmark_lock_is_shared_across_fast_and_full(tmp_path):
+        with execution_lock(tmp_path, "fast", seed=42):
+            with pytest.raises(RuntimeError, match="process"):
+                with execution_lock(tmp_path, "full"):
+>                   pytest.fail("full benchmarking cannot overlap a fast worker")
+E                   Failed: full benchmarking cannot overlap a fast worker
+
+tests/test_benchmark_pass.py:25: Failed
+__________ test_benchmark_pass_only_updates_timing_from_cached_models __________
+
+tmp_path = PosixPath('/tmp/pytest-of-mparsict/pytest-24/test_benchmark_pass_only_updat0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f5f35372790>
+
+    def test_benchmark_pass_only_updates_timing_from_cached_models(tmp_path, monkeypatch):
+        import exlightnet.execution as execution
+        import exlightnet.run_all as runner
+        from exlightnet.io import read_json, write_json
+        from exlightnet.metrics import evaluate_once
+        from exlightnet.train import seed_everything
+        seed_everything(42)
+        x = np.zeros((4, 40), dtype="float32")
+        y = np.array([0, 1, 0, 1])
+        arrays = {"x_" + p: x for p in ("train", "val", "test")}
+        arrays.update({"y2_" + p: y for p in ("train", "val", "test")})
+        directory = tmp_path / "results/full"
+        row = runner._run_one("binary", "mlp", 42, arrays, [], {"chosen": "none"}, {"fingerprint": "fixture"}, directory / "binary/mlp/42", 1)
+        write_json(directory / "results.json", [row])
+        write_json(directory / "gates.json", [])
+        write_json(directory / "failures.json", [])
+        write_json(directory / "manifest.json", {"mode": "full", "seeds": [42], "full_five_seed_headlines_complete": False})
+        monkeypatch.setattr(execution, "load_prepared_data", lambda root: ({"x_train": x}, [], None, {"fingerprint": "fixture"}))
+        monkeypatch.setattr(execution, "wait_for_idle", lambda: {"quiet_window_busy_fractions": [.01, .01, .01]})
+        observed = []
+        def measured(model, x):
+            observed.append(len(x))
+            return {"latency_mean_ms": 1., "latency_median_ms": .9, "latency_p95_ms": 1.2}
+        monkeypatch.setattr(execution, "benchmark", measured)
+        def publish_fixture(root, mode, rows, gates, failures, manifest, **kwargs):
+            write_json(directory / "results.json", rows)
+            write_json(directory / "manifest.json", manifest)
+            write_json(directory / "failures.json", failures)
+        monkeypatch.setattr(execution, "publish", publish_fixture)
+        monkeypatch.setattr(runner, "_run_one", lambda *args, **kwargs: pytest.fail("benchmark-only cannot train/test"))
+        receipt = (directory / "binary/mlp/42/test_evaluation_receipt.json").read_bytes()
+        result = runner.run(tmp_path, mode="full", benchmark_only=True)
+        assert observed == [4]
+        assert result["stage"] == "benchmark_only" and result["processes"] == 1
+        updated = read_json(directory / "results.json")[0]
+        assert updated["macro_f1"] == row["macro_f1"]
+        assert updated["latency_mean_ms"] == 1.
+        assert receipt == (directory / "binary/mlp/42/test_evaluation_receipt.json").read_bytes()
+        def busy_cpu():
+            raise RuntimeError("idle check fixture failed")
+        monkeypatch.setattr(execution, "wait_for_idle", busy_cpu)
+>       failed = runner.run(tmp_path, mode="full", benchmark_only=True)
+
+tests/test_benchmark_pass.py:69: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/exlightnet/run_all.py:402: in run
+    return benchmark_only_pass(root, mode)
+src/exlightnet/execution.py:146: in benchmark_only_pass
+    output.mkdir(parents=True)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/tmp/pytest-of-mparsict/pytest-24/test_benchmark_pass_only_updat0/results/full/benchmarks/20261116T102532-3')
+mode = 511, parents = True, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           FileExistsError: [Errno 17] File exists: '/tmp/pytest-of-mparsict/pytest-24/test_benchmark_pass_only_updat0/results/full/benchmarks/20261116T102532-3'
+
+/usr/lib/python3.11/pathlib.py:1117: FileExistsError
+----------------------------- Captured stdout call -----------------------------
+Waiting for idle CPU: binary/mlp/42
+Measured: binary/mlp/42, mean=1.000000 ms
+_______ test_aggregation_never_runs_uncached_analysis_or_proxy_training ________
+
+tmp_path = PosixPath('/tmp/pytest-of-mparsict/pytest-24/test_aggregation_never_runs_un0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f5f32daca90>
+
+    def test_aggregation_never_runs_uncached_analysis_or_proxy_training(tmp_path, monkeypatch):
+        import exlightnet.run_all as runner
+        import exlightnet.execution as execution
+        import exlightnet.explain as explain
+        import exlightnet.proxy as proxy
+        class PP:
+            def compare_table4(self):
+                return {"gate": "P1", "report_only": True}
+        monkeypatch.setattr(execution, "load_prepared_data", lambda root: (small_arrays(), [], PP(), {"fingerprint": "fixture", "gates": []}))
+        monkeypatch.setattr(execution, "load_alpha", lambda *args: {"chosen": "none", "sweep_max_epochs": 8, "candidates": []})
+        monkeypatch.setattr(runner, "sampler_gate", lambda y: {"gate": "T1", "pass": True})
+        def cached_row(task, name, seed, *args, **kwargs):
+            assert kwargs["cache_only"]
+            return {"task": task, "model": name, "seed": seed, "macro_f1": .7}
+        monkeypatch.setattr(runner, "_run_one", cached_row)
+        monkeypatch.setattr(runner, "_load_run_model", lambda *args: None)
+        monkeypatch.setattr(runner, "load_int8", lambda *args: None)
+        monkeypatch.setattr(explain, "run_explanations", lambda *args: pytest.fail("aggregation cannot explain uncached test inputs"))
+        monkeypatch.setattr(proxy, "run_proxy", lambda *args: pytest.fail("aggregation cannot train a proxy"))
+>       run(tmp_path, mode="full", models=("exlightnet",), tasks=("multiclass",), seeds=[42], ablations=False, aggregate_only=True, leakage_proxy=True)
+
+tests/test_execution_modes.py:90: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/exlightnet/run_all.py:403: in run
+    return _run_core(root, mode, models, tasks, seeds, epochs, ablations, explanations, leakage_proxy,
+src/exlightnet/run_all.py:369: in _run_core
+    run_proxy(root, arrays, pp, selections, directory)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = (PosixPath('/tmp/pytest-of-mparsict/pytest-24/test_aggregation_never_runs_un0'), {'x_test': array([[0., 0., 0., 0., 0...., 'sweep_max_epochs': 8}}, PosixPath('/tmp/pytest-of-mparsict/pytest-24/test_aggregation_never_runs_un0/results/full'))
+
+>   monkeypatch.setattr(proxy, "run_proxy", lambda *args: pytest.fail("aggregation cannot train a proxy"))
+E   Failed: aggregation cannot train a proxy
+
+tests/test_execution_modes.py:89: Failed
+----------------------------- Captured stdout call -----------------------------
+Alpha selection: multiclass, validation only
+Training/final reporting: full/multiclass/exlightnet/42
+STOP quantization/multiclass/42: Incomplete cached evaluation, missing evidence/receipt: ['metrics.json', 'predictions.npz', 'test_evaluation_receipt.json']
+STOP explainability: [Errno 2] No such file or directory: '/tmp/pytest-of-mparsict/pytest-24/test_aggregation_never_runs_un0/results/full/multiclass/exlightnet/42/predictions.npz'
+_____ test_summary_reports_actual_observation_count_for_missing_benchmarks _____
+
+self = Index(['task', 'model', 'n_seeds', 'seeds', 'five_seed_complete',
+       'accuracy_mean', 'accuracy_std', 'accuracy_se..._median_ms_seed42', 'latency_p95_ms_mean', 'latency_p95_ms_std',
+       'latency_p95_ms_seed42'],
+      dtype='object')
+key = 'macro_f1_n'
+
+    def get_loc(self, key):
+        """
+        Get integer location, slice or boolean mask for requested label.
+    
+        Parameters
+        ----------
+        key : label
+    
+        Returns
+        -------
+        int if unique index, slice if monotonic index, else mask
+    
+        Examples
+        --------
+        >>> unique_index = pd.Index(list('abc'))
+        >>> unique_index.get_loc('b')
+        1
+    
+        >>> monotonic_index = pd.Index(list('abbc'))
+        >>> monotonic_index.get_loc('b')
+        slice(1, 3, None)
+    
+        >>> non_monotonic_index = pd.Index(list('abcb'))
+        >>> non_monotonic_index.get_loc('b')
+        array([False,  True, False,  True])
+        """
+        casted_key = self._maybe_cast_indexer(key)
+        try:
+>           return self._engine.get_loc(casted_key)
+
+.venv/lib/python3.11/site-packages/pandas/core/indexes/base.py:3805: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+index.pyx:167: in pandas._libs.index.IndexEngine.get_loc
+    ???
+index.pyx:196: in pandas._libs.index.IndexEngine.get_loc
+    ???
+pandas/_libs/hashtable_class_helper.pxi:7081: in pandas._libs.hashtable.PyObjectHashTable.get_item
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   KeyError: 'macro_f1_n'
+
+pandas/_libs/hashtable_class_helper.pxi:7089: KeyError
+
+The above exception was the direct cause of the following exception:
+
+    def test_summary_reports_actual_observation_count_for_missing_benchmarks():
+        rows = [{"task": "binary", "model": "mlp", "seed": 42, "macro_f1": .7, "latency_mean_ms": 1.},
+                {"task": "binary", "model": "mlp", "seed": 43, "macro_f1": .8}]
+        result = summarize(rows).iloc[0]
+        assert result["n_seeds"] == 2
+>       assert result["macro_f1_n"] == 2 and result["latency_mean_ms_n"] == 1
+
+tests/test_metrics.py:63: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.11/site-packages/pandas/core/series.py:1121: in __getitem__
+    return self._get_value(key)
+.venv/lib/python3.11/site-packages/pandas/core/series.py:1237: in _get_value
+    loc = self.index.get_loc(label)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = Index(['task', 'model', 'n_seeds', 'seeds', 'five_seed_complete',
+       'accuracy_mean', 'accuracy_std', 'accuracy_se..._median_ms_seed42', 'latency_p95_ms_mean', 'latency_p95_ms_std',
+       'latency_p95_ms_seed42'],
+      dtype='object')
+key = 'macro_f1_n'
+
+    def get_loc(self, key):
+        """
+        Get integer location, slice or boolean mask for requested label.
+    
+        Parameters
+        ----------
+        key : label
+    
+        Returns
+        -------
+        int if unique index, slice if monotonic index, else mask
+    
+        Examples
+        --------
+        >>> unique_index = pd.Index(list('abc'))
+        >>> unique_index.get_loc('b')
+        1
+    
+        >>> monotonic_index = pd.Index(list('abbc'))
+        >>> monotonic_index.get_loc('b')
+        slice(1, 3, None)
+    
+        >>> non_monotonic_index = pd.Index(list('abcb'))
+        >>> non_monotonic_index.get_loc('b')
+        array([False,  True, False,  True])
+        """
+        casted_key = self._maybe_cast_indexer(key)
+        try:
+            return self._engine.get_loc(casted_key)
+        except KeyError as err:
+            if isinstance(casted_key, slice) or (
+                isinstance(casted_key, abc.Iterable)
+                and any(isinstance(x, slice) for x in casted_key)
+            ):
+                raise InvalidIndexError(key)
+>           raise KeyError(key) from err
+E           KeyError: 'macro_f1_n'
+
+.venv/lib/python3.11/site-packages/pandas/core/indexes/base.py:3812: KeyError
+=========================== short test summary info ============================
+FAILED tests/test_benchmark_pass.py::test_benchmark_lock_is_shared_across_fast_and_full
+FAILED tests/test_benchmark_pass.py::test_benchmark_pass_only_updates_timing_from_cached_models
+FAILED tests/test_execution_modes.py::test_aggregation_never_runs_uncached_analysis_or_proxy_training
+FAILED tests/test_metrics.py::test_summary_reports_actual_observation_count_for_missing_benchmarks
+4 failed, 2 passed in 4.67s

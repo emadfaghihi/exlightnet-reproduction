@@ -1,0 +1,194 @@
+Waiting for idle CPU: binary/exlightnet/42
+STOP benchmark/binary/exlightnet/42: CPU did not remain idle (<= 5% busy) for 3 windows within 300.0s
+{"status": "stopped", "started_at": "2026-11-17T05:17:29.957771+00:00", "benchmark_started_at": "2026-11-17T05:17:29.957794+00:00", "supervisor_pid": 1034808, "command": ["/home/mparsict/projects/me/exlightnet/.venv/bin/python", "-u", "-m", "exlightnet.run_all", "--mode", "full", "--root", "/home/mparsict/projects/me/exlightnet", "--benchmark-only"], "prior_campaign": "20261116T151119336040-1010228", "prior_measured_models": 0, "prior_failures": [{"branch": "benchmark/binary/exlightnet/42", "error_type": "IdleCPUUnavailable", "reason": "CPU did not remain idle (<= 5% busy) for 3 windows within 300.0s", "stage": "benchmark_only", "campaign": "20261116T151119336040-1010228"}], "reason": "User confirmed leaving machine idle after the first CPU-idle timeout", "log": "results/full/logs/benchmark_recovery.log", "pid": 1034809, "returncode": 0, "finished_at": "2026-11-17T05:22:33.065218+00:00", "seconds": 303.107433707999, "campaign": "20261117T051732374195-1034809", "measured_models": 0, "failures": [{"branch": "benchmark/binary/exlightnet/42", "error_type": "IdleCPUUnavailable", "reason": "CPU did not remain idle (<= 5% busy) for 3 windows within 300.0s", "stage": "benchmark_only", "campaign": "20261117T051732374195-1034809"}]}
+Waiting for idle CPU: binary/exlightnet/42
+Measured: binary/exlightnet/42, mean=0.617452 ms
+Waiting for idle CPU: binary/exlightnet/43
+Measured: binary/exlightnet/43, mean=0.621183 ms
+Waiting for idle CPU: binary/exlightnet/44
+Measured: binary/exlightnet/44, mean=0.605431 ms
+Waiting for idle CPU: binary/exlightnet/45
+Measured: binary/exlightnet/45, mean=0.605364 ms
+Waiting for idle CPU: binary/exlightnet/46
+Measured: binary/exlightnet/46, mean=0.603331 ms
+Waiting for idle CPU: binary/mlp/42
+Measured: binary/mlp/42, mean=0.044941 ms
+Waiting for idle CPU: binary/mlp/43
+Measured: binary/mlp/43, mean=0.044610 ms
+Waiting for idle CPU: binary/mlp/44
+Measured: binary/mlp/44, mean=0.043911 ms
+Waiting for idle CPU: binary/mlp/45
+Measured: binary/mlp/45, mean=0.044152 ms
+Waiting for idle CPU: binary/mlp/46
+Measured: binary/mlp/46, mean=0.044021 ms
+Waiting for idle CPU: binary/bilstm/42
+Measured: binary/bilstm/42, mean=0.320314 ms
+Waiting for idle CPU: binary/bilstm/43
+Measured: binary/bilstm/43, mean=0.323073 ms
+Waiting for idle CPU: binary/bilstm/44
+Measured: binary/bilstm/44, mean=0.318878 ms
+Waiting for idle CPU: binary/bilstm/45
+Measured: binary/bilstm/45, mean=0.319694 ms
+Waiting for idle CPU: binary/bilstm/46
+Measured: binary/bilstm/46, mean=0.313628 ms
+Waiting for idle CPU: binary/std_cnn/42
+Measured: binary/std_cnn/42, mean=0.319258 ms
+Waiting for idle CPU: binary/std_cnn/43
+Measured: binary/std_cnn/43, mean=0.325771 ms
+Waiting for idle CPU: binary/std_cnn/44
+Measured: binary/std_cnn/44, mean=0.322346 ms
+Waiting for idle CPU: binary/std_cnn/45
+Measured: binary/std_cnn/45, mean=0.323189 ms
+Waiting for idle CPU: binary/std_cnn/46
+Measured: binary/std_cnn/46, mean=0.326310 ms
+Waiting for idle CPU: binary/random_forest/42
+Measured: binary/random_forest/42, mean=14.329610 ms
+Waiting for idle CPU: binary/random_forest/43
+Measured: binary/random_forest/43, mean=14.359902 ms
+Waiting for idle CPU: binary/random_forest/44
+Measured: binary/random_forest/44, mean=14.201645 ms
+Waiting for idle CPU: binary/random_forest/45
+Measured: binary/random_forest/45, mean=14.143874 ms
+Waiting for idle CPU: binary/random_forest/46
+Measured: binary/random_forest/46, mean=14.006575 ms
+Waiting for idle CPU: binary/xgboost/42
+Measured: binary/xgboost/42, mean=0.404380 ms
+Waiting for idle CPU: binary/xgboost/43
+Measured: binary/xgboost/43, mean=0.417816 ms
+Waiting for idle CPU: binary/xgboost/44
+Measured: binary/xgboost/44, mean=0.415424 ms
+Waiting for idle CPU: binary/xgboost/45
+Measured: binary/xgboost/45, mean=0.421213 ms
+Waiting for idle CPU: binary/xgboost/46
+Measured: binary/xgboost/46, mean=0.406978 ms
+Waiting for idle CPU: multiclass/exlightnet/42
+Measured: multiclass/exlightnet/42, mean=0.629669 ms
+Waiting for idle CPU: multiclass/exlightnet/43
+Measured: multiclass/exlightnet/43, mean=0.610069 ms
+Waiting for idle CPU: multiclass/exlightnet/44
+Measured: multiclass/exlightnet/44, mean=0.623012 ms
+Waiting for idle CPU: multiclass/exlightnet/45
+Measured: multiclass/exlightnet/45, mean=0.615323 ms
+Waiting for idle CPU: multiclass/exlightnet/46
+Measured: multiclass/exlightnet/46, mean=0.610172 ms
+Waiting for idle CPU: multiclass/mlp/42
+Measured: multiclass/mlp/42, mean=0.045479 ms
+Waiting for idle CPU: multiclass/mlp/43
+Measured: multiclass/mlp/43, mean=0.045175 ms
+Waiting for idle CPU: multiclass/mlp/44
+Measured: multiclass/mlp/44, mean=0.045104 ms
+Waiting for idle CPU: multiclass/mlp/45
+Measured: multiclass/mlp/45, mean=0.045648 ms
+Waiting for idle CPU: multiclass/mlp/46
+Measured: multiclass/mlp/46, mean=0.046893 ms
+Waiting for idle CPU: multiclass/bilstm/42
+Measured: multiclass/bilstm/42, mean=0.324459 ms
+Waiting for idle CPU: multiclass/bilstm/43
+Measured: multiclass/bilstm/43, mean=0.321906 ms
+Waiting for idle CPU: multiclass/bilstm/44
+Measured: multiclass/bilstm/44, mean=0.325956 ms
+Waiting for idle CPU: multiclass/bilstm/45
+Measured: multiclass/bilstm/45, mean=0.318480 ms
+Waiting for idle CPU: multiclass/bilstm/46
+Measured: multiclass/bilstm/46, mean=0.326905 ms
+Waiting for idle CPU: multiclass/std_cnn/42
+Measured: multiclass/std_cnn/42, mean=0.316068 ms
+Waiting for idle CPU: multiclass/std_cnn/43
+Measured: multiclass/std_cnn/43, mean=0.318109 ms
+Waiting for idle CPU: multiclass/std_cnn/44
+Measured: multiclass/std_cnn/44, mean=0.321855 ms
+Waiting for idle CPU: multiclass/std_cnn/45
+Measured: multiclass/std_cnn/45, mean=0.323118 ms
+Waiting for idle CPU: multiclass/std_cnn/46
+Measured: multiclass/std_cnn/46, mean=0.315114 ms
+Waiting for idle CPU: multiclass/random_forest/42
+Measured: multiclass/random_forest/42, mean=14.049124 ms
+Waiting for idle CPU: multiclass/random_forest/43
+Measured: multiclass/random_forest/43, mean=14.340402 ms
+Waiting for idle CPU: multiclass/random_forest/44
+Measured: multiclass/random_forest/44, mean=14.402166 ms
+Waiting for idle CPU: multiclass/random_forest/45
+Measured: multiclass/random_forest/45, mean=14.240735 ms
+Waiting for idle CPU: multiclass/random_forest/46
+Measured: multiclass/random_forest/46, mean=14.449066 ms
+Waiting for idle CPU: multiclass/xgboost/42
+Measured: multiclass/xgboost/42, mean=0.609228 ms
+Waiting for idle CPU: multiclass/xgboost/43
+Measured: multiclass/xgboost/43, mean=0.632551 ms
+Waiting for idle CPU: multiclass/xgboost/44
+Measured: multiclass/xgboost/44, mean=0.610846 ms
+Waiting for idle CPU: multiclass/xgboost/45
+Measured: multiclass/xgboost/45, mean=0.619531 ms
+Waiting for idle CPU: multiclass/xgboost/46
+Measured: multiclass/xgboost/46, mean=0.624919 ms
+Waiting for idle CPU: multiclass/no_se/42
+Measured: multiclass/no_se/42, mean=0.470731 ms
+Waiting for idle CPU: multiclass/no_se/43
+Measured: multiclass/no_se/43, mean=0.478099 ms
+Waiting for idle CPU: multiclass/no_se/44
+Measured: multiclass/no_se/44, mean=0.471961 ms
+Waiting for idle CPU: multiclass/no_se/45
+Measured: multiclass/no_se/45, mean=0.467640 ms
+Waiting for idle CPU: multiclass/no_se/46
+Measured: multiclass/no_se/46, mean=0.467323 ms
+Waiting for idle CPU: multiclass/standard_conv/42
+Measured: multiclass/standard_conv/42, mean=0.435759 ms
+Waiting for idle CPU: multiclass/standard_conv/43
+Measured: multiclass/standard_conv/43, mean=0.431478 ms
+Waiting for idle CPU: multiclass/standard_conv/44
+Measured: multiclass/standard_conv/44, mean=0.430698 ms
+Waiting for idle CPU: multiclass/standard_conv/45
+Measured: multiclass/standard_conv/45, mean=0.424734 ms
+Waiting for idle CPU: multiclass/standard_conv/46
+Measured: multiclass/standard_conv/46, mean=0.433285 ms
+Waiting for idle CPU: multiclass/balanced/42
+Measured: multiclass/balanced/42, mean=0.612473 ms
+Waiting for idle CPU: multiclass/balanced/43
+Measured: multiclass/balanced/43, mean=0.613143 ms
+Waiting for idle CPU: multiclass/balanced/44
+Measured: multiclass/balanced/44, mean=0.617485 ms
+Waiting for idle CPU: multiclass/balanced/45
+Measured: multiclass/balanced/45, mean=0.601948 ms
+Waiting for idle CPU: multiclass/balanced/46
+Measured: multiclass/balanced/46, mean=0.593253 ms
+Waiting for idle CPU: multiclass/no_sampler/42
+Measured: multiclass/no_sampler/42, mean=0.609458 ms
+Waiting for idle CPU: multiclass/no_sampler/43
+Measured: multiclass/no_sampler/43, mean=0.597309 ms
+Waiting for idle CPU: multiclass/no_sampler/44
+Measured: multiclass/no_sampler/44, mean=0.594134 ms
+Waiting for idle CPU: multiclass/no_sampler/45
+Measured: multiclass/no_sampler/45, mean=0.600040 ms
+Waiting for idle CPU: multiclass/no_sampler/46
+Measured: multiclass/no_sampler/46, mean=0.595343 ms
+Waiting for idle CPU: multiclass/top20/42
+Measured: multiclass/top20/42, mean=0.566923 ms
+Waiting for idle CPU: multiclass/top20/43
+Measured: multiclass/top20/43, mean=0.565828 ms
+Waiting for idle CPU: multiclass/top20/44
+Measured: multiclass/top20/44, mean=0.569161 ms
+Waiting for idle CPU: multiclass/top20/45
+Measured: multiclass/top20/45, mean=0.578143 ms
+Waiting for idle CPU: multiclass/top20/46
+Measured: multiclass/top20/46, mean=0.566488 ms
+Waiting for idle CPU: binary/exlightnet_w8/42
+Measured: binary/exlightnet_w8/42, mean=0.592143 ms
+Waiting for idle CPU: binary/exlightnet_w8/43
+Measured: binary/exlightnet_w8/43, mean=0.594655 ms
+Waiting for idle CPU: binary/exlightnet_w8/44
+Measured: binary/exlightnet_w8/44, mean=0.620464 ms
+Waiting for idle CPU: binary/exlightnet_w8/45
+Measured: binary/exlightnet_w8/45, mean=0.598037 ms
+Waiting for idle CPU: binary/exlightnet_w8/46
+Measured: binary/exlightnet_w8/46, mean=0.594731 ms
+Waiting for idle CPU: multiclass/exlightnet_w8/42
+Measured: multiclass/exlightnet_w8/42, mean=0.593708 ms
+Waiting for idle CPU: multiclass/exlightnet_w8/43
+Measured: multiclass/exlightnet_w8/43, mean=0.592138 ms
+Waiting for idle CPU: multiclass/exlightnet_w8/44
+Measured: multiclass/exlightnet_w8/44, mean=0.599908 ms
+Waiting for idle CPU: multiclass/exlightnet_w8/45
+Measured: multiclass/exlightnet_w8/45, mean=0.592982 ms
+Waiting for idle CPU: multiclass/exlightnet_w8/46
+Measured: multiclass/exlightnet_w8/46, mean=0.607387 ms
+{"status": "complete", "started_at": "2026-11-17T05:26:43.659348+00:00", "benchmark_started_at": "2026-11-17T05:26:43.659367+00:00", "supervisor_pid": 1050021, "command": ["/home/mparsict/projects/me/exlightnet/.venv/bin/python", "-u", "-m", "exlightnet.run_all", "--mode", "full", "--root", "/home/mparsict/projects/me/exlightnet", "--benchmark-only"], "prior_campaign": "20261117T051732374195-1034809", "prior_measured_models": 0, "prior_failures": [{"branch": "benchmark/binary/exlightnet/42", "error_type": "IdleCPUUnavailable", "reason": "CPU did not remain idle (<= 5% busy) for 3 windows within 300.0s", "stage": "benchmark_only", "campaign": "20261117T051732374195-1034809"}], "reason": "User authorized temporarily pausing background apps after CPU-idle timeouts; original quiet-CPU criteria retained", "log": "results/full/logs/benchmark_recovery.log", "pid": 1050022, "returncode": 0, "finished_at": "2026-11-17T05:39:01.526395+00:00", "seconds": 737.8670350870016, "campaign": "20261117T052645467310-1050022", "measured_models": 95, "failures": []}

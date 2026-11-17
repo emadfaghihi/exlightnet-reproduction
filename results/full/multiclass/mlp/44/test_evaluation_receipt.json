@@ -1,0 +1,42 @@
+{
+  "status": "complete",
+  "metadata": {
+    "task": "multiclass",
+    "model": "mlp",
+    "seed": 44,
+    "params": 14284,
+    "serialized_bytes": 59444,
+    "training": {
+      "best_epoch": 17,
+      "best_val_macro_f1": 0.8539257515313264,
+      "epochs_run": 23,
+      "training_seconds": 40.02065530999971,
+      "config": {
+        "seed": 44,
+        "max_epochs": 30,
+        "batch_size": 512,
+        "patience": 6,
+        "lr": 0.0015,
+        "weight_decay": 0.0001,
+        "alpha_mode": "none",
+        "sampler": "tempered",
+        "threads": 1
+      }
+    },
+    "recipe": {
+      "seed": 44,
+      "max_epochs": 30,
+      "batch_size": 512,
+      "patience": 6,
+      "lr": 0.0015,
+      "weight_decay": 0.0001,
+      "alpha_mode": "none",
+      "sampler": "tempered",
+      "threads": 1
+    },
+    "data_fingerprint": "dfba90bd116f9288bc72a837160516984ba773b11904e98561c80cda7dedcf5c",
+    "features": 40,
+    "fingerprint": "2044e2f0c2c1090594a46afc483e5e3443f31d2605657b64adbc53f4669be218"
+  },
+  "test_prediction_passes": 1
+}

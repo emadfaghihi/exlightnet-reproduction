@@ -1,0 +1,85 @@
+{
+  "task": "binary",
+  "model": "exlightnet",
+  "seed": 42,
+  "params": 35438,
+  "serialized_bytes": 152312,
+  "training": {
+    "best_epoch": 1,
+    "best_val_macro_f1": 0.9665092947966785,
+    "epochs_run": 1,
+    "training_seconds": 26.8140050359998,
+    "config": {
+      "seed": 42,
+      "max_epochs": 1,
+      "batch_size": 512,
+      "patience": 6,
+      "lr": 0.0015,
+      "weight_decay": 0.0001,
+      "alpha_mode": "none",
+      "sampler": "tempered",
+      "threads": 1
+    }
+  },
+  "recipe": {
+    "seed": 42,
+    "max_epochs": 1,
+    "batch_size": 512,
+    "patience": 6,
+    "lr": 0.0015,
+    "weight_decay": 0.0001,
+    "alpha_mode": "none",
+    "sampler": "tempered",
+    "threads": 1
+  },
+  "data_fingerprint": "dfba90bd116f9288bc72a837160516984ba773b11904e98561c80cda7dedcf5c",
+  "features": 40,
+  "fingerprint": "1febd4bc9292cec7282d3c101ec58da32972e9bf89a80875b5f1dbb194be6e6b",
+  "accuracy": 0.9867879575481915,
+  "macro_precision": 0.9778474100270439,
+  "macro_recall": 0.9486786089527566,
+  "weighted_f1": 0.9865800156620417,
+  "macro_f1": 0.9626731969387561,
+  "auc": 0.9952846106634482,
+  "auc_definition": "p_attack",
+  "per_class": {
+    "normal": {
+      "precision": 0.9668192219679634,
+      "recall": 0.9008528784648188,
+      "f1": 0.9326710816777042,
+      "support": 1876
+    },
+    "attack": {
+      "precision": 0.9888755980861244,
+      "recall": 0.9965043394406943,
+      "f1": 0.9926753121998079,
+      "support": 16592
+    }
+  },
+  "confusion_matrix": [
+    [
+      1690,
+      186
+    ],
+    [
+      58,
+      16534
+    ]
+  ],
+  "attack_recall": 0.9965043394406943,
+  "miss_count": 58,
+  "fp_count": 186,
+  "fpr": 0.09914712153518124,
+  "threshold": 0.5,
+  "decision_rule": "argmax of two softmax logits; ties select normal",
+  "latency_mean_ms": 0.6578377910000001,
+  "latency_median_ms": 0.6534945,
+  "latency_p95_ms": 0.67747925,
+  "warmup": 100,
+  "iterations": 1000,
+  "batch_size": 1,
+  "threads": 1,
+  "input_partition": "train",
+  "peak_rss_bytes": 1376358400,
+  "rss_scope": "process lifetime including preceding training; not model-exclusive"
+}

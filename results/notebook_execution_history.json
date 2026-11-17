@@ -1,0 +1,33 @@
+[
+  {
+    "seconds": 695.0223949149986,
+    "mode": "fast",
+    "code_cells": 14,
+    "executed_code_cells": 14,
+    "error_outputs": 0
+  },
+  {
+    "seconds": 9.407705686000554,
+    "mode": "fast",
+    "code_cells": 14,
+    "cached_results_present_at_start": true,
+    "executed_code_cells": 14,
+    "error_outputs": 0
+  },
+  {
+    "seconds": 9.029287342000316,
+    "mode": "fast",
+    "code_cells": 14,
+    "cached_results_present_at_start": true,
+    "executed_code_cells": 14,
+    "error_outputs": 0
+  },
+  {
+    "seconds": 3.080653564000386,
+    "mode": "full",
+    "code_cells": 14,
+    "cached_results_present_at_start": true,
+    "executed_code_cells": 14,
+    "error_outputs": 0
+  }
+]

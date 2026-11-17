@@ -1,0 +1,12 @@
+{
+  "mode": "full",
+  "seeds": [
+    42,
+    43,
+    44,
+    45,
+    46
+  ],
+  "source": "full/summary.csv",
+  "full_five_seed_headlines_complete": true
+}

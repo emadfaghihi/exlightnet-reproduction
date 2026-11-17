@@ -1,0 +1,1 @@
+{"probe": "largest CNN training batch512 plus train/validation tail shapes; no test inference", "max_rss_kib": 515552, "pss": "447898 kB", "private_dirty": "323168 kB", "threads": 1}

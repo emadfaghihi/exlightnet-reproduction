@@ -1,0 +1,42 @@
+{
+  "status": "complete",
+  "metadata": {
+    "task": "binary",
+    "model": "bilstm",
+    "seed": 43,
+    "params": 9090,
+    "serialized_bytes": 39452,
+    "training": {
+      "best_epoch": 8,
+      "best_val_macro_f1": 0.9529367879341923,
+      "epochs_run": 14,
+      "training_seconds": 496.31914197100195,
+      "config": {
+        "seed": 43,
+        "max_epochs": 20,
+        "batch_size": 512,
+        "patience": 6,
+        "lr": 0.0015,
+        "weight_decay": 0.0001,
+        "alpha_mode": "effective_num",
+        "sampler": "tempered",
+        "threads": 1
+      }
+    },
+    "recipe": {
+      "seed": 43,
+      "max_epochs": 20,
+      "batch_size": 512,
+      "patience": 6,
+      "lr": 0.0015,
+      "weight_decay": 0.0001,
+      "alpha_mode": "effective_num",
+      "sampler": "tempered",
+      "threads": 1
+    },
+    "data_fingerprint": "dfba90bd116f9288bc72a837160516984ba773b11904e98561c80cda7dedcf5c",
+    "features": 40,
+    "fingerprint": "e42064a7cfb83b335b15fab6dcc9d662b8c4283178f34fa759e76432d40a76ba"
+  },
+  "test_prediction_passes": 1
+}

@@ -10,6 +10,9 @@
 # CSVs are measured evidence: preserve their original bytes and CRLF records.
 *.csv -text whitespace=cr-at-eol
 
+# Diagnostic evidence includes pytest trace formatting; retain it verbatim.
+results/**/*.log -text -whitespace
+
 *.npz binary
 *.pt binary
 *.pkl binary

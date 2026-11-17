@@ -1,0 +1,29 @@
+{
+  "status": "complete",
+  "metadata": {
+    "task": "binary",
+    "model": "random_forest",
+    "seed": 46,
+    "params": null,
+    "serialized_bytes": 9746690,
+    "training": {
+      "training_seconds": 29.152768094001658,
+      "config": {
+        "trees": 300,
+        "seed": 46,
+        "max_depth": null,
+        "balanced_weights": true
+      }
+    },
+    "recipe": {
+      "trees": 300,
+      "seed": 46,
+      "max_depth": null,
+      "balanced_weights": true
+    },
+    "data_fingerprint": "dfba90bd116f9288bc72a837160516984ba773b11904e98561c80cda7dedcf5c",
+    "features": 40,
+    "fingerprint": "8436da6845dfbb250db8111bb21bda7f1a21c3bff32f859b1c7044986f04e681"
+  },
+  "test_prediction_passes": 1
+}

@@ -1,0 +1,17 @@
+{
+  "gate": "Q1",
+  "task": "binary",
+  "seed": 42,
+  "pass": true,
+  "actual": {
+    "fp32_macro_f1": 0.9626731969387561,
+    "w8_macro_f1": 0.9623857384118137,
+    "delta": -0.0002874585269423413,
+    "fp32_bytes": 152312,
+    "max_abs_weight_error": 0.0021119117736816406,
+    "int8_bytes": 53468,
+    "quantized_weight_tensors": 10,
+    "compute": "FP32 with dequantized W8 weights"
+  },
+  "criterion": "absolute delta <=0.001 (predeclared meaning of approximately zero)"
+}

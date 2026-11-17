@@ -1,0 +1,104 @@
+...F............                                                         [100%]
+=================================== FAILURES ===================================
+__________ test_benchmark_pass_only_updates_timing_from_cached_models __________
+
+tmp_path = PosixPath('/tmp/pytest-of-mparsict/pytest-25/test_benchmark_pass_only_updat0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f2e5b256b90>
+
+    def test_benchmark_pass_only_updates_timing_from_cached_models(tmp_path, monkeypatch):
+        import exlightnet.execution as execution
+        import exlightnet.run_all as runner
+        from exlightnet.io import read_json, write_json
+        from exlightnet.metrics import evaluate_once
+        from exlightnet.train import seed_everything
+        seed_everything(42)
+        x = np.zeros((4, 40), dtype="float32")
+        y = np.array([0, 1, 0, 1])
+        arrays = {"x_" + p: x for p in ("train", "val", "test")}
+        arrays.update({"y2_" + p: y for p in ("train", "val", "test")})
+        directory = tmp_path / "results/full"
+        row = runner._run_one("binary", "mlp", 42, arrays, [], {"chosen": "none"}, {"fingerprint": "fixture"}, directory / "binary/mlp/42", 1)
+        write_json(directory / "results.json", [row])
+        write_json(directory / "gates.json", [])
+        write_json(directory / "failures.json", [])
+        write_json(directory / "manifest.json", {"mode": "full", "seeds": [42], "full_five_seed_headlines_complete": False})
+        monkeypatch.setattr(execution, "load_prepared_data", lambda root: ({"x_train": x}, [], None, {"fingerprint": "fixture"}))
+        monkeypatch.setattr(execution, "wait_for_idle", lambda: {"quiet_window_busy_fractions": [.01, .01, .01]})
+        observed = []
+        def measured(model, x):
+            observed.append(len(x))
+            return {"latency_mean_ms": 1., "latency_median_ms": .9, "latency_p95_ms": 1.2}
+        monkeypatch.setattr(execution, "benchmark", measured)
+        def publish_fixture(root, mode, rows, gates, failures, manifest, **kwargs):
+            write_json(directory / "results.json", rows)
+            write_json(directory / "manifest.json", manifest)
+            write_json(directory / "failures.json", failures)
+        monkeypatch.setattr(execution, "publish", publish_fixture)
+        monkeypatch.setattr(runner, "_run_one", lambda *args, **kwargs: pytest.fail("benchmark-only cannot train/test"))
+        receipt = (directory / "binary/mlp/42/test_evaluation_receipt.json").read_bytes()
+        result = runner.run(tmp_path, mode="full", benchmark_only=True)
+        assert observed == [4]
+        assert result["stage"] == "benchmark_only" and result["processes"] == 1
+        updated = read_json(directory / "results.json")[0]
+        assert updated["macro_f1"] == row["macro_f1"]
+        assert updated["latency_mean_ms"] == 1.
+        assert receipt == (directory / "binary/mlp/42/test_evaluation_receipt.json").read_bytes()
+        def busy_cpu():
+            raise RuntimeError("idle check fixture failed")
+        monkeypatch.setattr(execution, "wait_for_idle", busy_cpu)
+>       failed = runner.run(tmp_path, mode="full", benchmark_only=True)
+
+tests/test_benchmark_pass.py:69: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/exlightnet/run_all.py:407: in run
+    return benchmark_only_pass(root, mode)
+src/exlightnet/execution.py:152: in benchmark_only_pass
+    output.mkdir(parents=True)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/tmp/pytest-of-mparsict/pytest-25/test_benchmark_pass_only_updat0/results/full/benchmarks/20261116T102636-3')
+mode = 511, parents = True, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           FileExistsError: [Errno 17] File exists: '/tmp/pytest-of-mparsict/pytest-25/test_benchmark_pass_only_updat0/results/full/benchmarks/20261116T102636-3'
+
+/usr/lib/python3.11/pathlib.py:1117: FileExistsError
+----------------------------- Captured stdout call -----------------------------
+Waiting for idle CPU: binary/mlp/42
+Measured: binary/mlp/42, mean=1.000000 ms
+=============================== warnings summary ===============================
+tests/test_execution_modes.py::test_skip_benchmark_suppresses_all_timing_calls
+  /home/mparsict/projects/me/exlightnet/.venv/lib/python3.11/site-packages/matplotlib/_fontconfig_pattern.py:64: PyparsingDeprecationWarning: 'oneOf' deprecated - use 'one_of'
+    prop = Group((name + Suppress("=") + comma_separated(value)) | oneOf(_CONSTANTS))
+
+tests/test_execution_modes.py::test_skip_benchmark_suppresses_all_timing_calls
+tests/test_execution_modes.py::test_skip_benchmark_suppresses_all_timing_calls
+tests/test_execution_modes.py::test_skip_benchmark_suppresses_all_timing_calls
+tests/test_execution_modes.py::test_skip_benchmark_suppresses_all_timing_calls
+tests/test_execution_modes.py::test_skip_benchmark_suppresses_all_timing_calls
+tests/test_execution_modes.py::test_skip_benchmark_suppresses_all_timing_calls
+  /home/mparsict/projects/me/exlightnet/.venv/lib/python3.11/site-packages/matplotlib/_fontconfig_pattern.py:85: PyparsingDeprecationWarning: 'parseString' deprecated - use 'parse_string'
+    parse = parser.parseString(pattern)
+
+tests/test_execution_modes.py::test_skip_benchmark_suppresses_all_timing_calls
+tests/test_execution_modes.py::test_skip_benchmark_suppresses_all_timing_calls
+tests/test_execution_modes.py::test_skip_benchmark_suppresses_all_timing_calls
+tests/test_execution_modes.py::test_skip_benchmark_suppresses_all_timing_calls
+tests/test_execution_modes.py::test_skip_benchmark_suppresses_all_timing_calls
+tests/test_execution_modes.py::test_skip_benchmark_suppresses_all_timing_calls
+  /home/mparsict/projects/me/exlightnet/.venv/lib/python3.11/site-packages/matplotlib/_fontconfig_pattern.py:89: PyparsingDeprecationWarning: 'resetCache' deprecated - use 'reset_cache'
+    parser.resetCache()
+
+tests/test_execution_modes.py::test_skip_benchmark_suppresses_all_timing_calls
+  /home/mparsict/projects/me/exlightnet/.venv/lib/python3.11/site-packages/matplotlib/_mathtext.py:45: PyparsingDeprecationWarning: 'enablePackrat' deprecated - use 'enable_packrat'
+    ParserElement.enablePackrat()
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_benchmark_pass.py::test_benchmark_pass_only_updates_timing_from_cached_models
+1 failed, 15 passed, 14 warnings in 6.00s

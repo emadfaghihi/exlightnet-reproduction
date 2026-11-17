@@ -1,0 +1,37 @@
+..F                                                                      [100%]
+=================================== FAILURES ===================================
+__________ test_benchmark_pass_only_updates_timing_from_cached_models __________
+
+tmp_path = PosixPath('/tmp/pytest-of-mparsict/pytest-19/test_benchmark_pass_only_updat0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fde150e7990>
+
+    def test_benchmark_pass_only_updates_timing_from_cached_models(tmp_path, monkeypatch):
+        import exlightnet.execution as execution
+        import exlightnet.run_all as runner
+        from exlightnet.io import read_json, write_json
+        from exlightnet.metrics import evaluate_once
+        from exlightnet.train import seed_everything
+        seed_everything(42)
+        x = np.zeros((4, 40), dtype="float32")
+        y = np.array([0, 1, 0, 1])
+        arrays = {"x_" + p: x for p in ("train", "val", "test")}
+        arrays.update({"y2_" + p: y for p in ("train", "val", "test")})
+        directory = tmp_path / "results/full"
+        row = runner._run_one("binary", "mlp", 42, arrays, [], {"chosen": "none"}, {"fingerprint": "fixture"}, directory / "binary/mlp/42", 1)
+        write_json(directory / "results.json", [row])
+        write_json(directory / "gates.json", [])
+        write_json(directory / "failures.json", [])
+        write_json(directory / "manifest.json", {"mode": "full", "seeds": [42], "full_five_seed_headlines_complete": False})
+        monkeypatch.setattr(execution, "load_prepared_data", lambda root: ({"x_train": x}, [], None, {"fingerprint": "fixture"}))
+        monkeypatch.setattr(execution, "wait_for_idle", lambda: {"quiet_window_busy_fractions": [.01, .01, .01]})
+        observed = []
+        def measured(model, x):
+            observed.append(len(x))
+            return {"latency_mean_ms": 1., "latency_median_ms": .9, "latency_p95_ms": 1.2}
+>       monkeypatch.setattr(execution, "benchmark", measured)
+E       AttributeError: <module 'exlightnet.execution' from '/home/mparsict/projects/me/exlightnet/src/exlightnet/execution.py'> has no attribute 'benchmark'
+
+tests/test_benchmark_pass.py:44: AttributeError
+=========================== short test summary info ============================
+FAILED tests/test_benchmark_pass.py::test_benchmark_pass_only_updates_timing_from_cached_models
+1 failed, 2 passed in 12.54s

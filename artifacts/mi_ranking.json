@@ -1,0 +1,467 @@
+[
+  {
+    "rank": 1,
+    "feature": "fwd_pkts_payload.avg",
+    "mi": 0.3181110061927932
+  },
+  {
+    "rank": 2,
+    "feature": "fwd_pkts_payload.max",
+    "mi": 0.31107596383028824
+  },
+  {
+    "rank": 3,
+    "feature": "fwd_subflow_bytes",
+    "mi": 0.310021537078655
+  },
+  {
+    "rank": 4,
+    "feature": "flow_pkts_payload.tot",
+    "mi": 0.3078414053694185
+  },
+  {
+    "rank": 5,
+    "feature": "flow_pkts_payload.std",
+    "mi": 0.30529325318494127
+  },
+  {
+    "rank": 6,
+    "feature": "fwd_pkts_payload.tot",
+    "mi": 0.3050034174682098
+  },
+  {
+    "rank": 7,
+    "feature": "flow_pkts_payload.avg",
+    "mi": 0.3017826346020436
+  },
+  {
+    "rank": 8,
+    "feature": "flow_pkts_payload.max",
+    "mi": 0.3006589859616946
+  },
+  {
+    "rank": 9,
+    "feature": "flow_iat.min",
+    "mi": 0.29858133720805746
+  },
+  {
+    "rank": 10,
+    "feature": "bwd_subflow_bytes",
+    "mi": 0.29641717218831276
+  },
+  {
+    "rank": 11,
+    "feature": "bwd_pkts_payload.tot",
+    "mi": 0.295078208167214
+  },
+  {
+    "rank": 12,
+    "feature": "bwd_pkts_payload.avg",
+    "mi": 0.29417757908389397
+  },
+  {
+    "rank": 13,
+    "feature": "bwd_pkts_payload.max",
+    "mi": 0.291103970666734
+  },
+  {
+    "rank": 14,
+    "feature": "flow_iat.tot",
+    "mi": 0.28612115484399425
+  },
+  {
+    "rank": 15,
+    "feature": "flow_duration",
+    "mi": 0.285619757877153
+  },
+  {
+    "rank": 16,
+    "feature": "flow_iat.max",
+    "mi": 0.2854181625552994
+  },
+  {
+    "rank": 17,
+    "feature": "active.tot",
+    "mi": 0.282908330451204
+  },
+  {
+    "rank": 18,
+    "feature": "active.max",
+    "mi": 0.2822853686782355
+  },
+  {
+    "rank": 19,
+    "feature": "active.avg",
+    "mi": 0.28158874052031213
+  },
+  {
+    "rank": 20,
+    "feature": "fwd_iat.min",
+    "mi": 0.28106042898983263
+  },
+  {
+    "rank": 21,
+    "feature": "active.min",
+    "mi": 0.2805878638882362
+  },
+  {
+    "rank": 22,
+    "feature": "payload_bytes_per_second",
+    "mi": 0.28037764511481356
+  },
+  {
+    "rank": 23,
+    "feature": "fwd_pkts_per_sec",
+    "mi": 0.2786931329662229
+  },
+  {
+    "rank": 24,
+    "feature": "flow_pkts_per_sec",
+    "mi": 0.2783801129025487
+  },
+  {
+    "rank": 25,
+    "feature": "fwd_iat.max",
+    "mi": 0.27798944503393186
+  },
+  {
+    "rank": 26,
+    "feature": "bwd_pkts_per_sec",
+    "mi": 0.27618047799795553
+  },
+  {
+    "rank": 27,
+    "feature": "fwd_iat.tot",
+    "mi": 0.27586522979650896
+  },
+  {
+    "rank": 28,
+    "feature": "bwd_pkts_payload.std",
+    "mi": 0.2751882478957023
+  },
+  {
+    "rank": 29,
+    "feature": "flow_iat.avg",
+    "mi": 0.27379109907722377
+  },
+  {
+    "rank": 30,
+    "feature": "fwd_iat.avg",
+    "mi": 0.2699629390186703
+  },
+  {
+    "rank": 31,
+    "feature": "bwd_iat.tot",
+    "mi": 0.26726560376520814
+  },
+  {
+    "rank": 32,
+    "feature": "bwd_iat.max",
+    "mi": 0.2652659277818259
+  },
+  {
+    "rank": 33,
+    "feature": "fwd_header_size_tot",
+    "mi": 0.26318584188182004
+  },
+  {
+    "rank": 34,
+    "feature": "bwd_header_size_tot",
+    "mi": 0.2594743445134181
+  },
+  {
+    "rank": 35,
+    "feature": "bwd_iat.avg",
+    "mi": 0.2585296653196325
+  },
+  {
+    "rank": 36,
+    "feature": "flow_iat.std",
+    "mi": 0.25746381527976825
+  },
+  {
+    "rank": 37,
+    "feature": "id.resp_p",
+    "mi": 0.2501401063449893
+  },
+  {
+    "rank": 38,
+    "feature": "bwd_header_size_max",
+    "mi": 0.24624037076971472
+  },
+  {
+    "rank": 39,
+    "feature": "bwd_header_size_min",
+    "mi": 0.2439241881991323
+  },
+  {
+    "rank": 40,
+    "feature": "bwd_data_pkts_tot",
+    "mi": 0.24369055092262903
+  },
+  {
+    "rank": 41,
+    "feature": "fwd_subflow_pkts",
+    "mi": 0.24263102161995076
+  },
+  {
+    "rank": 42,
+    "feature": "fwd_pkts_tot",
+    "mi": 0.23832759134255843
+  },
+  {
+    "rank": 43,
+    "feature": "bwd_pkts_tot",
+    "mi": 0.23692285769636312
+  },
+  {
+    "rank": 44,
+    "feature": "bwd_iat.min",
+    "mi": 0.23498193404506273
+  },
+  {
+    "rank": 45,
+    "feature": "fwd_data_pkts_tot",
+    "mi": 0.2342860220956937
+  },
+  {
+    "rank": 46,
+    "feature": "bwd_subflow_pkts",
+    "mi": 0.23278592128897135
+  },
+  {
+    "rank": 47,
+    "feature": "fwd_pkts_payload.min",
+    "mi": 0.23263234894762586
+  },
+  {
+    "rank": 48,
+    "feature": "flow_ack_flag_count",
+    "mi": 0.22055545163601376
+  },
+  {
+    "rank": 49,
+    "feature": "flow_syn_flag_count",
+    "mi": 0.22040740507950818
+  },
+  {
+    "rank": 50,
+    "feature": "fwd_last_window_size",
+    "mi": 0.2193898379914323
+  },
+  {
+    "rank": 51,
+    "feature": "fwd_header_size_max",
+    "mi": 0.21553089787493085
+  },
+  {
+    "rank": 52,
+    "feature": "fwd_init_window_size",
+    "mi": 0.20648707945631206
+  },
+  {
+    "rank": 53,
+    "feature": "service_-",
+    "mi": 0.2063215731463346
+  },
+  {
+    "rank": 54,
+    "feature": "fwd_header_size_min",
+    "mi": 0.17962860325804875
+  },
+  {
+    "rank": 55,
+    "feature": "fwd_pkts_payload.std",
+    "mi": 0.17418230221479458
+  },
+  {
+    "rank": 56,
+    "feature": "down_up_ratio",
+    "mi": 0.17250091517466237
+  },
+  {
+    "rank": 57,
+    "feature": "bwd_init_window_size",
+    "mi": 0.16642902060303566
+  },
+  {
+    "rank": 58,
+    "feature": "bwd_iat.std",
+    "mi": 0.1636744493135993
+  },
+  {
+    "rank": 59,
+    "feature": "fwd_iat.std",
+    "mi": 0.15898623365138698
+  },
+  {
+    "rank": 60,
+    "feature": "fwd_psh_flag_count",
+    "mi": 0.1568897054844518
+  },
+  {
+    "rank": 61,
+    "feature": "bwd_psh_flag_count",
+    "mi": 0.1457128832964658
+  },
+  {
+    "rank": 62,
+    "feature": "flow_pkts_payload.min",
+    "mi": 0.0875047667497304
+  },
+  {
+    "rank": 63,
+    "feature": "service_mqtt",
+    "mi": 0.08248485110118095
+  },
+  {
+    "rank": 64,
+    "feature": "bwd_pkts_payload.min",
+    "mi": 0.07823664011990727
+  },
+  {
+    "rank": 65,
+    "feature": "idle.tot",
+    "mi": 0.07782301899435473
+  },
+  {
+    "rank": 66,
+    "feature": "idle.max",
+    "mi": 0.07745725115005464
+  },
+  {
+    "rank": 67,
+    "feature": "idle.min",
+    "mi": 0.07651121303530073
+  },
+  {
+    "rank": 68,
+    "feature": "idle.avg",
+    "mi": 0.0751749936245143
+  },
+  {
+    "rank": 69,
+    "feature": "flow_rst_flag_count",
+    "mi": 0.07485806615120416
+  },
+  {
+    "rank": 70,
+    "feature": "id.orig_p",
+    "mi": 0.06865089607363695
+  },
+  {
+    "rank": 71,
+    "feature": "flow_fin_flag_count",
+    "mi": 0.05074900147185568
+  },
+  {
+    "rank": 72,
+    "feature": "service_http",
+    "mi": 0.037495381345647685
+  },
+  {
+    "rank": 73,
+    "feature": "service_dns",
+    "mi": 0.031401359017352734
+  },
+  {
+    "rank": 74,
+    "feature": "proto_tcp",
+    "mi": 0.026288235070533614
+  },
+  {
+    "rank": 75,
+    "feature": "proto_udp",
+    "mi": 0.02576283268824417
+  },
+  {
+    "rank": 76,
+    "feature": "bwd_bulk_bytes",
+    "mi": 0.010635091897865712
+  },
+  {
+    "rank": 77,
+    "feature": "service_ssl",
+    "mi": 0.00928944243234027
+  },
+  {
+    "rank": 78,
+    "feature": "bwd_bulk_rate",
+    "mi": 0.009099639214899202
+  },
+  {
+    "rank": 79,
+    "feature": "bwd_bulk_packets",
+    "mi": 0.008259532660123137
+  },
+  {
+    "rank": 80,
+    "feature": "flow_ece_flag_count",
+    "mi": 0.0032469424207215436
+  },
+  {
+    "rank": 81,
+    "feature": "service_ntp",
+    "mi": 0.0016235137216272792
+  },
+  {
+    "rank": 82,
+    "feature": "fwd_urg_flag_count",
+    "mi": 0.0014842436161091044
+  },
+  {
+    "rank": 83,
+    "feature": "fwd_bulk_bytes",
+    "mi": 0.0013890480377558578
+  },
+  {
+    "rank": 84,
+    "feature": "service_irc",
+    "mi": 0.0008232033378928021
+  },
+  {
+    "rank": 85,
+    "feature": "active.std",
+    "mi": 0.0008138297220763313
+  },
+  {
+    "rank": 86,
+    "feature": "fwd_bulk_packets",
+    "mi": 0.0006722014715054847
+  },
+  {
+    "rank": 87,
+    "feature": "proto_icmp",
+    "mi": 0.0006212332191432872
+  },
+  {
+    "rank": 88,
+    "feature": "flow_cwr_flag_count",
+    "mi": 0.0006137707201745446
+  },
+  {
+    "rank": 89,
+    "feature": "idle.std",
+    "mi": 0.00010969001088567687
+  },
+  {
+    "rank": 90,
+    "feature": "service_dhcp",
+    "mi": 6.896593189471378e-05
+  },
+  {
+    "rank": 91,
+    "feature": "service_ssh",
+    "mi": 2.2374627559639372e-05
+  },
+  {
+    "rank": 92,
+    "feature": "service_radius",
+    "mi": 2.485826124149111e-06
+  },
+  {
+    "rank": 93,
+    "feature": "fwd_bulk_rate",
+    "mi": 0.0
+  }
+]

@@ -1,0 +1,88 @@
+Alpha selection: binary, validation only
+Alpha selection: multiclass, validation only
+Training/final reporting: full/binary/exlightnet/42
+Training/final reporting: full/binary/exlightnet/43
+Training/final reporting: full/binary/exlightnet/44
+Training/final reporting: full/binary/exlightnet/45
+Training/final reporting: full/binary/exlightnet/46
+Training/final reporting: full/binary/mlp/42
+Training/final reporting: full/binary/mlp/43
+Training/final reporting: full/binary/mlp/44
+Training/final reporting: full/binary/mlp/45
+Training/final reporting: full/binary/mlp/46
+Training/final reporting: full/binary/bilstm/42
+Training/final reporting: full/binary/bilstm/43
+Training/final reporting: full/binary/bilstm/44
+Training/final reporting: full/binary/bilstm/45
+Training/final reporting: full/binary/bilstm/46
+Training/final reporting: full/binary/std_cnn/42
+Training/final reporting: full/binary/std_cnn/43
+Training/final reporting: full/binary/std_cnn/44
+Training/final reporting: full/binary/std_cnn/45
+Training/final reporting: full/binary/std_cnn/46
+Training/final reporting: full/binary/random_forest/42
+Training/final reporting: full/binary/random_forest/43
+Training/final reporting: full/binary/random_forest/44
+Training/final reporting: full/binary/random_forest/45
+Training/final reporting: full/binary/random_forest/46
+Training/final reporting: full/binary/xgboost/42
+Training/final reporting: full/binary/xgboost/43
+Training/final reporting: full/binary/xgboost/44
+Training/final reporting: full/binary/xgboost/45
+Training/final reporting: full/binary/xgboost/46
+Training/final reporting: full/multiclass/exlightnet/42
+Training/final reporting: full/multiclass/exlightnet/43
+Training/final reporting: full/multiclass/exlightnet/44
+Training/final reporting: full/multiclass/exlightnet/45
+Training/final reporting: full/multiclass/exlightnet/46
+Training/final reporting: full/multiclass/mlp/42
+Training/final reporting: full/multiclass/mlp/43
+Training/final reporting: full/multiclass/mlp/44
+Training/final reporting: full/multiclass/mlp/45
+Training/final reporting: full/multiclass/mlp/46
+Training/final reporting: full/multiclass/bilstm/42
+Training/final reporting: full/multiclass/bilstm/43
+Training/final reporting: full/multiclass/bilstm/44
+Training/final reporting: full/multiclass/bilstm/45
+Training/final reporting: full/multiclass/bilstm/46
+Training/final reporting: full/multiclass/std_cnn/42
+Training/final reporting: full/multiclass/std_cnn/43
+Training/final reporting: full/multiclass/std_cnn/44
+Training/final reporting: full/multiclass/std_cnn/45
+Training/final reporting: full/multiclass/std_cnn/46
+Training/final reporting: full/multiclass/random_forest/42
+Training/final reporting: full/multiclass/random_forest/43
+Training/final reporting: full/multiclass/random_forest/44
+Training/final reporting: full/multiclass/random_forest/45
+Training/final reporting: full/multiclass/random_forest/46
+Training/final reporting: full/multiclass/xgboost/42
+Training/final reporting: full/multiclass/xgboost/43
+Training/final reporting: full/multiclass/xgboost/44
+Training/final reporting: full/multiclass/xgboost/45
+Training/final reporting: full/multiclass/xgboost/46
+Ablation: no_se/42
+Ablation: no_se/43
+Ablation: no_se/44
+Ablation: no_se/45
+Ablation: no_se/46
+Ablation: standard_conv/42
+Ablation: standard_conv/43
+Ablation: standard_conv/44
+Ablation: standard_conv/45
+Ablation: standard_conv/46
+Ablation: balanced/42
+Ablation: balanced/43
+Ablation: balanced/44
+Ablation: balanced/45
+Ablation: balanced/46
+Ablation: no_sampler/42
+Ablation: no_sampler/43
+Ablation: no_sampler/44
+Ablation: no_sampler/45
+Ablation: no_sampler/46
+Ablation: top20/42
+Ablation: top20/43
+Ablation: top20/44
+Ablation: top20/45
+Ablation: top20/46
+Finished full: 95 results, 0 stopped branches; /home/mparsict/projects/me/exlightnet/results/full

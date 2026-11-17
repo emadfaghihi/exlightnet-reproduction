@@ -1,0 +1,495 @@
+[
+  {
+    "gate": "D1",
+    "pass": true,
+    "actual": {
+      "rows": 123117,
+      "counts": {
+        "mqtt_publish": 4146,
+        "thing_speak": 8108,
+        "wipro_bulb": 253,
+        "arp_poisioning": 7750,
+        "ddos_slowloris": 534,
+        "dos_syn_hping": 94659,
+        "metasploit_brute_force_ssh": 37,
+        "nmap_fin_scan": 28,
+        "nmap_os_detection": 2000,
+        "nmap_tcp_scan": 1002,
+        "nmap_udp_scan": 2590,
+        "nmap_xmas_tree_scan": 2010
+      },
+      "normal": 12507,
+      "attack": 110610
+    }
+  },
+  {
+    "gate": "D2",
+    "pass": true,
+    "actual": {
+      "sizes": {
+        "train": 86181,
+        "val": 18468,
+        "test": 18468
+      },
+      "supports": {
+        "train": {
+          "dos_syn_hping": 66261,
+          "arp_poisioning": 5425,
+          "nmap_xmas_tree_scan": 1407,
+          "nmap_udp_scan": 1813,
+          "nmap_os_detection": 1400,
+          "mqtt_publish": 2902,
+          "nmap_fin_scan": 20,
+          "nmap_tcp_scan": 701,
+          "thing_speak": 5675,
+          "ddos_slowloris": 374,
+          "wipro_bulb": 177,
+          "metasploit_brute_force_ssh": 26
+        },
+        "val": {
+          "dos_syn_hping": 14199,
+          "ddos_slowloris": 80,
+          "nmap_os_detection": 300,
+          "arp_poisioning": 1163,
+          "nmap_udp_scan": 388,
+          "thing_speak": 1217,
+          "mqtt_publish": 622,
+          "nmap_xmas_tree_scan": 301,
+          "nmap_tcp_scan": 150,
+          "wipro_bulb": 38,
+          "nmap_fin_scan": 4,
+          "metasploit_brute_force_ssh": 6
+        },
+        "test": {
+          "dos_syn_hping": 14199,
+          "arp_poisioning": 1162,
+          "thing_speak": 1216,
+          "ddos_slowloris": 80,
+          "mqtt_publish": 622,
+          "nmap_os_detection": 300,
+          "nmap_tcp_scan": 151,
+          "nmap_udp_scan": 389,
+          "nmap_xmas_tree_scan": 302,
+          "wipro_bulb": 38,
+          "metasploit_brute_force_ssh": 5,
+          "nmap_fin_scan": 4
+        }
+      }
+    }
+  },
+  {
+    "gate": "P1",
+    "report_only": true,
+    "overlap_count": 40,
+    "budget": 40,
+    "spearman_shared_ranks": 0.9994371482176362,
+    "shared_features": [
+      "fwd_pkts_payload.avg",
+      "fwd_pkts_payload.max",
+      "fwd_subflow_bytes",
+      "flow_pkts_payload.tot",
+      "flow_pkts_payload.std",
+      "fwd_pkts_payload.tot",
+      "flow_pkts_payload.avg",
+      "flow_pkts_payload.max",
+      "flow_iat.min",
+      "bwd_subflow_bytes",
+      "bwd_pkts_payload.tot",
+      "bwd_pkts_payload.avg",
+      "bwd_pkts_payload.max",
+      "flow_iat.tot",
+      "flow_iat.max",
+      "flow_duration",
+      "active.max",
+      "active.tot",
+      "active.avg",
+      "fwd_iat.min",
+      "payload_bytes_per_second",
+      "active.min",
+      "fwd_pkts_per_sec",
+      "flow_pkts_per_sec",
+      "fwd_iat.max",
+      "bwd_pkts_per_sec",
+      "fwd_iat.tot",
+      "bwd_pkts_payload.std",
+      "flow_iat.avg",
+      "fwd_iat.avg",
+      "bwd_iat.tot",
+      "bwd_iat.max",
+      "fwd_header_size_tot",
+      "bwd_header_size_tot",
+      "bwd_iat.avg",
+      "flow_iat.std",
+      "id.resp_p",
+      "bwd_header_size_max",
+      "bwd_header_size_min",
+      "bwd_data_pkts_tot"
+    ],
+    "candidate_count_before_pruning": 94,
+    "candidate_count_after_pruning": 93,
+    "dropped_constant": [
+      "bwd_urg_flag_count"
+    ],
+    "mi_settings": {
+      "target": "binary",
+      "n_neighbors": 3,
+      "random_state": 42,
+      "discrete_features": "one-hot only",
+      "ties": "stable candidate order"
+    }
+  },
+  {
+    "gate": "M1",
+    "pass": true,
+    "actual": {
+      "multiclass": 38328,
+      "binary": 35438,
+      "no_se": 23052
+    },
+    "stages": {
+      "stem": 240,
+      "block1": 9672,
+      "block2": 24948,
+      "head": 3468
+    }
+  },
+  {
+    "gate": "T1",
+    "pass": true,
+    "actual": {
+      "rarest_train_count": 20,
+      "tempered_multiplicity": 29.809225890291543,
+      "balanced_multiplicity": 359.08750000000003
+    }
+  },
+  {
+    "gate": "Q1",
+    "task": "binary",
+    "seed": 42,
+    "pass": true,
+    "actual": {
+      "fp32_macro_f1": 0.9880544774817068,
+      "w8_macro_f1": 0.9877616747181965,
+      "delta": -0.00029280276351029144,
+      "fp32_bytes": 152312,
+      "max_abs_weight_error": 0.0022417306900024414,
+      "int8_bytes": 48877,
+      "quantized_weight_tensors": 10,
+      "compute": "FP32 with dequantized W8 weights",
+      "size_breakdown": {
+        "weights_only_int8_bytes": 34560,
+        "scales_fp32_bytes": 2936,
+        "rest_fp32_bytes": 5828,
+        "metadata_array_bytes": 10468,
+        "total_array_payload_bytes": 53792,
+        "compressed_members_bytes": {
+          "weights": 30028,
+          "scales": 3620,
+          "rest": 7364,
+          "metadata": 1843
+        },
+        "zip_container_bytes": 6022,
+        "full_artifact_bytes": 48877,
+        "definition": "weights-only is raw int8 tensor payload; full artifact includes scales, FP32 state, metadata, NPY headers and ZIP container"
+      }
+    },
+    "criterion": "absolute delta <=0.001 (predeclared meaning of approximately zero)"
+  },
+  {
+    "gate": "Q1",
+    "task": "binary",
+    "seed": 43,
+    "pass": true,
+    "actual": {
+      "fp32_macro_f1": 0.9872617039362985,
+      "w8_macro_f1": 0.9875520685889918,
+      "delta": 0.0002903646526932757,
+      "fp32_bytes": 152312,
+      "max_abs_weight_error": 0.002089887857437134,
+      "int8_bytes": 49694,
+      "quantized_weight_tensors": 10,
+      "compute": "FP32 with dequantized W8 weights",
+      "size_breakdown": {
+        "weights_only_int8_bytes": 34560,
+        "scales_fp32_bytes": 2936,
+        "rest_fp32_bytes": 5828,
+        "metadata_array_bytes": 10468,
+        "total_array_payload_bytes": 53792,
+        "compressed_members_bytes": {
+          "weights": 30824,
+          "scales": 3643,
+          "rest": 7362,
+          "metadata": 1843
+        },
+        "zip_container_bytes": 6022,
+        "full_artifact_bytes": 49694,
+        "definition": "weights-only is raw int8 tensor payload; full artifact includes scales, FP32 state, metadata, NPY headers and ZIP container"
+      }
+    },
+    "criterion": "absolute delta <=0.001 (predeclared meaning of approximately zero)"
+  },
+  {
+    "gate": "Q1",
+    "task": "binary",
+    "seed": 44,
+    "pass": true,
+    "actual": {
+      "fp32_macro_f1": 0.9857062511287118,
+      "w8_macro_f1": 0.9854153932381198,
+      "delta": -0.00029085789059202227,
+      "fp32_bytes": 152312,
+      "max_abs_weight_error": 0.002098366618156433,
+      "int8_bytes": 50446,
+      "quantized_weight_tensors": 10,
+      "compute": "FP32 with dequantized W8 weights",
+      "size_breakdown": {
+        "weights_only_int8_bytes": 34560,
+        "scales_fp32_bytes": 2936,
+        "rest_fp32_bytes": 5828,
+        "metadata_array_bytes": 10468,
+        "total_array_payload_bytes": 53792,
+        "compressed_members_bytes": {
+          "weights": 31590,
+          "scales": 3638,
+          "rest": 7353,
+          "metadata": 1843
+        },
+        "zip_container_bytes": 6022,
+        "full_artifact_bytes": 50446,
+        "definition": "weights-only is raw int8 tensor payload; full artifact includes scales, FP32 state, metadata, NPY headers and ZIP container"
+      }
+    },
+    "criterion": "absolute delta <=0.001 (predeclared meaning of approximately zero)"
+  },
+  {
+    "gate": "Q1",
+    "task": "binary",
+    "seed": 45,
+    "pass": true,
+    "actual": {
+      "fp32_macro_f1": 0.9870983603678489,
+      "w8_macro_f1": 0.9871105427338052,
+      "delta": 1.2182365956237007e-05,
+      "fp32_bytes": 152312,
+      "max_abs_weight_error": 0.002102404832839966,
+      "int8_bytes": 49403,
+      "quantized_weight_tensors": 10,
+      "compute": "FP32 with dequantized W8 weights",
+      "size_breakdown": {
+        "weights_only_int8_bytes": 34560,
+        "scales_fp32_bytes": 2936,
+        "rest_fp32_bytes": 5828,
+        "metadata_array_bytes": 10468,
+        "total_array_payload_bytes": 53792,
+        "compressed_members_bytes": {
+          "weights": 30545,
+          "scales": 3627,
+          "rest": 7366,
+          "metadata": 1843
+        },
+        "zip_container_bytes": 6022,
+        "full_artifact_bytes": 49403,
+        "definition": "weights-only is raw int8 tensor payload; full artifact includes scales, FP32 state, metadata, NPY headers and ZIP container"
+      }
+    },
+    "criterion": "absolute delta <=0.001 (predeclared meaning of approximately zero)"
+  },
+  {
+    "gate": "Q1",
+    "task": "binary",
+    "seed": 46,
+    "pass": true,
+    "actual": {
+      "fp32_macro_f1": 0.9872255182066656,
+      "w8_macro_f1": 0.9873710677838696,
+      "delta": 0.0001455495772040294,
+      "fp32_bytes": 152312,
+      "max_abs_weight_error": 0.0023192763328552246,
+      "int8_bytes": 49892,
+      "quantized_weight_tensors": 10,
+      "compute": "FP32 with dequantized W8 weights",
+      "size_breakdown": {
+        "weights_only_int8_bytes": 34560,
+        "scales_fp32_bytes": 2936,
+        "rest_fp32_bytes": 5828,
+        "metadata_array_bytes": 10468,
+        "total_array_payload_bytes": 53792,
+        "compressed_members_bytes": {
+          "weights": 31048,
+          "scales": 3622,
+          "rest": 7357,
+          "metadata": 1843
+        },
+        "zip_container_bytes": 6022,
+        "full_artifact_bytes": 49892,
+        "definition": "weights-only is raw int8 tensor payload; full artifact includes scales, FP32 state, metadata, NPY headers and ZIP container"
+      }
+    },
+    "criterion": "absolute delta <=0.001 (predeclared meaning of approximately zero)"
+  },
+  {
+    "gate": "Q1",
+    "task": "multiclass",
+    "seed": 42,
+    "pass": true,
+    "actual": {
+      "fp32_macro_f1": 0.824796327203707,
+      "w8_macro_f1": 0.8253071812641015,
+      "delta": 0.0005108540603945277,
+      "fp32_bytes": 163832,
+      "max_abs_weight_error": 0.0024102330207824707,
+      "int8_bytes": 55271,
+      "quantized_weight_tensors": 10,
+      "compute": "FP32 with dequantized W8 weights",
+      "size_breakdown": {
+        "weights_only_int8_bytes": 37440,
+        "scales_fp32_bytes": 2976,
+        "rest_fp32_bytes": 5868,
+        "metadata_array_bytes": 10472,
+        "total_array_payload_bytes": 56756,
+        "compressed_members_bytes": {
+          "weights": 36417,
+          "scales": 3658,
+          "rest": 7331,
+          "metadata": 1843
+        },
+        "zip_container_bytes": 6022,
+        "full_artifact_bytes": 55271,
+        "definition": "weights-only is raw int8 tensor payload; full artifact includes scales, FP32 state, metadata, NPY headers and ZIP container"
+      }
+    },
+    "criterion": "drop <=0.01"
+  },
+  {
+    "gate": "Q1",
+    "task": "multiclass",
+    "seed": 43,
+    "pass": true,
+    "actual": {
+      "fp32_macro_f1": 0.8557912091161192,
+      "w8_macro_f1": 0.8516139231555822,
+      "delta": -0.004177285960537014,
+      "fp32_bytes": 163832,
+      "max_abs_weight_error": 0.0023038536310195923,
+      "int8_bytes": 53843,
+      "quantized_weight_tensors": 10,
+      "compute": "FP32 with dequantized W8 weights",
+      "size_breakdown": {
+        "weights_only_int8_bytes": 37440,
+        "scales_fp32_bytes": 2976,
+        "rest_fp32_bytes": 5868,
+        "metadata_array_bytes": 10472,
+        "total_array_payload_bytes": 56756,
+        "compressed_members_bytes": {
+          "weights": 34968,
+          "scales": 3649,
+          "rest": 7361,
+          "metadata": 1843
+        },
+        "zip_container_bytes": 6022,
+        "full_artifact_bytes": 53843,
+        "definition": "weights-only is raw int8 tensor payload; full artifact includes scales, FP32 state, metadata, NPY headers and ZIP container"
+      }
+    },
+    "criterion": "drop <=0.01"
+  },
+  {
+    "gate": "Q1",
+    "task": "multiclass",
+    "seed": 44,
+    "pass": true,
+    "actual": {
+      "fp32_macro_f1": 0.8734192489816173,
+      "w8_macro_f1": 0.8693312968410636,
+      "delta": -0.004087952140553686,
+      "fp32_bytes": 163832,
+      "max_abs_weight_error": 0.0021494626998901367,
+      "int8_bytes": 52876,
+      "quantized_weight_tensors": 10,
+      "compute": "FP32 with dequantized W8 weights",
+      "size_breakdown": {
+        "weights_only_int8_bytes": 37440,
+        "scales_fp32_bytes": 2976,
+        "rest_fp32_bytes": 5868,
+        "metadata_array_bytes": 10472,
+        "total_array_payload_bytes": 56756,
+        "compressed_members_bytes": {
+          "weights": 34013,
+          "scales": 3641,
+          "rest": 7357,
+          "metadata": 1843
+        },
+        "zip_container_bytes": 6022,
+        "full_artifact_bytes": 52876,
+        "definition": "weights-only is raw int8 tensor payload; full artifact includes scales, FP32 state, metadata, NPY headers and ZIP container"
+      }
+    },
+    "criterion": "drop <=0.01"
+  },
+  {
+    "gate": "Q1",
+    "task": "multiclass",
+    "seed": 45,
+    "pass": true,
+    "actual": {
+      "fp32_macro_f1": 0.8312737283238759,
+      "w8_macro_f1": 0.8375948287000966,
+      "delta": 0.00632110037622069,
+      "fp32_bytes": 163832,
+      "max_abs_weight_error": 0.002301514148712158,
+      "int8_bytes": 53206,
+      "quantized_weight_tensors": 10,
+      "compute": "FP32 with dequantized W8 weights",
+      "size_breakdown": {
+        "weights_only_int8_bytes": 37440,
+        "scales_fp32_bytes": 2976,
+        "rest_fp32_bytes": 5868,
+        "metadata_array_bytes": 10472,
+        "total_array_payload_bytes": 56756,
+        "compressed_members_bytes": {
+          "weights": 34369,
+          "scales": 3641,
+          "rest": 7331,
+          "metadata": 1843
+        },
+        "zip_container_bytes": 6022,
+        "full_artifact_bytes": 53206,
+        "definition": "weights-only is raw int8 tensor payload; full artifact includes scales, FP32 state, metadata, NPY headers and ZIP container"
+      }
+    },
+    "criterion": "drop <=0.01"
+  },
+  {
+    "gate": "Q1",
+    "task": "multiclass",
+    "seed": 46,
+    "pass": true,
+    "actual": {
+      "fp32_macro_f1": 0.847711240259875,
+      "w8_macro_f1": 0.8501020098708919,
+      "delta": 0.0023907696110169185,
+      "fp32_bytes": 163832,
+      "max_abs_weight_error": 0.0025502443313598633,
+      "int8_bytes": 53706,
+      "quantized_weight_tensors": 10,
+      "compute": "FP32 with dequantized W8 weights",
+      "size_breakdown": {
+        "weights_only_int8_bytes": 37440,
+        "scales_fp32_bytes": 2976,
+        "rest_fp32_bytes": 5868,
+        "metadata_array_bytes": 10472,
+        "total_array_payload_bytes": 56756,
+        "compressed_members_bytes": {
+          "weights": 34840,
+          "scales": 3652,
+          "rest": 7349,
+          "metadata": 1843
+        },
+        "zip_container_bytes": 6022,
+        "full_artifact_bytes": 53706,
+        "definition": "weights-only is raw int8 tensor payload; full artifact includes scales, FP32 state, metadata, NPY headers and ZIP container"
+      }
+    },
+    "criterion": "drop <=0.01"
+  }
+]

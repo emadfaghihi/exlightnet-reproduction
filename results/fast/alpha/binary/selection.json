@@ -1,0 +1,31 @@
+{
+  "chosen": "none",
+  "selection_metric": "seed42 validation macro-F1",
+  "seed": 42,
+  "candidates": [
+    {
+      "mode": "inv_freq",
+      "validation_macro_f1": 0.9100821611365608,
+      "best_epoch": 1
+    },
+    {
+      "mode": "sqrt_inv_freq",
+      "validation_macro_f1": 0.9468740686113915,
+      "best_epoch": 1
+    },
+    {
+      "mode": "effective_num",
+      "validation_macro_f1": 0.93559350737973,
+      "best_epoch": 1
+    },
+    {
+      "mode": "none",
+      "validation_macro_f1": 0.9665092947966785,
+      "best_epoch": 1
+    }
+  ],
+  "sweep_max_epochs": 1,
+  "tie_break": "first in inv_freq,sqrt_inv_freq,effective_num,none",
+  "test_used": false,
+  "data_fingerprint": "dfba90bd116f9288bc72a837160516984ba773b11904e98561c80cda7dedcf5c"
+}

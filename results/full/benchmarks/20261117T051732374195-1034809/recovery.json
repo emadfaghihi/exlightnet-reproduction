@@ -1,0 +1,45 @@
+{
+  "status": "stopped",
+  "started_at": "2026-11-17T05:17:29.957771+00:00",
+  "benchmark_started_at": "2026-11-17T05:17:29.957794+00:00",
+  "supervisor_pid": 1034808,
+  "command": [
+    "/home/mparsict/projects/me/exlightnet/.venv/bin/python",
+    "-u",
+    "-m",
+    "exlightnet.run_all",
+    "--mode",
+    "full",
+    "--root",
+    "/home/mparsict/projects/me/exlightnet",
+    "--benchmark-only"
+  ],
+  "prior_campaign": "20261116T151119336040-1010228",
+  "prior_measured_models": 0,
+  "prior_failures": [
+    {
+      "branch": "benchmark/binary/exlightnet/42",
+      "error_type": "IdleCPUUnavailable",
+      "reason": "CPU did not remain idle (<= 5% busy) for 3 windows within 300.0s",
+      "stage": "benchmark_only",
+      "campaign": "20261116T151119336040-1010228"
+    }
+  ],
+  "reason": "User confirmed leaving machine idle after the first CPU-idle timeout",
+  "log": "results/full/logs/benchmark_recovery.log",
+  "pid": 1034809,
+  "returncode": 0,
+  "finished_at": "2026-11-17T05:22:33.065218+00:00",
+  "seconds": 303.107433707999,
+  "campaign": "20261117T051732374195-1034809",
+  "measured_models": 0,
+  "failures": [
+    {
+      "branch": "benchmark/binary/exlightnet/42",
+      "error_type": "IdleCPUUnavailable",
+      "reason": "CPU did not remain idle (<= 5% busy) for 3 windows within 300.0s",
+      "stage": "benchmark_only",
+      "campaign": "20261117T051732374195-1034809"
+    }
+  ]
+}

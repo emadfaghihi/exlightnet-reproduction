@@ -1,0 +1,31 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+____________ test_nested_table_values_are_readable_not_python_reprs ____________
+
+    def test_nested_table_values_are_readable_not_python_reprs():
+        table = md_table(["Evidence"], [[{"rows": 123117, "counts": {"normal": 12507, "attack": 110610}, "seeds": [42, 43]}]])
+>       assert "{'" not in table and "[42" not in table
+E       assert ("{'" not in '| Evidence ... [42, 43]} |'
+E         
+E         "{'" is contained here:
+E           | Evidence |
+E           | --- |
+E           | {'rows': 123117, 'counts': {'normal': 12507, 'attack': 110610}, 'seeds': [42, 43]} |
+E         ?   ++)
+
+tests/test_report_markdown.py:8: AssertionError
+___________________ test_report_candidate_note_is_consistent ___________________
+
+tmp_path = PosixPath('/tmp/pytest-of-mparsict/pytest-20/test_report_candidate_note_is_0')
+
+    def test_report_candidate_note_is_consistent(tmp_path):
+        build_report(tmp_path)
+        text = (tmp_path / "REPORT.md").read_text()
+>       assert "consistent (94 - 1 constant = 93)" in text
+E       AssertionError: assert 'consistent (94 - 1 constant = 93)' in '# ExLightNet reproduction report\n\nGenerated from saved evidence: 2026-11-16T13:45:34.678974+03:30\n\nThe supplied 3...ble/generated/shap.DeepExplainer.html), [official XGBoost CPU package](https://pypi.org/project/xgboost-cpu/2.1.4/).\n'
+
+tests/test_report_markdown.py:15: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_report_markdown.py::test_nested_table_values_are_readable_not_python_reprs
+FAILED tests/test_report_markdown.py::test_report_candidate_note_is_consistent
+2 failed in 3.70s

@@ -1,0 +1,682 @@
+{
+  "models": 95,
+  "groups": 19,
+  "seeds": [
+    42,
+    43,
+    44,
+    45,
+    46
+  ],
+  "single_pass_receipts": 95,
+  "checkpoint_fingerprints_verified": 95,
+  "prediction_arrays_verified": 95,
+  "q1_passes": 10,
+  "gate_results": [
+    {
+      "gate": "D1",
+      "pass": true,
+      "actual": {
+        "rows": 123117,
+        "counts": {
+          "mqtt_publish": 4146,
+          "thing_speak": 8108,
+          "wipro_bulb": 253,
+          "arp_poisioning": 7750,
+          "ddos_slowloris": 534,
+          "dos_syn_hping": 94659,
+          "metasploit_brute_force_ssh": 37,
+          "nmap_fin_scan": 28,
+          "nmap_os_detection": 2000,
+          "nmap_tcp_scan": 1002,
+          "nmap_udp_scan": 2590,
+          "nmap_xmas_tree_scan": 2010
+        },
+        "normal": 12507,
+        "attack": 110610
+      }
+    },
+    {
+      "gate": "D2",
+      "pass": true,
+      "actual": {
+        "sizes": {
+          "train": 86181,
+          "val": 18468,
+          "test": 18468
+        },
+        "supports": {
+          "train": {
+            "dos_syn_hping": 66261,
+            "arp_poisioning": 5425,
+            "nmap_xmas_tree_scan": 1407,
+            "nmap_udp_scan": 1813,
+            "nmap_os_detection": 1400,
+            "mqtt_publish": 2902,
+            "nmap_fin_scan": 20,
+            "nmap_tcp_scan": 701,
+            "thing_speak": 5675,
+            "ddos_slowloris": 374,
+            "wipro_bulb": 177,
+            "metasploit_brute_force_ssh": 26
+          },
+          "val": {
+            "dos_syn_hping": 14199,
+            "ddos_slowloris": 80,
+            "nmap_os_detection": 300,
+            "arp_poisioning": 1163,
+            "nmap_udp_scan": 388,
+            "thing_speak": 1217,
+            "mqtt_publish": 622,
+            "nmap_xmas_tree_scan": 301,
+            "nmap_tcp_scan": 150,
+            "wipro_bulb": 38,
+            "nmap_fin_scan": 4,
+            "metasploit_brute_force_ssh": 6
+          },
+          "test": {
+            "dos_syn_hping": 14199,
+            "arp_poisioning": 1162,
+            "thing_speak": 1216,
+            "ddos_slowloris": 80,
+            "mqtt_publish": 622,
+            "nmap_os_detection": 300,
+            "nmap_tcp_scan": 151,
+            "nmap_udp_scan": 389,
+            "nmap_xmas_tree_scan": 302,
+            "wipro_bulb": 38,
+            "metasploit_brute_force_ssh": 5,
+            "nmap_fin_scan": 4
+          }
+        }
+      }
+    },
+    {
+      "gate": "P1",
+      "report_only": true,
+      "overlap_count": 40,
+      "budget": 40,
+      "spearman_shared_ranks": 0.9994371482176362,
+      "shared_features": [
+        "fwd_pkts_payload.avg",
+        "fwd_pkts_payload.max",
+        "fwd_subflow_bytes",
+        "flow_pkts_payload.tot",
+        "flow_pkts_payload.std",
+        "fwd_pkts_payload.tot",
+        "flow_pkts_payload.avg",
+        "flow_pkts_payload.max",
+        "flow_iat.min",
+        "bwd_subflow_bytes",
+        "bwd_pkts_payload.tot",
+        "bwd_pkts_payload.avg",
+        "bwd_pkts_payload.max",
+        "flow_iat.tot",
+        "flow_iat.max",
+        "flow_duration",
+        "active.max",
+        "active.tot",
+        "active.avg",
+        "fwd_iat.min",
+        "payload_bytes_per_second",
+        "active.min",
+        "fwd_pkts_per_sec",
+        "flow_pkts_per_sec",
+        "fwd_iat.max",
+        "bwd_pkts_per_sec",
+        "fwd_iat.tot",
+        "bwd_pkts_payload.std",
+        "flow_iat.avg",
+        "fwd_iat.avg",
+        "bwd_iat.tot",
+        "bwd_iat.max",
+        "fwd_header_size_tot",
+        "bwd_header_size_tot",
+        "bwd_iat.avg",
+        "flow_iat.std",
+        "id.resp_p",
+        "bwd_header_size_max",
+        "bwd_header_size_min",
+        "bwd_data_pkts_tot"
+      ],
+      "candidate_count_before_pruning": 94,
+      "candidate_count_after_pruning": 93,
+      "dropped_constant": [
+        "bwd_urg_flag_count"
+      ],
+      "mi_settings": {
+        "target": "binary",
+        "n_neighbors": 3,
+        "random_state": 42,
+        "discrete_features": "one-hot only",
+        "ties": "stable candidate order"
+      }
+    },
+    {
+      "gate": "M1",
+      "pass": true,
+      "actual": {
+        "multiclass": 38328,
+        "binary": 35438,
+        "no_se": 23052
+      },
+      "stages": {
+        "stem": 240,
+        "block1": 9672,
+        "block2": 24948,
+        "head": 3468
+      }
+    },
+    {
+      "gate": "T1",
+      "pass": true,
+      "actual": {
+        "rarest_train_count": 20,
+        "tempered_multiplicity": 29.809225890291543,
+        "balanced_multiplicity": 359.08750000000003
+      }
+    },
+    {
+      "gate": "Q1",
+      "task": "binary",
+      "seed": 42,
+      "pass": true,
+      "actual": {
+        "fp32_macro_f1": 0.9880544774817068,
+        "w8_macro_f1": 0.9877616747181965,
+        "delta": -0.00029280276351029144,
+        "fp32_bytes": 152312,
+        "max_abs_weight_error": 0.0022417306900024414,
+        "int8_bytes": 48877,
+        "quantized_weight_tensors": 10,
+        "compute": "FP32 with dequantized W8 weights",
+        "size_breakdown": {
+          "weights_only_int8_bytes": 34560,
+          "scales_fp32_bytes": 2936,
+          "rest_fp32_bytes": 5828,
+          "metadata_array_bytes": 10468,
+          "total_array_payload_bytes": 53792,
+          "compressed_members_bytes": {
+            "weights": 30028,
+            "scales": 3620,
+            "rest": 7364,
+            "metadata": 1843
+          },
+          "zip_container_bytes": 6022,
+          "full_artifact_bytes": 48877,
+          "definition": "weights-only is raw int8 tensor payload; full artifact includes scales, FP32 state, metadata, NPY headers and ZIP container"
+        }
+      },
+      "criterion": "absolute delta <=0.001 (predeclared meaning of approximately zero)"
+    },
+    {
+      "gate": "Q1",
+      "task": "binary",
+      "seed": 43,
+      "pass": true,
+      "actual": {
+        "fp32_macro_f1": 0.9872617039362985,
+        "w8_macro_f1": 0.9875520685889918,
+        "delta": 0.0002903646526932757,
+        "fp32_bytes": 152312,
+        "max_abs_weight_error": 0.002089887857437134,
+        "int8_bytes": 49694,
+        "quantized_weight_tensors": 10,
+        "compute": "FP32 with dequantized W8 weights",
+        "size_breakdown": {
+          "weights_only_int8_bytes": 34560,
+          "scales_fp32_bytes": 2936,
+          "rest_fp32_bytes": 5828,
+          "metadata_array_bytes": 10468,
+          "total_array_payload_bytes": 53792,
+          "compressed_members_bytes": {
+            "weights": 30824,
+            "scales": 3643,
+            "rest": 7362,
+            "metadata": 1843
+          },
+          "zip_container_bytes": 6022,
+          "full_artifact_bytes": 49694,
+          "definition": "weights-only is raw int8 tensor payload; full artifact includes scales, FP32 state, metadata, NPY headers and ZIP container"
+        }
+      },
+      "criterion": "absolute delta <=0.001 (predeclared meaning of approximately zero)"
+    },
+    {
+      "gate": "Q1",
+      "task": "binary",
+      "seed": 44,
+      "pass": true,
+      "actual": {
+        "fp32_macro_f1": 0.9857062511287118,
+        "w8_macro_f1": 0.9854153932381198,
+        "delta": -0.00029085789059202227,
+        "fp32_bytes": 152312,
+        "max_abs_weight_error": 0.002098366618156433,
+        "int8_bytes": 50446,
+        "quantized_weight_tensors": 10,
+        "compute": "FP32 with dequantized W8 weights",
+        "size_breakdown": {
+          "weights_only_int8_bytes": 34560,
+          "scales_fp32_bytes": 2936,
+          "rest_fp32_bytes": 5828,
+          "metadata_array_bytes": 10468,
+          "total_array_payload_bytes": 53792,
+          "compressed_members_bytes": {
+            "weights": 31590,
+            "scales": 3638,
+            "rest": 7353,
+            "metadata": 1843
+          },
+          "zip_container_bytes": 6022,
+          "full_artifact_bytes": 50446,
+          "definition": "weights-only is raw int8 tensor payload; full artifact includes scales, FP32 state, metadata, NPY headers and ZIP container"
+        }
+      },
+      "criterion": "absolute delta <=0.001 (predeclared meaning of approximately zero)"
+    },
+    {
+      "gate": "Q1",
+      "task": "binary",
+      "seed": 45,
+      "pass": true,
+      "actual": {
+        "fp32_macro_f1": 0.9870983603678489,
+        "w8_macro_f1": 0.9871105427338052,
+        "delta": 1.2182365956237007e-05,
+        "fp32_bytes": 152312,
+        "max_abs_weight_error": 0.002102404832839966,
+        "int8_bytes": 49403,
+        "quantized_weight_tensors": 10,
+        "compute": "FP32 with dequantized W8 weights",
+        "size_breakdown": {
+          "weights_only_int8_bytes": 34560,
+          "scales_fp32_bytes": 2936,
+          "rest_fp32_bytes": 5828,
+          "metadata_array_bytes": 10468,
+          "total_array_payload_bytes": 53792,
+          "compressed_members_bytes": {
+            "weights": 30545,
+            "scales": 3627,
+            "rest": 7366,
+            "metadata": 1843
+          },
+          "zip_container_bytes": 6022,
+          "full_artifact_bytes": 49403,
+          "definition": "weights-only is raw int8 tensor payload; full artifact includes scales, FP32 state, metadata, NPY headers and ZIP container"
+        }
+      },
+      "criterion": "absolute delta <=0.001 (predeclared meaning of approximately zero)"
+    },
+    {
+      "gate": "Q1",
+      "task": "binary",
+      "seed": 46,
+      "pass": true,
+      "actual": {
+        "fp32_macro_f1": 0.9872255182066656,
+        "w8_macro_f1": 0.9873710677838696,
+        "delta": 0.0001455495772040294,
+        "fp32_bytes": 152312,
+        "max_abs_weight_error": 0.0023192763328552246,
+        "int8_bytes": 49892,
+        "quantized_weight_tensors": 10,
+        "compute": "FP32 with dequantized W8 weights",
+        "size_breakdown": {
+          "weights_only_int8_bytes": 34560,
+          "scales_fp32_bytes": 2936,
+          "rest_fp32_bytes": 5828,
+          "metadata_array_bytes": 10468,
+          "total_array_payload_bytes": 53792,
+          "compressed_members_bytes": {
+            "weights": 31048,
+            "scales": 3622,
+            "rest": 7357,
+            "metadata": 1843
+          },
+          "zip_container_bytes": 6022,
+          "full_artifact_bytes": 49892,
+          "definition": "weights-only is raw int8 tensor payload; full artifact includes scales, FP32 state, metadata, NPY headers and ZIP container"
+        }
+      },
+      "criterion": "absolute delta <=0.001 (predeclared meaning of approximately zero)"
+    },
+    {
+      "gate": "Q1",
+      "task": "multiclass",
+      "seed": 42,
+      "pass": true,
+      "actual": {
+        "fp32_macro_f1": 0.824796327203707,
+        "w8_macro_f1": 0.8253071812641015,
+        "delta": 0.0005108540603945277,
+        "fp32_bytes": 163832,
+        "max_abs_weight_error": 0.0024102330207824707,
+        "int8_bytes": 55271,
+        "quantized_weight_tensors": 10,
+        "compute": "FP32 with dequantized W8 weights",
+        "size_breakdown": {
+          "weights_only_int8_bytes": 37440,
+          "scales_fp32_bytes": 2976,
+          "rest_fp32_bytes": 5868,
+          "metadata_array_bytes": 10472,
+          "total_array_payload_bytes": 56756,
+          "compressed_members_bytes": {
+            "weights": 36417,
+            "scales": 3658,
+            "rest": 7331,
+            "metadata": 1843
+          },
+          "zip_container_bytes": 6022,
+          "full_artifact_bytes": 55271,
+          "definition": "weights-only is raw int8 tensor payload; full artifact includes scales, FP32 state, metadata, NPY headers and ZIP container"
+        }
+      },
+      "criterion": "drop <=0.01"
+    },
+    {
+      "gate": "Q1",
+      "task": "multiclass",
+      "seed": 43,
+      "pass": true,
+      "actual": {
+        "fp32_macro_f1": 0.8557912091161192,
+        "w8_macro_f1": 0.8516139231555822,
+        "delta": -0.004177285960537014,
+        "fp32_bytes": 163832,
+        "max_abs_weight_error": 0.0023038536310195923,
+        "int8_bytes": 53843,
+        "quantized_weight_tensors": 10,
+        "compute": "FP32 with dequantized W8 weights",
+        "size_breakdown": {
+          "weights_only_int8_bytes": 37440,
+          "scales_fp32_bytes": 2976,
+          "rest_fp32_bytes": 5868,
+          "metadata_array_bytes": 10472,
+          "total_array_payload_bytes": 56756,
+          "compressed_members_bytes": {
+            "weights": 34968,
+            "scales": 3649,
+            "rest": 7361,
+            "metadata": 1843
+          },
+          "zip_container_bytes": 6022,
+          "full_artifact_bytes": 53843,
+          "definition": "weights-only is raw int8 tensor payload; full artifact includes scales, FP32 state, metadata, NPY headers and ZIP container"
+        }
+      },
+      "criterion": "drop <=0.01"
+    },
+    {
+      "gate": "Q1",
+      "task": "multiclass",
+      "seed": 44,
+      "pass": true,
+      "actual": {
+        "fp32_macro_f1": 0.8734192489816173,
+        "w8_macro_f1": 0.8693312968410636,
+        "delta": -0.004087952140553686,
+        "fp32_bytes": 163832,
+        "max_abs_weight_error": 0.0021494626998901367,
+        "int8_bytes": 52876,
+        "quantized_weight_tensors": 10,
+        "compute": "FP32 with dequantized W8 weights",
+        "size_breakdown": {
+          "weights_only_int8_bytes": 37440,
+          "scales_fp32_bytes": 2976,
+          "rest_fp32_bytes": 5868,
+          "metadata_array_bytes": 10472,
+          "total_array_payload_bytes": 56756,
+          "compressed_members_bytes": {
+            "weights": 34013,
+            "scales": 3641,
+            "rest": 7357,
+            "metadata": 1843
+          },
+          "zip_container_bytes": 6022,
+          "full_artifact_bytes": 52876,
+          "definition": "weights-only is raw int8 tensor payload; full artifact includes scales, FP32 state, metadata, NPY headers and ZIP container"
+        }
+      },
+      "criterion": "drop <=0.01"
+    },
+    {
+      "gate": "Q1",
+      "task": "multiclass",
+      "seed": 45,
+      "pass": true,
+      "actual": {
+        "fp32_macro_f1": 0.8312737283238759,
+        "w8_macro_f1": 0.8375948287000966,
+        "delta": 0.00632110037622069,
+        "fp32_bytes": 163832,
+        "max_abs_weight_error": 0.002301514148712158,
+        "int8_bytes": 53206,
+        "quantized_weight_tensors": 10,
+        "compute": "FP32 with dequantized W8 weights",
+        "size_breakdown": {
+          "weights_only_int8_bytes": 37440,
+          "scales_fp32_bytes": 2976,
+          "rest_fp32_bytes": 5868,
+          "metadata_array_bytes": 10472,
+          "total_array_payload_bytes": 56756,
+          "compressed_members_bytes": {
+            "weights": 34369,
+            "scales": 3641,
+            "rest": 7331,
+            "metadata": 1843
+          },
+          "zip_container_bytes": 6022,
+          "full_artifact_bytes": 53206,
+          "definition": "weights-only is raw int8 tensor payload; full artifact includes scales, FP32 state, metadata, NPY headers and ZIP container"
+        }
+      },
+      "criterion": "drop <=0.01"
+    },
+    {
+      "gate": "Q1",
+      "task": "multiclass",
+      "seed": 46,
+      "pass": true,
+      "actual": {
+        "fp32_macro_f1": 0.847711240259875,
+        "w8_macro_f1": 0.8501020098708919,
+        "delta": 0.0023907696110169185,
+        "fp32_bytes": 163832,
+        "max_abs_weight_error": 0.0025502443313598633,
+        "int8_bytes": 53706,
+        "quantized_weight_tensors": 10,
+        "compute": "FP32 with dequantized W8 weights",
+        "size_breakdown": {
+          "weights_only_int8_bytes": 37440,
+          "scales_fp32_bytes": 2976,
+          "rest_fp32_bytes": 5868,
+          "metadata_array_bytes": 10472,
+          "total_array_payload_bytes": 56756,
+          "compressed_members_bytes": {
+            "weights": 34840,
+            "scales": 3652,
+            "rest": 7349,
+            "metadata": 1843
+          },
+          "zip_container_bytes": 6022,
+          "full_artifact_bytes": 53706,
+          "definition": "weights-only is raw int8 tensor payload; full artifact includes scales, FP32 state, metadata, NPY headers and ZIP container"
+        }
+      },
+      "criterion": "drop <=0.01"
+    }
+  ],
+  "summary_sample_std_verified": true,
+  "summary_scope": {
+    "mode": "full",
+    "seeds": [
+      42,
+      43,
+      44,
+      45,
+      46
+    ],
+    "source": "full/summary.csv",
+    "full_five_seed_headlines_complete": true
+  },
+  "int8_sizes": [
+    {
+      "task": "binary",
+      "seed": 42,
+      "weights_only_int8_bytes": 34560,
+      "full_artifact_bytes": 48877
+    },
+    {
+      "task": "binary",
+      "seed": 43,
+      "weights_only_int8_bytes": 34560,
+      "full_artifact_bytes": 49694
+    },
+    {
+      "task": "binary",
+      "seed": 44,
+      "weights_only_int8_bytes": 34560,
+      "full_artifact_bytes": 50446
+    },
+    {
+      "task": "binary",
+      "seed": 45,
+      "weights_only_int8_bytes": 34560,
+      "full_artifact_bytes": 49403
+    },
+    {
+      "task": "binary",
+      "seed": 46,
+      "weights_only_int8_bytes": 34560,
+      "full_artifact_bytes": 49892
+    },
+    {
+      "task": "multiclass",
+      "seed": 42,
+      "weights_only_int8_bytes": 37440,
+      "full_artifact_bytes": 55271
+    },
+    {
+      "task": "multiclass",
+      "seed": 43,
+      "weights_only_int8_bytes": 37440,
+      "full_artifact_bytes": 53843
+    },
+    {
+      "task": "multiclass",
+      "seed": 44,
+      "weights_only_int8_bytes": 37440,
+      "full_artifact_bytes": 52876
+    },
+    {
+      "task": "multiclass",
+      "seed": 45,
+      "weights_only_int8_bytes": 37440,
+      "full_artifact_bytes": 53206
+    },
+    {
+      "task": "multiclass",
+      "seed": 46,
+      "weights_only_int8_bytes": 37440,
+      "full_artifact_bytes": 53706
+    }
+  ],
+  "receipt_sha256": {
+    "results/full/binary/exlightnet/42/test_evaluation_receipt.json": "2af132d81be7b34ac3a151a3a91c85128ace3b585ae85bf20374a4d78877a0e3",
+    "results/full/binary/exlightnet/43/test_evaluation_receipt.json": "710b02686f95a5c312aa9b90cad691bc9f09a5ccf32673a6e51e0910e1db53a6",
+    "results/full/binary/exlightnet/44/test_evaluation_receipt.json": "7cf653ca0c27534fa08dd87012802b4c31b15cb13ec51e7cb7a3244f2b0c65dd",
+    "results/full/binary/exlightnet/45/test_evaluation_receipt.json": "a6791f058679ef2cc3af013f43fcc3e131dc17004b50fdc3bfc580852fc4acbe",
+    "results/full/binary/exlightnet/46/test_evaluation_receipt.json": "c248312b3f2d78c894e947191f5a84463a49b441c0910ea8c2b0df65a793a247",
+    "results/full/binary/mlp/42/test_evaluation_receipt.json": "6a9d1a7be0983e4da197d2f8a285b027739d75d2d9b66ac04658c71defa60332",
+    "results/full/binary/mlp/43/test_evaluation_receipt.json": "292002ffa429bd32de3589590ffd7e4991dbf83e56c2828dbb3ed0f5c033e406",
+    "results/full/binary/mlp/44/test_evaluation_receipt.json": "a0a1e91456ca9968ed3987617a777f30759bbbbdfed0e976b31bb231fd6d476b",
+    "results/full/binary/mlp/45/test_evaluation_receipt.json": "0a5ba571be9911c0e3a7ff662bf9bcd8b8a6b2c4739c1e15d169d0be8b812b7b",
+    "results/full/binary/mlp/46/test_evaluation_receipt.json": "cc5feec4a2207f92cde93505fe51ecb51aa7899ccafd4548bfe4311388cb6607",
+    "results/full/binary/bilstm/42/test_evaluation_receipt.json": "6ce576c97c08b52c400d393aa09ac41ea33d7649bf216a08d4723567fcb69e32",
+    "results/full/binary/bilstm/43/test_evaluation_receipt.json": "0f5a870972ce51d26c99fdcf844224d6f8e103d8801d86382c75ebcb5bb73722",
+    "results/full/binary/bilstm/44/test_evaluation_receipt.json": "8a1eeb9d7daee865c33bfce4a087747cc58192ca1b2b0edb8bfdd52fe5a6c53a",
+    "results/full/binary/bilstm/45/test_evaluation_receipt.json": "c421658c353c86ba6853c5e9133f961433f41738683a010540a549b16cc8d1f3",
+    "results/full/binary/bilstm/46/test_evaluation_receipt.json": "be1b8b3b0b638e6c9caa06b50b6ff015d8e93a1474c6ce487e7628dec0b8601e",
+    "results/full/binary/std_cnn/42/test_evaluation_receipt.json": "7889215f04ff380d3d1bfa6fea2462e7d992d8cd5e45e709a71d2221d9f731ab",
+    "results/full/binary/std_cnn/43/test_evaluation_receipt.json": "0c0ef1a75387088b31d4d7c0785fa8cb661005fd10bb65e908087ecdb2654f80",
+    "results/full/binary/std_cnn/44/test_evaluation_receipt.json": "bd84c5ae49eb676c0e14a3f1ad36a48ecbca89ca9c20c9f77b5f3eb102a2640c",
+    "results/full/binary/std_cnn/45/test_evaluation_receipt.json": "63e106c576bfc37fd05fd670f1c7ef49ee6edab39255866356553285467e5996",
+    "results/full/binary/std_cnn/46/test_evaluation_receipt.json": "e225c12ddf81a5c13d6061391c295ac6cc0bd7de2e70ab291e115ea21d9a9042",
+    "results/full/binary/random_forest/42/test_evaluation_receipt.json": "dc8372bf76562b21ac9b624ca1ee68689b451874cca55a006ddb2a1cfcbad4da",
+    "results/full/binary/random_forest/43/test_evaluation_receipt.json": "4ec955a03923b9bb3c203951ca838adfe87c793e349c6e2ee5e334975ec7cc04",
+    "results/full/binary/random_forest/44/test_evaluation_receipt.json": "26a099aff20225c7d8ee7a4603e54991637a0a2fcc0cb417490f30622b31d970",
+    "results/full/binary/random_forest/45/test_evaluation_receipt.json": "72b1667aa25cbed59f16302f5f7e8584e0740b34798129771b14bb7b21b8dcac",
+    "results/full/binary/random_forest/46/test_evaluation_receipt.json": "1d909c5cd07b6d369bce5faea06e8b6ccf814b136acebb06b11a16b159cbe934",
+    "results/full/binary/xgboost/42/test_evaluation_receipt.json": "d2a2456e1135142a8727deb474300dc85ad12b71c37dafd525c07da7cd5b1ccd",
+    "results/full/binary/xgboost/43/test_evaluation_receipt.json": "d28524f45c73311dae2e6130c3cd58990936add39a7390212faff72a9cbdaf6a",
+    "results/full/binary/xgboost/44/test_evaluation_receipt.json": "176f4aead40f3349c62d2c3854c186cb8f7eb05a036146ca8b65e47addbad7a0",
+    "results/full/binary/xgboost/45/test_evaluation_receipt.json": "9c617fcf200777e9da861b1f054d0e62ac1a50a955d4607800b79289fe8affc2",
+    "results/full/binary/xgboost/46/test_evaluation_receipt.json": "3504faea11ee152ccf135851569dca4323f28f1b7ef369122e087c59e3d3c474",
+    "results/full/multiclass/exlightnet/42/test_evaluation_receipt.json": "bed8b33ff7055c6bc8e114b43e8ad1cd3948689826731651ae8fa019da5662f9",
+    "results/full/multiclass/exlightnet/43/test_evaluation_receipt.json": "ec39a22ed03766a8a6c2bc6202ed7af61ef8918a39df081feaf1b2c31a344115",
+    "results/full/multiclass/exlightnet/44/test_evaluation_receipt.json": "a0f0f17ce4f206b64431fd0989cc05c12677d7fd51ebdcb8e2ed8945725ef1ca",
+    "results/full/multiclass/exlightnet/45/test_evaluation_receipt.json": "4691a07b33e80b5e41db14794d839d2baa123a409263781a2c44ec898ddcb7a7",
+    "results/full/multiclass/exlightnet/46/test_evaluation_receipt.json": "fb8df7ff366ab416d8c7bc211b9890c7db059e014eba573f8d8ceb4dfb4ca74b",
+    "results/full/multiclass/mlp/42/test_evaluation_receipt.json": "46bd129b463da721d3a2240613ce39442201cda34d591eb79812fb9d927ca63c",
+    "results/full/multiclass/mlp/43/test_evaluation_receipt.json": "a7ce7d39fce2717a3cb3a7cd79bd792df4bfe009e10fc4a490db4d485277031c",
+    "results/full/multiclass/mlp/44/test_evaluation_receipt.json": "508bf881560fa8a1d92c1a63b7eb9183dfc8de958d1857481ddea154aa544475",
+    "results/full/multiclass/mlp/45/test_evaluation_receipt.json": "27ef4fdf4f29805854281fb80f64615fc35cfe408ba29c39cd92ad6dbc7c17ea",
+    "results/full/multiclass/mlp/46/test_evaluation_receipt.json": "361e28224c2b07be85d3f6bb2e86baaaa35f79cf5f7a513197eda9ca845f76b3",
+    "results/full/multiclass/bilstm/42/test_evaluation_receipt.json": "5345bb8bedc91cbc738f786dc0763d9c65c0f7a9a6bae20b02ba7c0f793cfe99",
+    "results/full/multiclass/bilstm/43/test_evaluation_receipt.json": "1cc1caf1fdb6e3412b04fd4cce5c630bdecc9a227d79f6f05e809530b8ae7db0",
+    "results/full/multiclass/bilstm/44/test_evaluation_receipt.json": "9db9b9f4fac1c9f22a3bb40e9280b4e2d368fedccabd8a507165f8c5928d8fc6",
+    "results/full/multiclass/bilstm/45/test_evaluation_receipt.json": "8171a82314e809906ff25438e88ded9888fb1eaa0caf55fd1c559bfafdbfb2dc",
+    "results/full/multiclass/bilstm/46/test_evaluation_receipt.json": "8a3e23bda485a6043ea44417b6d9477c1266258cb8039b05044a156aadc9155a",
+    "results/full/multiclass/std_cnn/42/test_evaluation_receipt.json": "9c5b61da2e16c865cefa0f34e49c9927eb38d08db24e7d81adb1f5159cc8333a",
+    "results/full/multiclass/std_cnn/43/test_evaluation_receipt.json": "eb7265ab5fcf5d81e020a096bf39994f2dd9742f613ed249d425ae44625f8107",
+    "results/full/multiclass/std_cnn/44/test_evaluation_receipt.json": "3b1a488042e8cdac6a49384ed0b3c611561309125c7c3cd836a20980df716e1f",
+    "results/full/multiclass/std_cnn/45/test_evaluation_receipt.json": "3cf48c8a6cd23443d0ab8f9ed8b8703e9667efd619f7095551570440551706fd",
+    "results/full/multiclass/std_cnn/46/test_evaluation_receipt.json": "6d1f6e39c27550acbc6e68ded9317cad7463c897253c6c7cee64e1c6a0965004",
+    "results/full/multiclass/random_forest/42/test_evaluation_receipt.json": "53919bdcf46a9f016b6a3bd7c7916529915e3d1e8b8d0732f49421bff46fa31e",
+    "results/full/multiclass/random_forest/43/test_evaluation_receipt.json": "74a238d50ad1e6b485dfe2e5a9b841a7fbe28378ef548c7335c7433c4376e3d9",
+    "results/full/multiclass/random_forest/44/test_evaluation_receipt.json": "395f95f1e1d80dc717e2001e7bf1c71931af06bbee21b701123f5fff693cc530",
+    "results/full/multiclass/random_forest/45/test_evaluation_receipt.json": "03252fa9a0c53f0dddbcfa19d8afd8ca85be0ea1efbfda75b567f76ca99bb8dd",
+    "results/full/multiclass/random_forest/46/test_evaluation_receipt.json": "bab2f2ab71ad8cc043b8c2202b70ac7980b9060b5075d01630cf36d2e5decaa5",
+    "results/full/multiclass/xgboost/42/test_evaluation_receipt.json": "035322bce8b860f866dc378b370fc086d1a6b7740f7c8ba5b71dfa73818b9ba1",
+    "results/full/multiclass/xgboost/43/test_evaluation_receipt.json": "0f61fece5e2f7873dd1b7d1f1e4175f186670808b1f0d02dab278b9216da1d11",
+    "results/full/multiclass/xgboost/44/test_evaluation_receipt.json": "24c32a32a7b085680c45eafe11bf24d1e5ca04549d5b4298165d9f40b157fb49",
+    "results/full/multiclass/xgboost/45/test_evaluation_receipt.json": "d052b86fe7ece4abe363bb44304642b1f8aaeb63abffb272afd691f32d99479c",
+    "results/full/multiclass/xgboost/46/test_evaluation_receipt.json": "ef506a74aa3d04ce965e5dd8edaf32d6905116981781e6bb3976a4e453a497de",
+    "results/full/multiclass/no_se/42/test_evaluation_receipt.json": "53979e26d1204dd56341e6f6e1725b3eb724fb5b1882690cd57b6a9857a7bb8f",
+    "results/full/multiclass/no_se/43/test_evaluation_receipt.json": "00f4348bd2e05295922a866f36db8802bbea546bb1abd12bf384df11d884c8c2",
+    "results/full/multiclass/no_se/44/test_evaluation_receipt.json": "ad61e573c907979c2656e95cb6a663b61d48395798936f14e3137c116064b939",
+    "results/full/multiclass/no_se/45/test_evaluation_receipt.json": "c554398dec71fa43a02f6d659e609e12ade42aed075929775670b211aedae2cb",
+    "results/full/multiclass/no_se/46/test_evaluation_receipt.json": "3cefd9d58a9388885fba4d4443e23bb28ee095705b4aa157c64586a7041f8f2f",
+    "results/full/multiclass/standard_conv/42/test_evaluation_receipt.json": "3d532b089e67d099d966b7f0a61f03a18f4a435a808dd773ba20730fc1c53698",
+    "results/full/multiclass/standard_conv/43/test_evaluation_receipt.json": "f778b95699cbfe2868a5981403011027afb119e0ee0d367677af9228adef4da6",
+    "results/full/multiclass/standard_conv/44/test_evaluation_receipt.json": "ec3c888f289694d58627fb1ed734ec35b36e2503a044506b9fbd72508fbfa0ef",
+    "results/full/multiclass/standard_conv/45/test_evaluation_receipt.json": "8c384e63e5d7cf1950fca29c8bd7fa6dc7771fc74a762c5bcebadc4ce31897d7",
+    "results/full/multiclass/standard_conv/46/test_evaluation_receipt.json": "2ebf4812d1737b0fdd9deb3df51971353b519b57c4adc9ad579326df1d8499ac",
+    "results/full/multiclass/balanced/42/test_evaluation_receipt.json": "bdc075a760b54328289bc3882ba0ecb3ee904d545d1bd11917d115e0d3625495",
+    "results/full/multiclass/balanced/43/test_evaluation_receipt.json": "70ec57b583b94ce9793ac5c4924b0dc32165c3cebb5485dc240e08fc55a12a9e",
+    "results/full/multiclass/balanced/44/test_evaluation_receipt.json": "88422ba12725b5ed13a8303570821f8fa5a1e885716c7a9c74acf910c5337a22",
+    "results/full/multiclass/balanced/45/test_evaluation_receipt.json": "cb0125440b58186ee7dc21b33e2d800887f24691d366fe4293a03f7630558609",
+    "results/full/multiclass/balanced/46/test_evaluation_receipt.json": "f44355fd3ecde73b978e25f39e23dbc68fc1c1ce0370c7c09263c3fc9ad07637",
+    "results/full/multiclass/no_sampler/42/test_evaluation_receipt.json": "cb6fef97da2723d85d3a3244fa1700465956c50db175b86ced69a5a52a2e9af0",
+    "results/full/multiclass/no_sampler/43/test_evaluation_receipt.json": "6c90d7e23aee860562f7e198190c91bda8212a8c285ad29f51c02af89e0ed20e",
+    "results/full/multiclass/no_sampler/44/test_evaluation_receipt.json": "849d8cee400de60018df98765915652353ff8720350ed72e6054f2c4f30e0052",
+    "results/full/multiclass/no_sampler/45/test_evaluation_receipt.json": "e322fc7970ffde4c65cd7ec6329f346fce78bc04655632f0d3b4dc967dc494f8",
+    "results/full/multiclass/no_sampler/46/test_evaluation_receipt.json": "2ad944f31d2921c1f4d8ae22cd85d56672b60e6d2463a554d09646157ca4fbe5",
+    "results/full/multiclass/top20/42/test_evaluation_receipt.json": "0d2fbdf7fedba55f19dce63c1437d5555d481b8a6ccc28fd54d1fab7bdab1057",
+    "results/full/multiclass/top20/43/test_evaluation_receipt.json": "e7dff1f1218b99c21c4925c873c3f520bed99b0cffdf287a97fd6db61db817bb",
+    "results/full/multiclass/top20/44/test_evaluation_receipt.json": "774678e6da3bc71d79775bf57a5bd4307d51487330dc4901b83916a671296ee7",
+    "results/full/multiclass/top20/45/test_evaluation_receipt.json": "a3dde80528c5f759ea7b4c0f5b451c971aedbef293a99213e27720af46048388",
+    "results/full/multiclass/top20/46/test_evaluation_receipt.json": "a3fa0385ad5af97b5134d4e7e99d817d46af25273b62fbd63c13235fecb93f95",
+    "results/full/binary/exlightnet_w8/42/test_evaluation_receipt.json": "8b7cec90ca833264b937558a57649a495cc3783c3b0fb9152ee8852f5ff806c2",
+    "results/full/binary/exlightnet_w8/43/test_evaluation_receipt.json": "270f6fc83909a8e549e4506013b77eb0c6a53352a40a5367b5f23c67de19f476",
+    "results/full/binary/exlightnet_w8/44/test_evaluation_receipt.json": "6aaceef0d7506c55ecf2f8c6ffbc84ef582822507799be858aa26b43a79c4a51",
+    "results/full/binary/exlightnet_w8/45/test_evaluation_receipt.json": "5adc5b8013375164d00efbf6d2845e4bc3c26451784d5124e112773f70a83a8a",
+    "results/full/binary/exlightnet_w8/46/test_evaluation_receipt.json": "a1c2e22496157fa46244c3366afcd359834ed4a34b3520b6281f98fed97dac46",
+    "results/full/multiclass/exlightnet_w8/42/test_evaluation_receipt.json": "c76620a244a2eca2d9d7656f28fbcc4ab0e3dc7b2f4ad1f4995797e4e3443908",
+    "results/full/multiclass/exlightnet_w8/43/test_evaluation_receipt.json": "2a2f599c3be5f23e2f99cd872129dcc93a4777daf8610b11f14a1221602c78b1",
+    "results/full/multiclass/exlightnet_w8/44/test_evaluation_receipt.json": "17acc44890005237491dc5cb2e7cc1944e944e9e38f097f9c6cbc26f72c2d3f9",
+    "results/full/multiclass/exlightnet_w8/45/test_evaluation_receipt.json": "b395d482dc00a9dee756f4812f05aa231ce45eede433aa5cd2efa18c7813577b",
+    "results/full/multiclass/exlightnet_w8/46/test_evaluation_receipt.json": "fcb0fe4b3911d242f8515787d9fb813c5aa13c09495d5799dd2f6c5416c42b68"
+  }
+}

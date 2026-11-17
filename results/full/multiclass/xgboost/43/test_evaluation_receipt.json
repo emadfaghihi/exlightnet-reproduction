@@ -1,0 +1,29 @@
+{
+  "status": "complete",
+  "metadata": {
+    "task": "multiclass",
+    "model": "xgboost",
+    "seed": 43,
+    "params": null,
+    "serialized_bytes": 7767607,
+    "training": {
+      "training_seconds": 85.27837495000131,
+      "config": {
+        "trees": 400,
+        "seed": 43,
+        "max_depth": 8,
+        "balanced_weights": true
+      }
+    },
+    "recipe": {
+      "trees": 400,
+      "seed": 43,
+      "max_depth": 8,
+      "balanced_weights": true
+    },
+    "data_fingerprint": "dfba90bd116f9288bc72a837160516984ba773b11904e98561c80cda7dedcf5c",
+    "features": 40,
+    "fingerprint": "f1077d057280e1be25e34086811026727600c653d2e37c07d9ff1f90e95a4695"
+  },
+  "test_prediction_passes": 1
+}

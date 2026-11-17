@@ -1,0 +1,83 @@
+FFFF                                                                     [100%]
+=================================== FAILURES ===================================
+____________ test_extracted_archive_can_rebuild_missing_array_cache ____________
+
+tmp_path = PosixPath('/tmp/pytest-of-mparsict/pytest-8/test_extracted_archive_can_reb0')
+
+    def test_extracted_archive_can_rebuild_missing_array_cache(tmp_path):
+        if not Path("artifacts/cache_manifest.json").exists():
+            pytest.skip("requires a prepared real corpus")
+        (tmp_path / "data").mkdir()
+        (tmp_path / "data/RT_IOT2022.csv").symlink_to(Path("data/RT_IOT2022.csv").resolve())
+        (tmp_path / "artifacts").mkdir()
+        for name in ("cache_manifest.json", "preprocessor.json", "mi_ranking.json", "mi_comparison.json", "split_indices.npz", "class_names.json"):
+            shutil.copy(Path("artifacts") / name, tmp_path / "artifacts" / name)
+        expected = read_json(tmp_path / "artifacts/cache_manifest.json")["arrays_sha256"]
+>       arrays, _, _, _ = prepare_data(tmp_path, download=False)
+
+tests/test_recovery.py:23: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/exlightnet/run_all.py:55: in prepare_data
+    if sha256(directory / "cache_arrays.npz") != read_json(manifest)["arrays_sha256"]:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = PosixPath('/tmp/pytest-of-mparsict/pytest-8/test_extracted_archive_can_reb0/artifacts/cache_arrays.npz')
+
+    def sha256(path):
+        digest = hashlib.sha256()
+>       with open(path, "rb") as stream:
+E       FileNotFoundError: [Errno 2] No such file or directory: '/tmp/pytest-of-mparsict/pytest-8/test_extracted_archive_can_reb0/artifacts/cache_arrays.npz'
+
+src/exlightnet/io.py:33: FileNotFoundError
+______________ test_cached_metrics_cannot_bypass_missing_evidence ______________
+
+tmp_path = PosixPath('/tmp/pytest-of-mparsict/pytest-8/test_cached_metrics_cannot_byp0')
+
+    def test_cached_metrics_cannot_bypass_missing_evidence(tmp_path):
+        config = dataclasses.asdict(TrainConfig(max_epochs=1, alpha_mode="none"))
+        write_json(tmp_path / "metrics.json", {"recipe": config, "data_fingerprint": "fixture"})
+        arrays = {"x_" + p: np.zeros((4, 40), dtype="float32") for p in ("train", "val", "test")}
+        arrays.update({"y2_" + p: np.array([0, 1, 0, 1]) for p in ("train", "val", "test")})
+>       with pytest.raises(RuntimeError, match="Incomplete"):
+E       Failed: DID NOT RAISE <class 'RuntimeError'>
+
+tests/test_recovery.py:34: Failed
+_____________ test_blocked_run_report_retains_actual_gate_evidence _____________
+
+tmp_path = PosixPath('/tmp/pytest-of-mparsict/pytest-8/test_blocked_run_report_retain0')
+
+    def test_blocked_run_report_retains_actual_gate_evidence(tmp_path):
+        directory = tmp_path / "results/fast"
+        write_json(directory / "gates.json", [{"gate": "D1", "pass": False, "actual": {"rows": 17}}])
+        write_json(directory / "failures.json", [{"branch": "data", "error_type": "GateFailure", "reason": "D1 fixture has 17 rows"}])
+        build_report(tmp_path)
+        report = (tmp_path / "REPORT.md").read_text()
+>       assert "D1" in report and "17" in report and "FAIL" in report
+E       AssertionError: assert ('D1' in '# ExLightNet reproduction report\n\nGenerated from saved evidence: 2026-11-16T11:33:24.826535+03:30\n\nThe supplied 3...ble/generated/shap.DeepExplainer.html), [official XGBoost CPU package](https://pypi.org/project/xgboost-cpu/2.1.4/).\n')
+
+tests/test_recovery.py:44: AssertionError
+_____________ test_alpha_failure_continues_independent_tree_branch _____________
+
+tmp_path = PosixPath('/tmp/pytest-of-mparsict/pytest-8/test_alpha_failure_continues_i0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fd4e9bbe890>
+
+    def test_alpha_failure_continues_independent_tree_branch(tmp_path, monkeypatch):
+        import exlightnet.run_all as runner
+        arrays = {"x_" + p: np.zeros((4, 40), dtype="float32") for p in ("train", "val", "test")}
+        arrays.update({"y12_" + p: np.array([0, 1, 0, 1]) for p in ("train", "val", "test")})
+        class Preprocessor:
+            def compare_table4(self):
+                return {"gate": "P1", "report_only": True}
+        # External boundaries: fixture data and deliberate selection failure. Real
+        # runner dispatch/finalization operates; _run_one records which job survives.
+        monkeypatch.setattr(runner, "prepare_data", lambda root: (arrays, ["a", "b"], Preprocessor(), {"fingerprint": "fixture", "gates": []}))
+>       monkeypatch.setattr(runner, "sampler_gate", lambda y: {"gate": "T1", "pass": True})
+E       AttributeError: <module 'exlightnet.run_all' from '/home/mparsict/projects/me/exlightnet/src/exlightnet/run_all.py'> has no attribute 'sampler_gate'
+
+tests/test_recovery.py:57: AttributeError
+=========================== short test summary info ============================
+FAILED tests/test_recovery.py::test_extracted_archive_can_rebuild_missing_array_cache
+FAILED tests/test_recovery.py::test_cached_metrics_cannot_bypass_missing_evidence
+FAILED tests/test_recovery.py::test_blocked_run_report_retains_actual_gate_evidence
+FAILED tests/test_recovery.py::test_alpha_failure_continues_independent_tree_branch
+4 failed in 4.27s

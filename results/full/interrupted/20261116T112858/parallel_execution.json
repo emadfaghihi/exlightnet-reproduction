@@ -1,0 +1,134 @@
+{
+  "status": "interrupted",
+  "started_at": "2026-11-16T10:49:19.283326+00:00",
+  "seeds": [
+    42,
+    43,
+    44,
+    45,
+    46
+  ],
+  "threads_per_worker": 1,
+  "reuse_alpha": true,
+  "invocations": [
+    {
+      "stage": "seed_worker",
+      "seed": 42,
+      "pid": 6,
+      "command": [
+        "/home/mparsict/projects/me/exlightnet/.venv/bin/python",
+        "-u",
+        "-m",
+        "exlightnet.run_all",
+        "--mode",
+        "full",
+        "--root",
+        "/home/mparsict/projects/me/exlightnet",
+        "--seed-worker",
+        "--seeds",
+        "42",
+        "--skip-benchmark"
+      ],
+      "started_at": "2026-11-16T10:56:19.358581+00:00",
+      "log": "/home/mparsict/projects/me/exlightnet/results/full/logs/seed_42.log"
+    },
+    {
+      "stage": "seed_worker",
+      "seed": 43,
+      "pid": 7,
+      "command": [
+        "/home/mparsict/projects/me/exlightnet/.venv/bin/python",
+        "-u",
+        "-m",
+        "exlightnet.run_all",
+        "--mode",
+        "full",
+        "--root",
+        "/home/mparsict/projects/me/exlightnet",
+        "--seed-worker",
+        "--seeds",
+        "43",
+        "--skip-benchmark",
+        "--no-explanations"
+      ],
+      "started_at": "2026-11-16T10:56:19.359753+00:00",
+      "log": "/home/mparsict/projects/me/exlightnet/results/full/logs/seed_43.log"
+    },
+    {
+      "stage": "seed_worker",
+      "seed": 44,
+      "pid": 8,
+      "command": [
+        "/home/mparsict/projects/me/exlightnet/.venv/bin/python",
+        "-u",
+        "-m",
+        "exlightnet.run_all",
+        "--mode",
+        "full",
+        "--root",
+        "/home/mparsict/projects/me/exlightnet",
+        "--seed-worker",
+        "--seeds",
+        "44",
+        "--skip-benchmark",
+        "--no-explanations"
+      ],
+      "started_at": "2026-11-16T10:56:19.360322+00:00",
+      "log": "/home/mparsict/projects/me/exlightnet/results/full/logs/seed_44.log"
+    },
+    {
+      "stage": "seed_worker",
+      "seed": 45,
+      "pid": 9,
+      "command": [
+        "/home/mparsict/projects/me/exlightnet/.venv/bin/python",
+        "-u",
+        "-m",
+        "exlightnet.run_all",
+        "--mode",
+        "full",
+        "--root",
+        "/home/mparsict/projects/me/exlightnet",
+        "--seed-worker",
+        "--seeds",
+        "45",
+        "--skip-benchmark",
+        "--no-explanations"
+      ],
+      "started_at": "2026-11-16T10:56:19.360975+00:00",
+      "log": "/home/mparsict/projects/me/exlightnet/results/full/logs/seed_45.log"
+    },
+    {
+      "stage": "seed_worker",
+      "seed": 46,
+      "pid": 10,
+      "command": [
+        "/home/mparsict/projects/me/exlightnet/.venv/bin/python",
+        "-u",
+        "-m",
+        "exlightnet.run_all",
+        "--mode",
+        "full",
+        "--root",
+        "/home/mparsict/projects/me/exlightnet",
+        "--seed-worker",
+        "--seeds",
+        "46",
+        "--skip-benchmark",
+        "--no-explanations"
+      ],
+      "started_at": "2026-11-16T10:56:19.361548+00:00",
+      "log": "/home/mparsict/projects/me/exlightnet/results/full/logs/seed_46.log"
+    }
+  ],
+  "available_ram_mb": 1512.39453125,
+  "required_ram_mb": 3072,
+  "worker_launch_memory": {
+    "available_mb": 3350.140625,
+    "minimum_mb": 3072,
+    "wait_seconds": 420.0643890400006
+  },
+  "progress_at": "2026-11-16T11:25:50.308709+00:00",
+  "finished_at": "2026-11-16T11:28:58.056771+00:00",
+  "reason": "Tool session ended at new user continue turn; checked no worker/supervisor remained"
+}

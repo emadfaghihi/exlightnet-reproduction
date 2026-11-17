@@ -1,0 +1,42 @@
+{
+  "status": "complete",
+  "metadata": {
+    "task": "binary",
+    "model": "exlightnet",
+    "seed": 43,
+    "params": 35438,
+    "serialized_bytes": 152312,
+    "training": {
+      "best_epoch": 17,
+      "best_val_macro_f1": 0.9883397908342109,
+      "epochs_run": 20,
+      "training_seconds": 1647.838853117999,
+      "config": {
+        "seed": 43,
+        "max_epochs": 20,
+        "batch_size": 512,
+        "patience": 6,
+        "lr": 0.0015,
+        "weight_decay": 0.0001,
+        "alpha_mode": "effective_num",
+        "sampler": "tempered",
+        "threads": 1
+      }
+    },
+    "recipe": {
+      "seed": 43,
+      "max_epochs": 20,
+      "batch_size": 512,
+      "patience": 6,
+      "lr": 0.0015,
+      "weight_decay": 0.0001,
+      "alpha_mode": "effective_num",
+      "sampler": "tempered",
+      "threads": 1
+    },
+    "data_fingerprint": "dfba90bd116f9288bc72a837160516984ba773b11904e98561c80cda7dedcf5c",
+    "features": 40,
+    "fingerprint": "21766ceaf8f65c22a9bb2f2c91a0bee404812d49098cf9f031a23b1c5fbf70ca"
+  },
+  "test_prediction_passes": 1
+}

@@ -1,0 +1,35 @@
+{
+  "task": "binary",
+  "model": "exlightnet",
+  "seed": 43,
+  "latency_mean_ms": 0.621182862,
+  "latency_median_ms": 0.6108534999999999,
+  "latency_p95_ms": 0.6603667000000001,
+  "warmup": 100,
+  "iterations": 1000,
+  "batch_size": 1,
+  "threads": 1,
+  "input_partition": "train",
+  "peak_rss_bytes": 358146048,
+  "rss_scope": "benchmark-only process lifetime across preceding benchmarked models; no training",
+  "benchmark_context": {
+    "campaign": "20261117T052645467310-1050022",
+    "stage": "benchmark_only",
+    "pid": 1050022,
+    "processes": 1,
+    "idle_cpu": {
+      "max_busy_fraction": 0.05,
+      "consecutive_windows": 3,
+      "sample_interval_s": 1.0,
+      "quiet_window_busy_fractions": [
+        0.005016722408026756,
+        0.020066889632107024,
+        0.048494983277591976
+      ],
+      "wait_seconds": 5.00176361800186,
+      "observed_windows": 5
+    },
+    "timestamp": "2026-11-17T05:27:01.862317+00:00",
+    "model_fingerprint": "21766ceaf8f65c22a9bb2f2c91a0bee404812d49098cf9f031a23b1c5fbf70ca"
+  }
+}

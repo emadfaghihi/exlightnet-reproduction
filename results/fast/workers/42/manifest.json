@@ -1,0 +1,44 @@
+{
+  "mode": "fast",
+  "seeds": [
+    42
+  ],
+  "tasks": [
+    "binary"
+  ],
+  "models": [
+    "mlp"
+  ],
+  "fast_max_epochs": 1,
+  "full_five_seed_headlines_complete": false,
+  "elapsed_seconds_this_invocation": 2.183885428999929,
+  "failures": [],
+  "optional_kd": "not implemented (lowest priority)",
+  "leakage_proxy_requested": false,
+  "stage": "seed_worker",
+  "skip_benchmark": true,
+  "pid": 3,
+  "threads": 1,
+  "started_at": "2026-11-16T10:30:57.207205+00:00",
+  "finished_at": "2026-11-16T10:30:59.367668+00:00",
+  "source_sha256": {
+    "preprocess.py": "c58cbd024bca1023f104bd3a9c5ccf8979a007af262ffec808f5b3f8265d0529",
+    "losses.py": "f45d93b98bbcc210dc1ec09c264d2c06581339411ee826f0866e4b2f515f7f77",
+    "quantize.py": "65042ec46b68eeb8db3ddfb38c9b08c60c288bddebf8407f0cded3cd74a4ee2b",
+    "run_all.py": "5e4f831400b6e6f1b648d1d82087aff80d8dcc06d151da37664dfb5c988443de",
+    "__init__.py": "e655fc81d4f9247f9c1bb6dc2467b15f570f5d333cbe87ebe0e677e0c5bf8bb0",
+    "train.py": "4260b1238b1fc0d7ff39070a8cfce299b3968d9e272dabad7d5b05d5a25ad3b2",
+    "io.py": "cddbe4af02af6e7fbfd05d3b23537fe36a17a436e7455c062d64e6a1654fe1c2",
+    "baselines.py": "8ca28923465bd8fa2379f6cafad8355e7f4be59e40352ce0b1be893a61ffc57c",
+    "notebook.py": "d919ae8fd74b1f9f1bb1fba0d61a52d42a60755f960463ceeeda5196626551e2",
+    "report.py": "d39aef98e3c9cc346ea41afbc6cfb6f82a85b1e6804a658d4a1369c521af0a6c",
+    "proxy.py": "3dd302996d99a04dfdf8ca6e887ad35daa8079f12d254a8c5099bf32723fd2ef",
+    "data.py": "adb04ec339f358b42a6b8cfcfa52a0d9db7da967bf69986040bfd020bf6ec8fb",
+    "metrics.py": "18be2eef27bea80c9dd88f9e4863a7f26ed88bd1dc1c9d6c4dbc2cd70059f7e5",
+    "execution.py": "2e35eed174da6a5ef2d04cd07401ec6e6ba13963bf1b997a422226ec66a8abc4",
+    "paper.py": "aa5620d1e5664f372a3a3003aa07d7a7b5ac07210f72fd97e2888e2de251297b",
+    "model.py": "909940290291d6dd0ecb7a0ad5ebda4d507d214b394cdc9e6228bc362340ae1e",
+    "explain.py": "6f1c070e689dca1810d98b78e7d3a0a0f49707a48043e21473f34caa89f4cf58",
+    "bench.py": "54771d54433e11e49054df65dec4e8c2ea683026bb5fcefae6e9ef6b462df7e7"
+  }
+}

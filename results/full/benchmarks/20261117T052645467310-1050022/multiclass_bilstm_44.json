@@ -1,0 +1,35 @@
+{
+  "task": "multiclass",
+  "model": "bilstm",
+  "seed": 44,
+  "latency_mean_ms": 0.325955566,
+  "latency_median_ms": 0.327504,
+  "latency_p95_ms": 0.33668835,
+  "warmup": 100,
+  "iterations": 1000,
+  "batch_size": 1,
+  "threads": 1,
+  "input_partition": "train",
+  "peak_rss_bytes": 386772992,
+  "rss_scope": "benchmark-only process lifetime across preceding benchmarked models; no training",
+  "benchmark_context": {
+    "campaign": "20261117T052645467310-1050022",
+    "stage": "benchmark_only",
+    "pid": 1050022,
+    "processes": 1,
+    "idle_cpu": {
+      "max_busy_fraction": 0.05,
+      "consecutive_windows": 3,
+      "sample_interval_s": 1.0,
+      "quiet_window_busy_fractions": [
+        0.03511705685618729,
+        0.03355704697986577,
+        0.018425460636515914
+      ],
+      "wait_seconds": 3.001083839000785,
+      "observed_windows": 3
+    },
+    "timestamp": "2026-11-17T05:32:46.401827+00:00",
+    "model_fingerprint": "1e914d759f5acb41f86d632510bb72512e41044f1182b62662e4c9547e8b49e1"
+  }
+}

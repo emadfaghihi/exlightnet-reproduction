@@ -1,0 +1,29 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_______ test_real_worker_processes_overlap_and_finish_before_aggregation _______
+
+tmp_path = PosixPath('/tmp/pytest-of-mparsict/pytest-22/test_real_worker_processes_ove0')
+
+    def test_real_worker_processes_overlap_and_finish_before_aggregation(tmp_path):
+        spec = importlib.util.spec_from_file_location("pipeline", Path("scripts/run_parallel.py"))
+        module = importlib.util.module_from_spec(spec)
+>       spec.loader.exec_module(module)
+
+tests/test_parallel_pipeline.py:9: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+<frozen importlib._bootstrap_external>:936: in exec_module
+    ???
+<frozen importlib._bootstrap_external>:1073: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <_frozen_importlib_external.SourceFileLoader object at 0x7f2fbd1dc590>
+path = '/home/mparsict/projects/me/exlightnet/scripts/run_parallel.py'
+
+>   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/home/mparsict/projects/me/exlightnet/scripts/run_parallel.py'
+
+<frozen importlib._bootstrap_external>:1130: FileNotFoundError
+=========================== short test summary info ============================
+FAILED tests/test_parallel_pipeline.py::test_real_worker_processes_overlap_and_finish_before_aggregation
+1 failed in 0.08s

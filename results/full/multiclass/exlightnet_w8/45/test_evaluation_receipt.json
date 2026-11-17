@@ -1,0 +1,34 @@
+{
+  "status": "complete",
+  "metadata": {
+    "task": "multiclass",
+    "model": "exlightnet_w8",
+    "seed": 45,
+    "params": 38328,
+    "serialized_bytes": 53206,
+    "fingerprint": "5340daa5d5e0fb38a42d36dab00d2ec3bb9c46215c23ff63281c9d6024f9bb59",
+    "quantization": {
+      "max_abs_weight_error": 0.002301514148712158,
+      "int8_bytes": 53206,
+      "quantized_weight_tensors": 10,
+      "compute": "FP32 with dequantized W8 weights",
+      "size_breakdown": {
+        "weights_only_int8_bytes": 37440,
+        "scales_fp32_bytes": 2976,
+        "rest_fp32_bytes": 5868,
+        "metadata_array_bytes": 10472,
+        "total_array_payload_bytes": 56756,
+        "compressed_members_bytes": {
+          "weights": 34369,
+          "scales": 3641,
+          "rest": 7331,
+          "metadata": 1843
+        },
+        "zip_container_bytes": 6022,
+        "full_artifact_bytes": 53206,
+        "definition": "weights-only is raw int8 tensor payload; full artifact includes scales, FP32 state, metadata, NPY headers and ZIP container"
+      }
+    }
+  },
+  "test_prediction_passes": 1
+}

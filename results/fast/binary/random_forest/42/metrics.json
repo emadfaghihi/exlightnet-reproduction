@@ -1,0 +1,72 @@
+{
+  "task": "binary",
+  "model": "random_forest",
+  "seed": 42,
+  "params": null,
+  "serialized_bytes": 9659792,
+  "training": {
+    "training_seconds": 17.75133715300035,
+    "config": {
+      "trees": 300,
+      "seed": 42,
+      "max_depth": null,
+      "balanced_weights": true
+    }
+  },
+  "recipe": {
+    "trees": 300,
+    "seed": 42,
+    "max_depth": null,
+    "balanced_weights": true
+  },
+  "data_fingerprint": "dfba90bd116f9288bc72a837160516984ba773b11904e98561c80cda7dedcf5c",
+  "features": 40,
+  "fingerprint": "6b85fa47eb44a14b46d0bb1a7d65a0c27f175cf4dc2c2d3e2760bc6ac2e206b1",
+  "accuracy": 0.99772579597141,
+  "macro_precision": 0.9921703462420075,
+  "macro_recall": 0.9954248765814131,
+  "weighted_f1": 0.9977295431819193,
+  "macro_f1": 0.9937906896207775,
+  "auc": 0.9999509101413994,
+  "auc_definition": "p_attack",
+  "per_class": {
+    "normal": {
+      "precision": 0.9851851851851852,
+      "recall": 0.9925373134328358,
+      "f1": 0.9888475836431226,
+      "support": 1876
+    },
+    "attack": {
+      "precision": 0.9991555072988297,
+      "recall": 0.9983124397299904,
+      "f1": 0.9987337955984323,
+      "support": 16592
+    }
+  },
+  "confusion_matrix": [
+    [
+      1862,
+      14
+    ],
+    [
+      28,
+      16564
+    ]
+  ],
+  "attack_recall": 0.9983124397299904,
+  "miss_count": 28,
+  "fp_count": 14,
+  "fpr": 0.007462686567164179,
+  "threshold": 0.5,
+  "decision_rule": "argmax of two softmax logits; ties select normal",
+  "latency_mean_ms": 14.686626285000001,
+  "latency_median_ms": 14.6771095,
+  "latency_p95_ms": 14.979970199999999,
+  "warmup": 100,
+  "iterations": 1000,
+  "batch_size": 1,
+  "threads": 1,
+  "input_partition": "train",
+  "peak_rss_bytes": 1376358400,
+  "rss_scope": "process lifetime including preceding training; not model-exclusive"
+}

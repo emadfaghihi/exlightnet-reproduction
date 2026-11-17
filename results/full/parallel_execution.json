@@ -1,0 +1,183 @@
+{
+  "status": "complete_with_stopped_branches",
+  "started_at": "2026-11-16T11:29:02.211256+00:00",
+  "seeds": [
+    42,
+    43,
+    44,
+    45,
+    46
+  ],
+  "threads_per_worker": 1,
+  "reuse_alpha": true,
+  "invocations": [
+    {
+      "stage": "seed_worker",
+      "seed": 42,
+      "pid": 569716,
+      "command": [
+        "/home/mparsict/projects/me/exlightnet/.venv/bin/python",
+        "-u",
+        "-m",
+        "exlightnet.run_all",
+        "--mode",
+        "full",
+        "--root",
+        "/home/mparsict/projects/me/exlightnet",
+        "--seed-worker",
+        "--seeds",
+        "42",
+        "--skip-benchmark"
+      ],
+      "started_at": "2026-11-16T11:29:02.212526+00:00",
+      "log": "/home/mparsict/projects/me/exlightnet/results/full/logs/seed_42.log",
+      "returncode": 0,
+      "finished_at": "2026-11-16T15:11:10.648782+00:00"
+    },
+    {
+      "stage": "seed_worker",
+      "seed": 43,
+      "pid": 569717,
+      "command": [
+        "/home/mparsict/projects/me/exlightnet/.venv/bin/python",
+        "-u",
+        "-m",
+        "exlightnet.run_all",
+        "--mode",
+        "full",
+        "--root",
+        "/home/mparsict/projects/me/exlightnet",
+        "--seed-worker",
+        "--seeds",
+        "43",
+        "--skip-benchmark",
+        "--no-explanations"
+      ],
+      "started_at": "2026-11-16T11:29:02.213287+00:00",
+      "log": "/home/mparsict/projects/me/exlightnet/results/full/logs/seed_43.log",
+      "returncode": 0,
+      "finished_at": "2026-11-16T15:11:10.649115+00:00"
+    },
+    {
+      "stage": "seed_worker",
+      "seed": 44,
+      "pid": 569718,
+      "command": [
+        "/home/mparsict/projects/me/exlightnet/.venv/bin/python",
+        "-u",
+        "-m",
+        "exlightnet.run_all",
+        "--mode",
+        "full",
+        "--root",
+        "/home/mparsict/projects/me/exlightnet",
+        "--seed-worker",
+        "--seeds",
+        "44",
+        "--skip-benchmark",
+        "--no-explanations"
+      ],
+      "started_at": "2026-11-16T11:29:02.213852+00:00",
+      "log": "/home/mparsict/projects/me/exlightnet/results/full/logs/seed_44.log",
+      "returncode": 0,
+      "finished_at": "2026-11-16T15:11:10.649586+00:00"
+    },
+    {
+      "stage": "seed_worker",
+      "seed": 45,
+      "pid": 569719,
+      "command": [
+        "/home/mparsict/projects/me/exlightnet/.venv/bin/python",
+        "-u",
+        "-m",
+        "exlightnet.run_all",
+        "--mode",
+        "full",
+        "--root",
+        "/home/mparsict/projects/me/exlightnet",
+        "--seed-worker",
+        "--seeds",
+        "45",
+        "--skip-benchmark",
+        "--no-explanations"
+      ],
+      "started_at": "2026-11-16T11:29:02.226478+00:00",
+      "log": "/home/mparsict/projects/me/exlightnet/results/full/logs/seed_45.log",
+      "returncode": 0,
+      "finished_at": "2026-11-16T15:11:10.649770+00:00"
+    },
+    {
+      "stage": "seed_worker",
+      "seed": 46,
+      "pid": 569720,
+      "command": [
+        "/home/mparsict/projects/me/exlightnet/.venv/bin/python",
+        "-u",
+        "-m",
+        "exlightnet.run_all",
+        "--mode",
+        "full",
+        "--root",
+        "/home/mparsict/projects/me/exlightnet",
+        "--seed-worker",
+        "--seeds",
+        "46",
+        "--skip-benchmark",
+        "--no-explanations"
+      ],
+      "started_at": "2026-11-16T11:29:02.242428+00:00",
+      "log": "/home/mparsict/projects/me/exlightnet/results/full/logs/seed_46.log",
+      "returncode": 0,
+      "finished_at": "2026-11-16T15:11:10.649967+00:00"
+    },
+    {
+      "stage": "aggregate_only",
+      "seed": null,
+      "pid": 1010041,
+      "command": [
+        "/home/mparsict/projects/me/exlightnet/.venv/bin/python",
+        "-u",
+        "-m",
+        "exlightnet.run_all",
+        "--mode",
+        "full",
+        "--root",
+        "/home/mparsict/projects/me/exlightnet",
+        "--aggregate-only",
+        "--skip-benchmark"
+      ],
+      "started_at": "2026-11-16T15:11:10.650609+00:00",
+      "log": "/home/mparsict/projects/me/exlightnet/results/full/logs/aggregate.log",
+      "returncode": 0,
+      "finished_at": "2026-11-16T15:11:17.342509+00:00"
+    },
+    {
+      "stage": "benchmark_only",
+      "seed": null,
+      "pid": 1010228,
+      "command": [
+        "/home/mparsict/projects/me/exlightnet/.venv/bin/python",
+        "-u",
+        "-m",
+        "exlightnet.run_all",
+        "--mode",
+        "full",
+        "--root",
+        "/home/mparsict/projects/me/exlightnet",
+        "--benchmark-only"
+      ],
+      "started_at": "2026-11-16T15:11:17.343279+00:00",
+      "log": "/home/mparsict/projects/me/exlightnet/results/full/logs/benchmark.log",
+      "returncode": 0,
+      "finished_at": "2026-11-16T15:16:19.994249+00:00"
+    }
+  ],
+  "worker_launch_memory": {
+    "available_mb": 6159.640625,
+    "minimum_mb": 3072,
+    "wait_seconds": 6.954000127734616e-05
+  },
+  "progress_at": "2026-11-16T15:11:09.648370+00:00",
+  "finished_at": "2026-11-16T15:16:19.994776+00:00",
+  "seconds": 13637.783383412
+}

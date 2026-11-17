@@ -1,0 +1,92 @@
+{
+  "task": "binary",
+  "model": "xgboost",
+  "seed": 44,
+  "params": null,
+  "serialized_bytes": 706309,
+  "training": {
+    "training_seconds": 7.149391964001552,
+    "config": {
+      "trees": 400,
+      "seed": 44,
+      "max_depth": 8,
+      "balanced_weights": true
+    }
+  },
+  "recipe": {
+    "trees": 400,
+    "seed": 44,
+    "max_depth": 8,
+    "balanced_weights": true
+  },
+  "data_fingerprint": "dfba90bd116f9288bc72a837160516984ba773b11904e98561c80cda7dedcf5c",
+  "features": 40,
+  "fingerprint": "caecd3ea2a37be570b7598eab2ded0bc2755ed7764d6b88606fe9688738ca7ed",
+  "accuracy": 0.9975633528265108,
+  "macro_precision": 0.9900472117674297,
+  "macro_recall": 0.9967528086595538,
+  "weighted_f1": 0.9975716316387121,
+  "macro_f1": 0.9933705626609901,
+  "auc": 0.9999671502745948,
+  "auc_definition": "p_attack",
+  "per_class": {
+    "normal": {
+      "precision": 0.9805774278215224,
+      "recall": 0.9957356076759062,
+      "f1": 0.9880983866701931,
+      "support": 1876
+    },
+    "attack": {
+      "precision": 0.999516995713337,
+      "recall": 0.9977700096432015,
+      "f1": 0.9986427386517871,
+      "support": 16592
+    }
+  },
+  "confusion_matrix": [
+    [
+      1868,
+      8
+    ],
+    [
+      37,
+      16555
+    ]
+  ],
+  "attack_recall": 0.9977700096432015,
+  "miss_count": 37,
+  "fp_count": 8,
+  "fpr": 0.0042643923240938165,
+  "threshold": 0.5,
+  "decision_rule": "argmax of two softmax logits; ties select normal",
+  "latency_mean_ms": 0.415423539,
+  "latency_median_ms": 0.40784600000000004,
+  "latency_p95_ms": 0.4585658,
+  "warmup": 100,
+  "iterations": 1000,
+  "batch_size": 1,
+  "threads": 1,
+  "input_partition": "train",
+  "peak_rss_bytes": 386772992,
+  "rss_scope": "benchmark-only process lifetime across preceding benchmarked models; no training",
+  "benchmark_context": {
+    "campaign": "20261117T052645467310-1050022",
+    "stage": "benchmark_only",
+    "pid": 1050022,
+    "processes": 1,
+    "idle_cpu": {
+      "max_busy_fraction": 0.05,
+      "consecutive_windows": 3,
+      "sample_interval_s": 1.0,
+      "quiet_window_busy_fractions": [
+        0.011666666666666667,
+        0.005008347245409015,
+        0.04522613065326633
+      ],
+      "wait_seconds": 5.002089162997436,
+      "observed_windows": 5
+    },
+    "timestamp": "2026-11-17T05:31:15.618612+00:00",
+    "model_fingerprint": "caecd3ea2a37be570b7598eab2ded0bc2755ed7764d6b88606fe9688738ca7ed"
+  }
+}

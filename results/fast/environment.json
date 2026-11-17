@@ -1,0 +1,19 @@
+{
+  "platform": "Linux-6.1.0-32-amd64-x86_64-with-glibc2.36",
+  "cpu": "Intel(R) Core(TM) i5-8500 CPU @ 3.00GHz",
+  "python": "3.11.2",
+  "versions": {
+    "numpy": "1.26.4",
+    "pandas": "2.2.3",
+    "scipy": "1.14.1",
+    "torch": "2.6.0+cpu",
+    "scikit-learn": "1.6.1",
+    "xgboost-cpu": "2.1.4",
+    "shap": "0.46.0",
+    "nbformat": "5.10.4",
+    "nbconvert": "7.16.6",
+    "pytest": "8.3.5"
+  },
+  "cuda_used": false,
+  "torch_threads": 1
+}

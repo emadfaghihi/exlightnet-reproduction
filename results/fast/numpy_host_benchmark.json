@@ -1,0 +1,17 @@
+{
+  "platform": "Linux-6.1.0-32-amd64-x86_64-with-glibc2.36",
+  "machine": "x86_64",
+  "processor": "",
+  "python": "3.11.2",
+  "numpy": "1.26.4",
+  "mean_ms": 0.875075601,
+  "median_ms": 0.8268690000000001,
+  "p95_ms": 1.10371585,
+  "peak_rss_bytes": 36380672,
+  "artifact_bytes": 56234,
+  "warmup": 100,
+  "iterations": 1000,
+  "input_source": "zero vector in z-space",
+  "weight_load": "dequantized once at load",
+  "compute": "float32; no INT8 compute or multi-core throughput claim"
+}

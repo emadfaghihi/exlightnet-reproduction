@@ -1,0 +1,2 @@
+Waiting for idle CPU: binary/exlightnet/42
+STOP benchmark/binary/exlightnet/42: CPU did not remain idle (<= 5% busy) for 3 windows within 300.0s
