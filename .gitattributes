@@ -1,0 +1,18 @@
+# Keep source and documentation portable across operating systems.
+* text=auto
+*.py text eol=lf
+*.md text eol=lf
+*.toml text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.ipynb text eol=lf
+
+# CSVs are measured evidence: preserve their original bytes and CRLF records.
+*.csv -text whitespace=cr-at-eol
+
+*.npz binary
+*.pt binary
+*.pkl binary
+*.png binary
+*.pdf binary
+*.zip binary

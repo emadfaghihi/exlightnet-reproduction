@@ -1,0 +1,10 @@
+torch==2.6.0
+numpy==1.26.4
+pandas==2.2.3
+scipy==1.14.1
+scikit-learn==1.6.1
+xgboost-cpu==2.1.4
+shap==0.46.0
+matplotlib==3.9.4
+nbformat==5.10.4
+ucimlrepo==0.0.7

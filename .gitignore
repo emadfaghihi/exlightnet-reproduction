@@ -1,0 +1,36 @@
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+.coverage
+.coverage.*
+htmlcov/
+*.egg-info/
+build/
+dist/
+
+# Local data and regenerable, potentially large artifacts.
+data/
+artifacts/cache/
+artifacts/cache_arrays.npz
+*.pkl
+deliverables.zip
+*.partial
+.locks/
+
+# Credentials and machine-specific agent/editor state.
+.env
+.env.*
+!.env.example
+.aws/
+.agents/
+.codex/
+.kilo/
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

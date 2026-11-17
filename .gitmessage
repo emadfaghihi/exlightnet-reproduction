@@ -1,0 +1,9 @@
+# <type>(<scope>): <imperative summary>
+# Example: fix(eval): reject stale prediction caches
+#
+# Explain why this change is needed and any meaningful behavior change.
+# Keep each commit focused on one reviewable purpose.
+#
+# Validation: <commands run and their results>
+# Refs: <issue or experiment reference, if applicable>
+# BREAKING CHANGE: <migration details, only when applicable>
