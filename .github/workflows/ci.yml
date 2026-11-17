@@ -23,7 +23,6 @@ jobs:
       OPENBLAS_NUM_THREADS: "1"
       MKL_NUM_THREADS: "1"
       NUMEXPR_NUM_THREADS: "1"
-      MPLCONFIGDIR: ${{ runner.temp }}/exlightnet-mpl
     steps:
       - name: Check out source
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -40,6 +39,8 @@ jobs:
           python -m pip install --disable-pip-version-check -r requirements.txt
           python -m pip install --no-deps -e .
       - name: Run tests without the local dataset
+        env:
+          MPLCONFIGDIR: ${{ runner.temp }}/exlightnet-mpl
         run: >-
           python -m pytest -q
           -k 'not test_extracted_archive_can_rebuild_missing_array_cache'
