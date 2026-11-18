@@ -1,0 +1,1 @@
+campaign,study,source_study,arm,task,model,device,seed,split_seed,checkpoint,macro_f1,accuracy,best_val_macro_f1,epochs_run,best_epoch,max_epochs,lr,run_fingerprint,inference_eligible,device_label

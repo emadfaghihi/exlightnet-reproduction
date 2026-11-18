@@ -161,6 +161,15 @@ new chat begins.
   "post-hoc sensitivity" and never replace the pre-declared headline metric.
 - Correlations (for example epochs run versus macro-F1) are descriptive. Do not
   state causality without an intervention arm.
+- The dated 2026-11-18 stopping-hypothesis amendment is stricter: fixed30 LAST
+  versus paper BEST-validation is primary; fixed30 BEST is secondary. Apply the
+  predeclared paired mean-CI and SD-ratio/bootstrap criteria, report disagreement
+  as inconclusive, and never make a causal claim for this hypothesis.
+- B1/B2/B3 execute seed-major without changing run identities. Test every plan
+  prefix: at most its final seed can have an incomplete matched block. Exclude
+  incomplete predeclared study seed blocks from statistical comparisons and
+  explicitly report `incomplete; excluded` in completeness tables. Never fill
+  missing seeds through interpolation or substitution.
 - State whether a bootstrap is paired (same flows) or unpaired. Flag models with
   zero seed variance (for example XGBoost under the paper configuration).
 - Flag unstable baselines (very early best epoch, very large SD). Do not use an
@@ -210,6 +219,10 @@ then one cache-only aggregation, then one isolated benchmark-only process.
   moment), write one record per run, stop launching new runs at a time budget,
   and package results incrementally. Run a short timing probe and print the
   projected cost before any long study starts.
+- Hosted `--only all/neural/trees` selection changes scheduling only. A trees-only
+  session needs neither CUDA nor a neural probe and retains every RF/XGBoost
+  seed/recipe. Its records can merge with neural records within gpu_v2 under the
+  explicit mixed-device policy; no model seed vector pools different devices.
 
 ## Code organization and change discipline
 
@@ -332,3 +345,8 @@ session logs in experiment records instead.
 - A3 (2026-11-17, user-authorized): preserve legacy SD flags in immutable old
   JSON; active code/report/notebook/new outputs use paired tests. Tiny synthetic
   unit training is exempt from the real-data smoke budget under Verification.
+- A4 (2026-11-18, user-authorized): dated protocol amendments define the primary
+  last-epoch stopping endpoint, quantified paired uncertainty, seed-major
+  scheduling/full-block inference, independent tree sessions and a separate
+  CPU-only stratified final SHAP analysis. Preserve the original declaration and
+  all cpu_v1 explanations; see docs/statistics_protocol.json amendment records.

@@ -8,7 +8,7 @@ from .io import read_json
 from .metrics import summarize
 from .report import paper_comparison
 from .publication import (execution_status, limitation_paragraphs, load_statistics,
-                          rare_class_warning, statistic_sections)
+                          rare_class_warning, statistic_sections, stopping_hypothesis_declaration)
 
 
 def experiment(root, mode):
@@ -146,6 +146,48 @@ def show_shap(root, mode):
           f"Deletion-AUC is {result['deletion']['normalized_auc']:.6f}, versus {result['deletion']['random_normalized_auc']:.6f} for random ordering; lower means less retained original-class probability under this masking protocol.")
     if result["fp32"]["method"] == "GradientExplainer":
         print("DeepExplainer failed its additivity check. The fallback's displayed residuals limit additive-efficiency claims; these attributions are approximate diagnostics.")
+
+
+def show_final_analysis(root):
+    from .final_presentation import load_final_analysis
+    result = load_final_analysis(root)
+    if result is None:
+        print('NOT RUN/PENDING: stratified final analysis has no completed, verified evidence.')
+        return
+    manifest = result['manifest']
+    attribution = manifest['attribution']
+    print(manifest['label'])
+    print('Per-class rankings target each true class’s own logit; the primary global ranking weights classes equally. '
+          'The auxiliary all-output ranking preserves the earlier output-averaging definition. '
+          'Deletion follows the original predicted class even when it is incorrect; this is final analysis, never selection.')
+    display(pd.DataFrame([{'sample_size': manifest['sample_size'], 'background_size': manifest['background_size'],
+                           **{key: attribution.get(key) for key in ('method', 'fallback_reason', 'warnings', 'additivity_max_abs', 'additivity_mean_abs', 'nsamples_gradient')}}]))
+    print(f"Additivity residuals summarize {manifest['sample_size']} flows by {len(manifest['class_names'])} output logits. "
+          'Separate output-logit summaries were not retained. These are approximate attributions, not exact SHAP.')
+    print('Recorded warnings: ' + '; '.join(attribution.get('warnings', [])))
+    for name in ('earlier_random300_class_composition', 'per_class_top10', 'balanced_global_ranking',
+                 'balanced_global_all_outputs_ranking', 'early_deletion_k10'):
+        print(name + '.csv')
+        display(result['tables'][name])
+    for name in ('balanced_global_ranking.png', 'per_class_top10.png', 'deletion_panels.png'):
+        display(Image(filename=str(result['directory'] / name)))
+    print('Random-minus-SHAP at k=10 is a descriptive probability contrast on the same flows. '
+          'Small class supports and measured additivity residuals limit interpretation; '
+          'no monotonicity, significance, causal effect or model-selection conclusion is implied.')
+
+
+def show_stopping_hypothesis_declaration(root):
+    declaration = stopping_hypothesis_declaration(root)
+    if declaration is None:
+        print('NOT DECLARED: dated stopping-hypothesis rules are unavailable.')
+        return
+    print(declaration['id'] + ' (' + declaration['date'] + ')')
+    for rule in declaration['rules']:
+        print(rule)
+    print('Original declaration: ' + declaration['original_source'])
+    print('Effective amendment: ' + declaration['effective_source'])
+    print('Execution/completeness and both endpoints: ' + declaration['results_source'] +
+          '; a declaration alone is not execution evidence.')
 
 
 def show_comparison(root, mode):

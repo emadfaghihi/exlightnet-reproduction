@@ -1,0 +1,34 @@
+...F..........................................                           [100%]
+=================================== FAILURES ===================================
+________ test_legacy_claimed_tree_blocks_new_fingerprint_and_evaluation ________
+
+prepared_b1 = (PosixPath('/tmp/pytest-of-mparsict/pytest-6/test_legacy_claimed_tree_block0/prepared'), {'data_fingerprint': '1d3a56a...ae7443f6241b021a51cbee', 'schema_version': 1, ...}, '469354848398982432775f3f8dba45496e5d0d5e52ec13711058df7346fabcbf')
+one_tree = {'arm': 'paper', 'model': 'random_forest', 'seed': 42, 'split_seed': 42, ...}
+tmp_path = PosixPath('/tmp/pytest-of-mparsict/pytest-6/test_legacy_claimed_tree_block0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f9cf4b18050>
+
+    def test_legacy_claimed_tree_blocks_new_fingerprint_and_evaluation(
+        prepared_b1, one_tree, tmp_path, monkeypatch
+    ):
+        prepared, metadata, sha = prepared_b1
+        output = tmp_path / 'out'
+        root = output / 'gpu_v2'
+        directory, _ = pending_tree(root, one_tree, metadata, sha)
+        (directory / 'best').mkdir()
+        receipt = directory / 'best/receipt.json'
+        receipt.write_text('{"status":"claimed"}')
+        _forbid_cuda(monkeypatch)
+        monkeypatch.setattr(baselines, 'build_model', lambda *args: pytest.fail('Repeated claimed run'))
+        result = campaign.run_campaign(prepared, output, 'B1', only='trees')
+        assert result['new_completed'] == 0 and result['stopped_count'] == 1
+>       assert 'claimed' in result['stopped'][0]['reason'].lower()
+E       AssertionError: assert 'claimed' in 'incomplete evaluation receipt; training and inference stopped'
+E        +  where 'incomplete evaluation receipt; training and inference stopped' = <built-in method lower of str object at 0x7f9ccc0b8b90>()
+E        +    where <built-in method lower of str object at 0x7f9ccc0b8b90> = 'Incomplete evaluation receipt; training and inference stopped'.lower
+
+tests/test_tree_session_identity.py:109: AssertionError
+----------------------------- Captured stdout call -----------------------------
+B1: 1 selected tree runs on CPU; no neural timing probe required.
+=========================== short test summary info ============================
+FAILED tests/test_tree_session_identity.py::test_legacy_claimed_tree_blocks_new_fingerprint_and_evaluation
+1 failed, 45 passed in 7.05s

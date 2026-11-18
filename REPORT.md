@@ -1,16 +1,16 @@
 # ExLightNet reproduction report
 
-Generated from saved evidence: 2026-11-17T16:49:36.858856+03:30
+Generated from saved evidence: 2026-11-18T15:38:25.337230+03:30
 
 The supplied 31-page PDF was fully extracted with `pdftotext -layout` and read before implementation. The supplied brief is authoritative where it conflicts with the paper. All measured results below come from code. Quoted reference metrics appear only in `src/exlightnet/paper.py::PAPER_REPORTED` and comparison tables.
 
 ## Execution status
 
-Pytest verification from artifacts/stats_cpu_v1/verification/final/pytest.xml. Warning logs remain beside their original verification records.
+Pytest verification from artifacts/predata_20261118/verification/pytest.xml. Warning logs remain beside their original verification records.
 
 | Tests | Failures | Errors | Skipped |
 | --- | --- | --- | --- |
-| 199 | 0 | 0 | 0 |
+| 253 | 0 | 0 | 0 |
 
 Historical notebook verification (wall-clock time may include the original training; this is preserved history):
 
@@ -25,7 +25,13 @@ Current notebook verification from a new evidence path:
 
 | Source | Mode | Seconds | Executed cells | Error outputs |
 | --- | --- | --- | --- | --- |
-| artifacts/stats_cpu_v1/verification/final/notebook_restart/notebook_execution.json | full | 3.4318543539993698 | 16 | 0 |
+| artifacts/predata_20261118/verification/notebook_first/notebook_execution.json | full | 3.3670932109999967 | 17 | 0 |
+
+Current notebook verification from a new evidence path:
+
+| Source | Mode | Seconds | Executed cells | Error outputs |
+| --- | --- | --- | --- | --- |
+| artifacts/predata_20261118/verification/notebook_restart/notebook_execution.json | full | 3.3790285960001256 | 17 | 0 |
 
 Effective current status (raw historical status is preserved):
 
@@ -42,31 +48,37 @@ Effective current status (raw historical status is preserved):
 
 ### Cached-statistics and hosted-runner verification
 
-Source: artifacts/stats_cpu_v1/verification/final/gates.json. These gates verify cached analysis, code and the local CPU smoke; CUDA studies remain NOT RUN.
+Source: artifacts/predata_20261118/verification/gates.json. These gates verify cached analysis, code and the local CPU smoke; CUDA studies remain NOT RUN.
 
 | Stage | Gate | Status | Evidence |
 | --- | --- | --- | --- |
-| A | Immutable evidence | PASS | files_checked: 916; changed:  |
-| A | Paired t/CI agrees with SciPy | PASS | artifacts/stats_cpu_v1/verification/final/pytest.xml |
-| A | No active legacy SD flags | PASS | violations: ; excluded: results/, archive/, authoritative brief/instruction docs |
-| A | Mode captions and status recovery | PASS | artifacts/stats_cpu_v1/verification/final/pytest.xml |
-| A | Generated statistical values trace to checksummed files | PASS | tables_checked: model_summary, paired_tests, flow_bootstrap, paired_flow_bootstrap, per_class_f1, sensitivity, training_dynamics, correlations, binary_caps, per_seed_macro_f1; manifest: artifacts/stats_cpu_v1/statistics_manifest.json; method: source/table SHA and rendering tests; no freehand new metric values |
-| A | Executed cached notebook | PASS | artifacts/stats_cpu_v1/verification/final/notebook_restart/notebook_execution.json |
-| A | Full pytest suite | PASS | tests: 199; xml: artifacts/stats_cpu_v1/verification/final/pytest.xml |
-| B | Canonical CPU default compatibility | PASS | method: read-only validated original CPU cache hit; no retraining or inference; fingerprint: b49fbe2ba153504e2811f7abf991a5d71f5c8e1d682c5af7ba660f3291bf567e; macro_f1: 0.8354536030948337; retrained: NOT RUN: prohibited by local experiment budget |
-| B | Sampler-frequency equivalence | PASS | artifacts/stats_cpu_v1/verification/final/pytest.xml |
-| B | Prepared split42 matches canonical fingerprint | PASS | fingerprint: dfba90bd116f9288bc72a837160516984ba773b11904e98561c80cda7dedcf5c; evidence: artifacts/stats_cpu_v1/prepared_export_checks.json |
-| B | CPU smoke, ZIP restore, idempotent resume and aggregation | PASS | seconds: 10.875827761999972; evidence: artifacts/stats_cpu_v1/smoke/control.json; aggregate: artifacts/stats_gpu_v2_smoke_verified/aggregation_manifest.json |
-| B | Mixed campaigns rejected; within-campaign device exception explicit | PASS | artifacts/stats_cpu_v1/verification/final/pytest.xml |
-| B | Real studies remain PENDING; protocol verbatim | PASS | REPORT_stats_v2.md |
-| B | Full pytest suite | PASS | tests: 199; xml: artifacts/stats_cpu_v1/verification/final/pytest.xml |
+| Pre-data | PA-1 stopping endpoints | PASS | Original declaration preserved; both endpoint/threshold/degenerate/disagreement tests pass. Real B3 data: PENDING. |
+| Pre-data | PA-2 seed-major and completeness | PASS | All 603 B1/B2/B3 plan prefixes and unchanged plan/fingerprint multisets tested; incomplete study blocks excluded in pure regressions. |
+| Pre-data | PA-3 independent tree sessions | PASS | CPU-only selector, no CUDA/probe, all RF/XGB seeds, shard merge and legacy resume/claimed-receipt regressions pass. Actual hosted fitting: NOT RUN. |
+| Pre-data | PA-4 three-file handoff | PASS | HOSTED_HANDOFF.json/.md bind each SHA and TESTED/NOT TESTED statement; offline install/import/help pass. Hosted notebook/CUDA: NEVER EXECUTED. |
+| Final analysis | PA-5 stratified SHAP | PASS | CPU 259 flows, prior 200 backgrounds, 12 checked outputs, 20 random orders per class and k10 contrast; approximate additivity reported. All 1047 prior evidence hashes unchanged. |
+| Optional | PA-6 leakage PROXY B6 | NOT RUN | Optional runner/export/study deferred. No campaign-disjoint validation claim. |
 
 Synthetic unit verification is separate from the real-data smoke; earlier focused runs are preserved in their own records. Unit-test seconds are pytest case wall time; smoke seconds are supervisor end-to-end time.
 
 | Scope | Cases/runs | Fits | Epochs | Seconds |
 | --- | --- | --- | --- | --- |
-| Synthetic tests in the final full suite | 4 | 5 | 7 | 1.3810000000000002 |
-| Real-data CPU smoke with ZIP restore and cache restart | 2 | 2 | 4 | 10.875827761999972 |
+| Synthetic tests in the final full suite | 4 | 5 | 7 | 1.968 |
+| Real-data CPU smoke with ZIP restore and cache restart | NOT RUN in this follow-up | NOT RUN in this follow-up | NOT RUN | NOT RUN |
+
+### Effective stopping-hypothesis declaration
+
+PA-20261118-1 (2026-11-18). Original declaration: docs/protocol_declarations/2026-11-17-original.json; effective dated amendment: docs/statistics_protocol.json.
+
+PRIMARY stopping-hypothesis endpoint: fixed30 LAST-epoch macro-F1 versus the paper arm's best-validation checkpoint. The fixed30 best-validation checkpoint is SECONDARY; report both.
+
+Visibly smaller SD requires fixed30 sample SD <= 0.75 x paper sample SD AND the upper end of the 95% bootstrap CI of the SD ratio is < 1, using 2000 resamples over matched seeds 42-56 and fixed random seed 42.
+
+Higher mean requires the paired 95% CI of (fixed30 - paper) macro-F1 to exclude 0 in the positive direction.
+
+If primary and secondary disagree, report inconclusive. Undefined SD ratios or insufficient matched observations cannot support the hypothesis. Never claim causality.
+
+Stage B execution/completeness and both endpoints are reported separately in REPORT_stats_v2.md; a declared rule is not execution evidence.
 
 ## Fast demonstration (historical)
 
@@ -1105,13 +1117,315 @@ Source: artifacts/stats_cpu_v1/per_seed_macro_f1.csv
 | multiclass | xgboost | 45 | 5 | n=5, indicative only | 0.83266412 | 0.97969461 | — | — |
 | multiclass | xgboost | 46 | 5 | n=5, indicative only | 0.83266412 | 0.97969461 | — | — |
 
+## Stratified SHAP — final analysis (2026-11-18)
+
+final analysis; no selection use. No model, epoch, threshold or recipe was selected with this analysis. Original explanation files remain unchanged.
+
+Source: artifacts/final_analysis/stratified_shap_20261118/analysis.json
+
+Primary feature importance is mean absolute attribution to each true class’s own logit, conditional on that true class. The primary global ranking averages class vectors equally. The auxiliary all-output global ranking uses the earlier output-channel averaging definition with equal true-class weights; this separates output-target changes from class reweighting.
+
+| Test sample size | Training background size | Method | Gradient samples | Max abs. additivity residual | Mean abs. residual | Fallback reason |
+| --- | --- | --- | --- | --- | --- | --- |
+| 259 | 200 | GradientExplainer | 200 | 3.3370019332892307 | 0.2966468941682444 | AssertionError: The SHAP explanations do not sum up to the model's output! This is either because of a rounding error or because an operator in your computation graph was not fully supported. If the sum difference of %f is significant compared to the scale of your model outputs, please post as a github issue, with a reproducible example so we can debug it. Used framework: pytorch - Max. diff: 2.368308211240219 - Tolerance: 0.01 |
+
+Additivity residuals summarize 259 flows by 12 output logits. Separate output-logit summaries were not retained. These are approximate attributions, not exact SHAP.
+
+Recorded warnings: unrecognized nn.Module: AdaptiveMaxPool1d
+
+Sampling and true-class support (all available flows are retained below the declared per-class cap):
+
+| class_index | true_class | test_support | sampled_count | predicted_correct_count |
+| --- | --- | --- | --- | --- |
+| 0 | arp_poisioning | 1162 | 25 | 25 |
+| 1 | ddos_slowloris | 80 | 25 | 25 |
+| 2 | dos_syn_hping | 14199 | 25 | 25 |
+| 3 | metasploit_brute_force_ssh | 5 | 5 | 5 |
+| 4 | mqtt_publish | 622 | 25 | 25 |
+| 5 | nmap_fin_scan | 4 | 4 | 3 |
+| 6 | nmap_os_detection | 300 | 25 | 15 |
+| 7 | nmap_tcp_scan | 151 | 25 | 25 |
+| 8 | nmap_udp_scan | 389 | 25 | 21 |
+| 9 | nmap_xmas_tree_scan | 302 | 25 | 16 |
+| 10 | thing_speak | 1216 | 25 | 23 |
+| 11 | wipro_bulb | 38 | 25 | 22 |
+
+### Class composition of the earlier random sample, excluding its extra local examples
+
+Source: artifacts/final_analysis/stratified_shap_20261118/earlier_random300_class_composition.csv
+
+| class_index | true_class | test_support | sampled_count | test_fraction | sample_fraction |
+| --- | --- | --- | --- | --- | --- |
+| 0 | arp_poisioning | 1162 | 16 | 0.062919645 | 0.053333333 |
+| 1 | ddos_slowloris | 80 | 0 | 0.0043318172 | 0 |
+| 2 | dos_syn_hping | 14199 | 232 | 0.7688434 | 0.77333333 |
+| 3 | metasploit_brute_force_ssh | 5 | 0 | 0.00027073857 | 0 |
+| 4 | mqtt_publish | 622 | 11 | 0.033679879 | 0.036666667 |
+| 5 | nmap_fin_scan | 4 | 0 | 0.00021659086 | 0 |
+| 6 | nmap_os_detection | 300 | 6 | 0.016244314 | 0.02 |
+| 7 | nmap_tcp_scan | 151 | 3 | 0.008176305 | 0.01 |
+| 8 | nmap_udp_scan | 389 | 3 | 0.021063461 | 0.01 |
+| 9 | nmap_xmas_tree_scan | 302 | 5 | 0.01635261 | 0.016666667 |
+| 10 | thing_speak | 1216 | 22 | 0.065843621 | 0.073333333 |
+| 11 | wipro_bulb | 38 | 2 | 0.0020576132 | 0.0066666667 |
+
+### Per-class top-ten rankings for own-class logits
+
+Source: artifacts/final_analysis/stratified_shap_20261118/per_class_top10.csv
+
+| class_index | true_class | test_support | sampled_count | predicted_correct_count | rank | feature_index | feature | mean_abs_phi |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 0 | arp_poisioning | 1162 | 25 | 25 | 1 | 38 | bwd_header_size_min | 0.66849152 |
+| 0 | arp_poisioning | 1162 | 25 | 25 | 2 | 5 | fwd_pkts_payload.tot | 0.51290623 |
+| 0 | arp_poisioning | 1162 | 25 | 25 | 3 | 6 | flow_pkts_payload.avg | 0.42380891 |
+| 0 | arp_poisioning | 1162 | 25 | 25 | 4 | 2 | fwd_subflow_bytes | 0.35077972 |
+| 0 | arp_poisioning | 1162 | 25 | 25 | 5 | 4 | flow_pkts_payload.std | 0.31497518 |
+| 0 | arp_poisioning | 1162 | 25 | 25 | 6 | 37 | bwd_header_size_max | 0.309789 |
+| 0 | arp_poisioning | 1162 | 25 | 25 | 7 | 22 | fwd_pkts_per_sec | 0.29879258 |
+| 0 | arp_poisioning | 1162 | 25 | 25 | 8 | 11 | bwd_pkts_payload.avg | 0.26143333 |
+| 0 | arp_poisioning | 1162 | 25 | 25 | 9 | 0 | fwd_pkts_payload.avg | 0.23616874 |
+| 0 | arp_poisioning | 1162 | 25 | 25 | 10 | 27 | bwd_pkts_payload.std | 0.21976313 |
+| 1 | ddos_slowloris | 80 | 25 | 25 | 1 | 37 | bwd_header_size_max | 1.0492071 |
+| 1 | ddos_slowloris | 80 | 25 | 25 | 2 | 24 | fwd_iat.max | 0.73198548 |
+| 1 | ddos_slowloris | 80 | 25 | 25 | 3 | 6 | flow_pkts_payload.avg | 0.67536871 |
+| 1 | ddos_slowloris | 80 | 25 | 25 | 4 | 28 | flow_iat.avg | 0.44721696 |
+| 1 | ddos_slowloris | 80 | 25 | 25 | 5 | 38 | bwd_header_size_min | 0.43045543 |
+| 1 | ddos_slowloris | 80 | 25 | 25 | 6 | 0 | fwd_pkts_payload.avg | 0.36152703 |
+| 1 | ddos_slowloris | 80 | 25 | 25 | 7 | 4 | flow_pkts_payload.std | 0.31466206 |
+| 1 | ddos_slowloris | 80 | 25 | 25 | 8 | 25 | bwd_pkts_per_sec | 0.3050383 |
+| 1 | ddos_slowloris | 80 | 25 | 25 | 9 | 32 | fwd_header_size_tot | 0.30267497 |
+| 1 | ddos_slowloris | 80 | 25 | 25 | 10 | 27 | bwd_pkts_payload.std | 0.29537333 |
+| 2 | dos_syn_hping | 14199 | 25 | 25 | 1 | 22 | fwd_pkts_per_sec | 0.51558791 |
+| 2 | dos_syn_hping | 14199 | 25 | 25 | 2 | 23 | flow_pkts_per_sec | 0.36696983 |
+| 2 | dos_syn_hping | 14199 | 25 | 25 | 3 | 21 | payload_bytes_per_second | 0.34856223 |
+| 2 | dos_syn_hping | 14199 | 25 | 25 | 4 | 6 | flow_pkts_payload.avg | 0.32118938 |
+| 2 | dos_syn_hping | 14199 | 25 | 25 | 5 | 11 | bwd_pkts_payload.avg | 0.30165986 |
+| 2 | dos_syn_hping | 14199 | 25 | 25 | 6 | 0 | fwd_pkts_payload.avg | 0.26897948 |
+| 2 | dos_syn_hping | 14199 | 25 | 25 | 7 | 25 | bwd_pkts_per_sec | 0.21407411 |
+| 2 | dos_syn_hping | 14199 | 25 | 25 | 8 | 37 | bwd_header_size_max | 0.19404418 |
+| 2 | dos_syn_hping | 14199 | 25 | 25 | 9 | 4 | flow_pkts_payload.std | 0.16389725 |
+| 2 | dos_syn_hping | 14199 | 25 | 25 | 10 | 7 | flow_pkts_payload.max | 0.15426849 |
+| 3 | metasploit_brute_force_ssh | 5 | 5 | 5 | 1 | 7 | flow_pkts_payload.max | 1.1666735 |
+| 3 | metasploit_brute_force_ssh | 5 | 5 | 5 | 2 | 1 | fwd_pkts_payload.max | 0.66634202 |
+| 3 | metasploit_brute_force_ssh | 5 | 5 | 5 | 3 | 27 | bwd_pkts_payload.std | 0.57461078 |
+| 3 | metasploit_brute_force_ssh | 5 | 5 | 5 | 4 | 4 | flow_pkts_payload.std | 0.54933103 |
+| 3 | metasploit_brute_force_ssh | 5 | 5 | 5 | 5 | 37 | bwd_header_size_max | 0.50428123 |
+| 3 | metasploit_brute_force_ssh | 5 | 5 | 5 | 6 | 17 | active.max | 0.48538928 |
+| 3 | metasploit_brute_force_ssh | 5 | 5 | 5 | 7 | 12 | bwd_pkts_payload.max | 0.31504836 |
+| 3 | metasploit_brute_force_ssh | 5 | 5 | 5 | 8 | 25 | bwd_pkts_per_sec | 0.29777312 |
+| 3 | metasploit_brute_force_ssh | 5 | 5 | 5 | 9 | 32 | fwd_header_size_tot | 0.28398957 |
+| 3 | metasploit_brute_force_ssh | 5 | 5 | 5 | 10 | 2 | fwd_subflow_bytes | 0.26291561 |
+| 4 | mqtt_publish | 622 | 25 | 25 | 1 | 20 | active.min | 1.6002505 |
+| 4 | mqtt_publish | 622 | 25 | 25 | 2 | 24 | fwd_iat.max | 1.5225793 |
+| 4 | mqtt_publish | 622 | 25 | 25 | 3 | 0 | fwd_pkts_payload.avg | 0.84178338 |
+| 4 | mqtt_publish | 622 | 25 | 25 | 4 | 25 | bwd_pkts_per_sec | 0.45463357 |
+| 4 | mqtt_publish | 622 | 25 | 25 | 5 | 6 | flow_pkts_payload.avg | 0.4527868 |
+| 4 | mqtt_publish | 622 | 25 | 25 | 6 | 21 | payload_bytes_per_second | 0.32726815 |
+| 4 | mqtt_publish | 622 | 25 | 25 | 7 | 15 | flow_iat.max | 0.31555265 |
+| 4 | mqtt_publish | 622 | 25 | 25 | 8 | 35 | flow_iat.std | 0.24030485 |
+| 4 | mqtt_publish | 622 | 25 | 25 | 9 | 4 | flow_pkts_payload.std | 0.20732101 |
+| 4 | mqtt_publish | 622 | 25 | 25 | 10 | 22 | fwd_pkts_per_sec | 0.19565555 |
+| 5 | nmap_fin_scan | 4 | 4 | 3 | 1 | 6 | flow_pkts_payload.avg | 1.90253 |
+| 5 | nmap_fin_scan | 4 | 4 | 3 | 2 | 7 | flow_pkts_payload.max | 1.0773812 |
+| 5 | nmap_fin_scan | 4 | 4 | 3 | 3 | 4 | flow_pkts_payload.std | 0.72111124 |
+| 5 | nmap_fin_scan | 4 | 4 | 3 | 4 | 0 | fwd_pkts_payload.avg | 0.54668856 |
+| 5 | nmap_fin_scan | 4 | 4 | 3 | 5 | 38 | bwd_header_size_min | 0.44054819 |
+| 5 | nmap_fin_scan | 4 | 4 | 3 | 6 | 21 | payload_bytes_per_second | 0.4383711 |
+| 5 | nmap_fin_scan | 4 | 4 | 3 | 7 | 37 | bwd_header_size_max | 0.42388182 |
+| 5 | nmap_fin_scan | 4 | 4 | 3 | 8 | 23 | flow_pkts_per_sec | 0.2915144 |
+| 5 | nmap_fin_scan | 4 | 4 | 3 | 9 | 11 | bwd_pkts_payload.avg | 0.26051497 |
+| 5 | nmap_fin_scan | 4 | 4 | 3 | 10 | 25 | bwd_pkts_per_sec | 0.19721562 |
+| 6 | nmap_os_detection | 300 | 25 | 15 | 1 | 6 | flow_pkts_payload.avg | 3.3935437 |
+| 6 | nmap_os_detection | 300 | 25 | 15 | 2 | 0 | fwd_pkts_payload.avg | 1.5734211 |
+| 6 | nmap_os_detection | 300 | 25 | 15 | 3 | 21 | payload_bytes_per_second | 0.90915571 |
+| 6 | nmap_os_detection | 300 | 25 | 15 | 4 | 4 | flow_pkts_payload.std | 0.81210701 |
+| 6 | nmap_os_detection | 300 | 25 | 15 | 5 | 1 | fwd_pkts_payload.max | 0.7855989 |
+| 6 | nmap_os_detection | 300 | 25 | 15 | 6 | 38 | bwd_header_size_min | 0.33463317 |
+| 6 | nmap_os_detection | 300 | 25 | 15 | 7 | 12 | bwd_pkts_payload.max | 0.32893449 |
+| 6 | nmap_os_detection | 300 | 25 | 15 | 8 | 36 | id.resp_p | 0.30560568 |
+| 6 | nmap_os_detection | 300 | 25 | 15 | 9 | 23 | flow_pkts_per_sec | 0.2782511 |
+| 6 | nmap_os_detection | 300 | 25 | 15 | 10 | 22 | fwd_pkts_per_sec | 0.27358004 |
+| 7 | nmap_tcp_scan | 151 | 25 | 25 | 1 | 32 | fwd_header_size_tot | 1.4901951 |
+| 7 | nmap_tcp_scan | 151 | 25 | 25 | 2 | 4 | flow_pkts_payload.std | 0.78097257 |
+| 7 | nmap_tcp_scan | 151 | 25 | 25 | 3 | 21 | payload_bytes_per_second | 0.74779945 |
+| 7 | nmap_tcp_scan | 151 | 25 | 25 | 4 | 0 | fwd_pkts_payload.avg | 0.67937189 |
+| 7 | nmap_tcp_scan | 151 | 25 | 25 | 5 | 23 | flow_pkts_per_sec | 0.46409635 |
+| 7 | nmap_tcp_scan | 151 | 25 | 25 | 6 | 1 | fwd_pkts_payload.max | 0.46067957 |
+| 7 | nmap_tcp_scan | 151 | 25 | 25 | 7 | 22 | fwd_pkts_per_sec | 0.43407207 |
+| 7 | nmap_tcp_scan | 151 | 25 | 25 | 8 | 38 | bwd_header_size_min | 0.40465103 |
+| 7 | nmap_tcp_scan | 151 | 25 | 25 | 9 | 6 | flow_pkts_payload.avg | 0.40172097 |
+| 7 | nmap_tcp_scan | 151 | 25 | 25 | 10 | 25 | bwd_pkts_per_sec | 0.35168099 |
+| 8 | nmap_udp_scan | 389 | 25 | 21 | 1 | 37 | bwd_header_size_max | 2.039531 |
+| 8 | nmap_udp_scan | 389 | 25 | 21 | 2 | 38 | bwd_header_size_min | 1.6983569 |
+| 8 | nmap_udp_scan | 389 | 25 | 21 | 3 | 6 | flow_pkts_payload.avg | 0.92805477 |
+| 8 | nmap_udp_scan | 389 | 25 | 21 | 4 | 21 | payload_bytes_per_second | 0.85785953 |
+| 8 | nmap_udp_scan | 389 | 25 | 21 | 5 | 22 | fwd_pkts_per_sec | 0.69783663 |
+| 8 | nmap_udp_scan | 389 | 25 | 21 | 6 | 36 | id.resp_p | 0.57010374 |
+| 8 | nmap_udp_scan | 389 | 25 | 21 | 7 | 7 | flow_pkts_payload.max | 0.31654276 |
+| 8 | nmap_udp_scan | 389 | 25 | 21 | 8 | 4 | flow_pkts_payload.std | 0.31288813 |
+| 8 | nmap_udp_scan | 389 | 25 | 21 | 9 | 12 | bwd_pkts_payload.max | 0.17889244 |
+| 8 | nmap_udp_scan | 389 | 25 | 21 | 10 | 11 | bwd_pkts_payload.avg | 0.16785684 |
+| 9 | nmap_xmas_tree_scan | 302 | 25 | 16 | 1 | 6 | flow_pkts_payload.avg | 3.1478013 |
+| 9 | nmap_xmas_tree_scan | 302 | 25 | 16 | 2 | 0 | fwd_pkts_payload.avg | 1.3571822 |
+| 9 | nmap_xmas_tree_scan | 302 | 25 | 16 | 3 | 21 | payload_bytes_per_second | 1.0014932 |
+| 9 | nmap_xmas_tree_scan | 302 | 25 | 16 | 4 | 1 | fwd_pkts_payload.max | 0.75238889 |
+| 9 | nmap_xmas_tree_scan | 302 | 25 | 16 | 5 | 4 | flow_pkts_payload.std | 0.56481973 |
+| 9 | nmap_xmas_tree_scan | 302 | 25 | 16 | 6 | 22 | fwd_pkts_per_sec | 0.50236027 |
+| 9 | nmap_xmas_tree_scan | 302 | 25 | 16 | 7 | 23 | flow_pkts_per_sec | 0.28382124 |
+| 9 | nmap_xmas_tree_scan | 302 | 25 | 16 | 8 | 36 | id.resp_p | 0.27616158 |
+| 9 | nmap_xmas_tree_scan | 302 | 25 | 16 | 9 | 12 | bwd_pkts_payload.max | 0.23895033 |
+| 9 | nmap_xmas_tree_scan | 302 | 25 | 16 | 10 | 38 | bwd_header_size_min | 0.22262892 |
+| 10 | thing_speak | 1216 | 25 | 23 | 1 | 22 | fwd_pkts_per_sec | 0.70536805 |
+| 10 | thing_speak | 1216 | 25 | 23 | 2 | 27 | bwd_pkts_payload.std | 0.62276737 |
+| 10 | thing_speak | 1216 | 25 | 23 | 3 | 38 | bwd_header_size_min | 0.53319766 |
+| 10 | thing_speak | 1216 | 25 | 23 | 4 | 6 | flow_pkts_payload.avg | 0.53008839 |
+| 10 | thing_speak | 1216 | 25 | 23 | 5 | 23 | flow_pkts_per_sec | 0.43782843 |
+| 10 | thing_speak | 1216 | 25 | 23 | 6 | 4 | flow_pkts_payload.std | 0.42023735 |
+| 10 | thing_speak | 1216 | 25 | 23 | 7 | 25 | bwd_pkts_per_sec | 0.27318321 |
+| 10 | thing_speak | 1216 | 25 | 23 | 8 | 11 | bwd_pkts_payload.avg | 0.25261811 |
+| 10 | thing_speak | 1216 | 25 | 23 | 9 | 7 | flow_pkts_payload.max | 0.14642564 |
+| 10 | thing_speak | 1216 | 25 | 23 | 10 | 12 | bwd_pkts_payload.max | 0.12746366 |
+| 11 | wipro_bulb | 38 | 25 | 22 | 1 | 14 | flow_duration | 0.69212125 |
+| 11 | wipro_bulb | 38 | 25 | 22 | 2 | 17 | active.max | 0.66609491 |
+| 11 | wipro_bulb | 38 | 25 | 22 | 3 | 16 | active.tot | 0.59993058 |
+| 11 | wipro_bulb | 38 | 25 | 22 | 4 | 0 | fwd_pkts_payload.avg | 0.4066539 |
+| 11 | wipro_bulb | 38 | 25 | 22 | 5 | 27 | bwd_pkts_payload.std | 0.30898156 |
+| 11 | wipro_bulb | 38 | 25 | 22 | 6 | 6 | flow_pkts_payload.avg | 0.25623642 |
+| 11 | wipro_bulb | 38 | 25 | 22 | 7 | 38 | bwd_header_size_min | 0.22875786 |
+| 11 | wipro_bulb | 38 | 25 | 22 | 8 | 13 | flow_iat.tot | 0.2230845 |
+| 11 | wipro_bulb | 38 | 25 | 22 | 9 | 4 | flow_pkts_payload.std | 0.21866842 |
+| 11 | wipro_bulb | 38 | 25 | 22 | 10 | 32 | fwd_header_size_tot | 0.20990493 |
+
+### Equal-class global ranking for own-class logits
+
+Source: artifacts/final_analysis/stratified_shap_20261118/balanced_global_ranking.csv
+
+| rank | feature_index | feature | mean_abs_phi |
+| --- | --- | --- | --- |
+| 1 | 6 | flow_pkts_payload.avg | 1.0539879 |
+| 2 | 0 | fwd_pkts_payload.avg | 0.55328959 |
+| 3 | 21 | payload_bytes_per_second | 0.45700657 |
+| 4 | 37 | bwd_header_size_max | 0.45670233 |
+| 5 | 4 | flow_pkts_payload.std | 0.44841592 |
+| 6 | 38 | bwd_header_size_min | 0.43438584 |
+| 7 | 22 | fwd_pkts_per_sec | 0.34873457 |
+| 8 | 7 | flow_pkts_payload.max | 0.34483689 |
+| 9 | 1 | fwd_pkts_payload.max | 0.30195485 |
+| 10 | 24 | fwd_iat.max | 0.26267319 |
+| 11 | 23 | flow_pkts_per_sec | 0.25600675 |
+| 12 | 32 | fwd_header_size_tot | 0.23938132 |
+| 13 | 25 | bwd_pkts_per_sec | 0.23397602 |
+| 14 | 27 | bwd_pkts_payload.std | 0.21697834 |
+| 15 | 20 | active.min | 0.18350166 |
+| 16 | 11 | bwd_pkts_payload.avg | 0.17607393 |
+| 17 | 36 | id.resp_p | 0.16661099 |
+| 18 | 12 | bwd_pkts_payload.max | 0.15582469 |
+| 19 | 17 | active.max | 0.15503839 |
+| 20 | 2 | fwd_subflow_bytes | 0.11978518 |
+| 21 | 28 | flow_iat.avg | 0.093049054 |
+| 22 | 15 | flow_iat.max | 0.082420068 |
+| 23 | 18 | active.avg | 0.081942828 |
+| 24 | 16 | active.tot | 0.073306734 |
+| 25 | 14 | flow_duration | 0.069793285 |
+| 26 | 35 | flow_iat.std | 0.067350696 |
+| 27 | 33 | bwd_header_size_tot | 0.066865651 |
+| 28 | 5 | fwd_pkts_payload.tot | 0.063268849 |
+| 29 | 34 | bwd_iat.avg | 0.057917922 |
+| 30 | 31 | bwd_iat.max | 0.050353173 |
+| 31 | 29 | fwd_iat.avg | 0.039256632 |
+| 32 | 26 | fwd_iat.tot | 0.034731312 |
+| 33 | 13 | flow_iat.tot | 0.026736608 |
+| 34 | 3 | flow_pkts_payload.tot | 0.021904569 |
+| 35 | 8 | flow_iat.min | 0.019984123 |
+| 36 | 30 | bwd_iat.tot | 0.01739263 |
+| 37 | 10 | bwd_pkts_payload.tot | 0.017379076 |
+| 38 | 9 | bwd_subflow_bytes | 0.015459978 |
+| 39 | 39 | bwd_data_pkts_tot | 0.014122522 |
+| 40 | 19 | fwd_iat.min | 0.0014237333 |
+
+### Equal-class auxiliary global ranking over all output logits
+
+Source: artifacts/final_analysis/stratified_shap_20261118/balanced_global_all_outputs_ranking.csv
+
+| rank | feature_index | feature | mean_abs_phi |
+| --- | --- | --- | --- |
+| 1 | 6 | flow_pkts_payload.avg | 0.86126567 |
+| 2 | 0 | fwd_pkts_payload.avg | 0.59348978 |
+| 3 | 22 | fwd_pkts_per_sec | 0.46370082 |
+| 4 | 21 | payload_bytes_per_second | 0.45052684 |
+| 5 | 4 | flow_pkts_payload.std | 0.41269184 |
+| 6 | 38 | bwd_header_size_min | 0.39106356 |
+| 7 | 37 | bwd_header_size_max | 0.36615068 |
+| 8 | 7 | flow_pkts_payload.max | 0.32339009 |
+| 9 | 23 | flow_pkts_per_sec | 0.25796749 |
+| 10 | 11 | bwd_pkts_payload.avg | 0.2284997 |
+| 11 | 1 | fwd_pkts_payload.max | 0.22555504 |
+| 12 | 25 | bwd_pkts_per_sec | 0.22415921 |
+| 13 | 17 | active.max | 0.2181562 |
+| 14 | 12 | bwd_pkts_payload.max | 0.21028662 |
+| 15 | 32 | fwd_header_size_tot | 0.18158266 |
+| 16 | 36 | id.resp_p | 0.16504509 |
+| 17 | 24 | fwd_iat.max | 0.1632354 |
+| 18 | 27 | bwd_pkts_payload.std | 0.15837772 |
+| 19 | 20 | active.min | 0.15665846 |
+| 20 | 18 | active.avg | 0.13007142 |
+| 21 | 2 | fwd_subflow_bytes | 0.12711438 |
+| 22 | 28 | flow_iat.avg | 0.12287761 |
+| 23 | 33 | bwd_header_size_tot | 0.10489338 |
+| 24 | 14 | flow_duration | 0.095912662 |
+| 25 | 34 | bwd_iat.avg | 0.093288666 |
+| 26 | 31 | bwd_iat.max | 0.085720083 |
+| 27 | 15 | flow_iat.max | 0.085556044 |
+| 28 | 35 | flow_iat.std | 0.078921729 |
+| 29 | 16 | active.tot | 0.078628655 |
+| 30 | 29 | fwd_iat.avg | 0.061353923 |
+| 31 | 13 | flow_iat.tot | 0.059855433 |
+| 32 | 5 | fwd_pkts_payload.tot | 0.058820055 |
+| 33 | 26 | fwd_iat.tot | 0.046308262 |
+| 34 | 3 | flow_pkts_payload.tot | 0.031105766 |
+| 35 | 8 | flow_iat.min | 0.022124624 |
+| 36 | 30 | bwd_iat.tot | 0.021861929 |
+| 37 | 10 | bwd_pkts_payload.tot | 0.020908815 |
+| 38 | 9 | bwd_subflow_bytes | 0.019725787 |
+| 39 | 39 | bwd_data_pkts_tot | 0.015142184 |
+| 40 | 19 | fwd_iat.min | 0.0022681826 |
+
+### Per-class early deletion and random-order comparison
+
+Source: artifacts/final_analysis/stratified_shap_20261118/early_deletion_k10.csv
+
+| class_index | true_class | test_support | sampled_count | predicted_correct_count | original_mean_probability | shap_k10 | random_k10 | shap_drop_k10 | random_drop_k10 | random_minus_shap_k10 | shap_normalized_auc | random_normalized_auc |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 0 | arp_poisioning | 1162 | 25 | 25 | 0.75468686 | 0.11223545 | 0.46626992 | 0.64245141 | 0.28841694 | 0.35403447 | 0.10182771 | 0.28762417 |
+| 1 | ddos_slowloris | 80 | 25 | 25 | 0.75976204 | 0.0062218821 | 0.2286971 | 0.75354016 | 0.53106494 | 0.22247522 | 0.022260363 | 0.14635187 |
+| 2 | dos_syn_hping | 14199 | 25 | 25 | 0.95210451 | 0.81485373 | 0.87357949 | 0.13725078 | 0.078525019 | 0.058725759 | 0.88392046 | 0.87360574 |
+| 3 | metasploit_brute_force_ssh | 5 | 5 | 5 | 0.78378899 | 0.04630493 | 0.30767726 | 0.73748406 | 0.47611173 | 0.26137233 | 0.067237473 | 0.18904476 |
+| 4 | mqtt_publish | 622 | 25 | 25 | 0.84470315 | 0.013194815 | 0.27400535 | 0.83150833 | 0.5706978 | 0.26081053 | 0.023174131 | 0.19198442 |
+| 5 | nmap_fin_scan | 4 | 4 | 3 | 0.36110211 | 0.031162826 | 0.14571367 | 0.32993929 | 0.21538845 | 0.11455084 | 0.023993665 | 0.094136509 |
+| 6 | nmap_os_detection | 300 | 25 | 15 | 0.42250463 | 6.5067841e-05 | 0.0086328263 | 0.42243957 | 0.41387181 | 0.0085677585 | 0.00809621 | 0.025819233 |
+| 7 | nmap_tcp_scan | 151 | 25 | 25 | 0.95963342 | 0.30341625 | 0.74423145 | 0.65621717 | 0.21540197 | 0.4408152 | 0.25182133 | 0.59306992 |
+| 8 | nmap_udp_scan | 389 | 25 | 21 | 0.630436 | 0.00059242215 | 0.14067618 | 0.62984358 | 0.48975983 | 0.14008376 | 0.013075953 | 0.11231527 |
+| 9 | nmap_xmas_tree_scan | 302 | 25 | 16 | 0.4175484 | 0.00017444551 | 0.053370736 | 0.41737396 | 0.36417767 | 0.05319629 | 0.0088067607 | 0.045216323 |
+| 10 | thing_speak | 1216 | 25 | 23 | 0.77879307 | 0.017848549 | 0.30763507 | 0.76094452 | 0.471158 | 0.28978652 | 0.043890894 | 0.21862705 |
+| 11 | wipro_bulb | 38 | 25 | 22 | 0.7539424 | 0.16038451 | 0.48559773 | 0.59355789 | 0.26834467 | 0.32521322 | 0.13362248 | 0.34404511 |
+
+Deletion uses the SHAP order for each flow’s fixed original predicted-class logit and follows that class’s probability, grouped by true class. The zero-removal probability is reused from the final cache. Random-minus-SHAP at the declared early-removal point is a descriptive paired-flow contrast, not a significance test. Tiny supports, approximate additivity and distribution-shifting zero masks limit interpretation; curves need not be monotone and no causal or selection claim follows.
+
+Full curves and random-order replicates: artifacts/final_analysis/stratified_shap_20261118/deletion_curves.csv and artifacts/final_analysis/stratified_shap_20261118/deletion_replicates.npz.
+
+![Balanced global final-analysis ranking](artifacts/final_analysis/stratified_shap_20261118/balanced_global_ranking.png)
+
+![Per-class final-analysis rankings](artifacts/final_analysis/stratified_shap_20261118/per_class_top10.png)
+
+![Per-class final-analysis deletion curves](artifacts/final_analysis/stratified_shap_20261118/deletion_panels.png)
+
 ## Limitations
 
 The class-stratified flow split is fixed. The five canonical seeds vary initialization and sampling, not the split; n=5, indicative only. Related attack-run flows can cross partitions because session/campaign identifiers are absent. A clustering PROXY is not campaign-disjoint validation.
 
 Tiny multiclass test supports make macro-F1 comparisons noisy: metasploit_brute_force_ssh (test n=5), nmap_fin_scan (test n=4). Training seeds do not measure split or campaign variability.
 
-The relation between epochs run and macro-F1 is descriptive. Early stopping combined with a cosine schedule that has not reached its horizon is a hypothesis, to be tested by [Stage B stopping-rule interventions](docs/KAGGLE_RUNBOOK.md); correlation alone does not establish causality.
+The relation between epochs run and macro-F1 is descriptive. The dated stopping-rule hypothesis uses predeclared primary and secondary endpoints; even a supported result never establishes causality. See the effective declaration and Stage B report.
 
 The persisted training-dynamics table flags std_cnn instability (early best-validation epochs or large seed SD). This baseline cannot establish that ExLightNet is superior. Zero observed seed variance, including XGBoost under the paper configuration, is flagged in the generated summary; its paired test remains a test of the paired differences.
 

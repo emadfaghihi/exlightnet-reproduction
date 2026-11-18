@@ -6,6 +6,9 @@ import os
 # Must be configured before PyTorch initializes CUDA.
 os.environ.setdefault("CUBLAS_WORKSPACE_CONFIG", ":4096:8")
 
+TREE_MODELS = ("random_forest", "xgboost")
+RUN_SELECTIONS = ("all", "neural", "trees")
+
 
 class RunStopped(RuntimeError):
     """A preserved run-local failure that must not stop independent runs."""
@@ -31,7 +34,7 @@ def finalize_tree_cache(directory, root, fingerprint):
     from pathlib import Path
     directory, root = Path(directory), Path(root)
     identity = json.loads((directory / "run_identity.json").read_text())
-    if identity.get("run_fingerprint") != fingerprint or identity.get("model") not in ("random_forest", "xgboost"):
+    if identity.get("run_fingerprint") != fingerprint or identity.get("model") not in TREE_MODELS:
         raise RunStopped("Tree identity differs")
     item = _evaluate(directory, "best", None, None, lambda: (_ for _ in ()).throw(RunStopped("Tree evaluation missing")), fingerprint + ":best")
     for key in ("prediction", "metrics", "receipt"):
@@ -61,6 +64,41 @@ def run_fingerprint(identity):
     return hashlib.sha256(json.dumps(identity, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()).hexdigest()
 
 
+def _tree_record_identity(record, plan):
+    return {**{key: record[key] for key in ('campaign', 'device', 'config', 'data_fingerprint',
+                                            'payload_sha256', 'prepared_sha256', 'libraries')},
+            'plan': {key: record[key] for key in plan}}
+
+
+def _resolve_tree_identity(root, identity):
+    """Reuse legacy CPU-tree identities without changing their opaque hashes."""
+    matches = {}
+    for directory in (root / 'cpu').glob('*'):
+        for name in ('record.json', 'run_identity.json'):
+            path = directory / name
+            if not path.exists():
+                continue
+            try:
+                record = json.loads(path.read_text())
+                if record.get('model') not in TREE_MODELS or record.get('campaign') != identity['campaign']:
+                    continue
+                if any(record.get(key) != value for key, value in identity['plan'].items()):
+                    continue
+                previous = _tree_record_identity(record, identity['plan'])
+                fingerprint = run_fingerprint(previous)
+                if fingerprint != record.get('run_fingerprint') or fingerprint != directory.name:
+                    raise RunStopped('Existing tree fingerprint differs from its recorded identity')
+                comparable = {**previous, 'libraries': {**previous['libraries'], 'gpu_name': None}}
+                if comparable != identity:
+                    raise RunStopped('Existing tree scientific identity differs; use a separate campaign')
+                matches[fingerprint] = previous
+            except (OSError, ValueError, KeyError, TypeError) as exc:
+                raise RunStopped('Existing tree identity is corrupt') from exc
+    if len(matches) > 1:
+        raise RunStopped('Ambiguous existing tree identities; preserve and inspect both branches')
+    return next(iter(matches.values()), identity)
+
+
 def validate_probe(probe, environment):
     if probe.get("environment") != environment:
         raise RuntimeError("Timing probe environment differs or is missing; use a separate campaign and probe again")
@@ -78,16 +116,18 @@ def study_runs(study):
     binary = ("exlightnet", "mlp", "random_forest", "xgboost")
     multi = ("exlightnet", "mlp", "standard_conv", "no_se", "std_cnn", "random_forest", "xgboost")
     if study == "B1":
-        for task, models in (("binary", binary), ("multiclass", multi)):
-            for model in models:
-                for seed in range(42, 72): add(task, model, seed)
+        for seed in range(42, 72):
+            for task, models in (("binary", binary), ("multiclass", multi)):
+                for model in models:
+                    add(task, model, seed)
     elif study == "B2":
-        for task, models in (("binary", binary), ("multiclass", ("exlightnet", "mlp", "standard_conv", "random_forest", "xgboost"))):
-            for model in models:
-                for seed in range(42, 52): add(task, model, seed, seed)
+        for seed in range(42, 52):
+            for task, models in (("binary", binary), ("multiclass", ("exlightnet", "mlp", "standard_conv", "random_forest", "xgboost"))):
+                for model in models:
+                    add(task, model, seed, seed)
     elif study == "B3":
-        for model in ("exlightnet", "standard_conv", "mlp", "std_cnn"):
-            for seed in range(42, 57):
+        for seed in range(42, 57):
+            for model in ("exlightnet", "standard_conv", "mlp", "std_cnn"):
                 add("multiclass", model, seed, arm="paper", reuse_study="B1")
                 add("multiclass", model, seed, arm="fixed30")
                 add("multiclass", model, seed, arm="patience10_min15")
@@ -104,16 +144,33 @@ def study_runs(study):
     return rows
 
 
+def select_study_runs(study, only="all"):
+    """Filter a study's declared rows by model family while preserving order."""
+    if only not in RUN_SELECTIONS:
+        raise ValueError("Run selection must be all, neural or trees")
+    plans = study_runs(study)
+    if only == "all":
+        return plans
+    return [plan for plan in plans if (plan["model"] in TREE_MODELS) == (only == "trees")]
+
+
 def projected_neural_hours(study, seconds_per_epoch):
     """Crude estimate at probe speed; excludes trees and model-specific speed."""
     if seconds_per_epoch < 0:
         raise ValueError("Negative epoch duration")
     epochs = 0
     for row in study_runs(study):
-        if "reuse_study" in row or row["model"] in ("random_forest", "xgboost"):
+        if "reuse_study" in row or row["model"] in TREE_MODELS:
             continue
         epochs += 60 if study == "B4" else 20 if row["task"] == "binary" else 30
     return epochs * seconds_per_epoch / 3600
+
+
+def _print_neural_projections(seconds_per_epoch, only):
+    for study in ("B1", "B3", "B2", "B4", "B5"):
+        count = sum("reuse_study" not in plan for plan in select_study_runs(study, only))
+        hours = projected_neural_hours(study, seconds_per_epoch)
+        print(f"{study}: {count} selected runs; rough neural projection {hours:.2f} hours, trees and model differences excluded", flush=True)
 
 
 def _sha256(path):
@@ -287,7 +344,7 @@ def _evaluate(directory, checkpoint, y, names, predictor, fingerprint):
     return item
 
 
-def run_campaign(prepared_dir, output, study, *, device="cpu", campaign="gpu_v2", time_budget_hours=8,
+def run_campaign(prepared_dir, output, study, *, device="cpu", campaign="gpu_v2", time_budget_hours=8, only="all",
                  zip_every=5, smoke_model=None, smoke_task=None, smoke_seeds=None,
                  smoke_epochs=None, checkpoint_hook=None):
     """Run the predeclared study using verified prepared inputs and resumable epochs."""
@@ -295,15 +352,10 @@ def run_campaign(prepared_dir, output, study, *, device="cpu", campaign="gpu_v2"
     import fcntl
     import os
     import pickle
+    import random
     import time
     import warnings
     from pathlib import Path
-    import numpy as np
-    import torch
-    from .baselines import build_model, fit_tree
-    from .device import configure_device, environment_identity, effective_settings
-    from .prepared import load_prepared
-    from .train import TrainConfig, fit_resumable, seed_everything
 
     validate_campaign_name(campaign)
     if time_budget_hours <= 0 or zip_every < 1:
@@ -313,31 +365,46 @@ def run_campaign(prepared_dir, output, study, *, device="cpu", campaign="gpu_v2"
             raise ValueError("Smoke controls must be specified together")
         if not campaign.endswith("_smoke") or len(smoke_seeds) != 2 or smoke_epochs != 2:
             raise ValueError("Smoke requires a distinct _smoke campaign, two seeds and two epochs")
+    plans = [plan for plan in select_study_runs(study, only) if "reuse_study" not in plan]
+    if smoke_model is not None:
+        plans = [r for r in plans if r["model"] == smoke_model and r["task"] == smoke_task
+                 and r["seed"] in smoke_seeds]
+        if len(plans) != 2:
+            raise ValueError("Smoke selection must resolve to exactly two independent runs")
     output = Path(output)
     root = output / campaign
+    if not plans:
+        print(f"No runs selected for {study} with --only {only}.", flush=True)
+        return {"new_completed": 0, "stopped_count": 0, "stopped": [], "elapsed_seconds": 0.0, "root": str(root)}
+
+    import numpy as np
+    import torch
+    from .baselines import build_model, fit_tree
+    from .device import configure_device, environment_identity, effective_settings
+    from .prepared import load_prepared
+    from .train import TrainConfig, fit_resumable, seed_everything
+
+    configured_device = "cpu" if only == "trees" and device in ("cuda", "auto") else device
+    if configured_device != device:
+        print(f"Using CPU for --only trees (requested device: {device}).", flush=True)
     root.mkdir(parents=True, exist_ok=True)
     with warnings.catch_warnings(record=True) as config_warnings:
         warnings.simplefilter("always")
-        actual = configure_device(device)
+        actual = configure_device(configured_device)
     initial_warnings = [{"epoch": None, "phase": "configure", "message": str(w.message), "category": w.category.__name__} for w in config_warnings]
     versions = library_versions()
     versions.update(cuda=torch.version.cuda, cudnn=torch.backends.cudnn.version(),
                     gpu_name=torch.cuda.get_device_name(0) if actual == "cuda" else None)
-    plans = study_runs(study)
-    if smoke_model is not None:
-        plans = [r for r in plans if r["model"] == smoke_model and r["task"] == smoke_task
-                 and r["seed"] in smoke_seeds and "reuse_study" not in r]
-        if len(plans) != 2:
-            raise ValueError("Smoke selection must resolve to exactly two independent runs")
     probe_file = root / f"probe_{actual}.json"
-    if study not in ("probe", "determinism") and smoke_model is None:
+    has_neural_runs = any(plan["model"] not in TREE_MODELS for plan in plans)
+    if only == "trees":
+        print(f"{study}: {len(plans)} selected tree runs on CPU; no neural timing probe required.", flush=True)
+    if has_neural_runs and study not in ("probe", "determinism") and smoke_model is None:
         if not probe_file.exists():
             raise RuntimeError("Run the three-epoch probe first on this campaign and device")
         probe = json.loads(probe_file.read_text())
         validate_probe(probe, environment_identity(actual, versions))
-        for name in ("B1", "B3", "B2", "B4", "B5"):
-            count = sum("reuse_study" not in r for r in study_runs(name))
-            print(f"{name}: {count} runs; rough neural projection {projected_neural_hours(name, probe['seconds_per_epoch']):.2f} hours, trees and model differences excluded", flush=True)
+        _print_neural_projections(probe["seconds_per_epoch"], only)
     lock = (root / "campaign.lock").open("a+")
     try:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -352,8 +419,6 @@ def run_campaign(prepared_dir, output, study, *, device="cpu", campaign="gpu_v2"
         for plan in plans:
             if not budget_allows(time.monotonic() - started, time_budget_hours * 3600):
                 break
-            if "reuse_study" in plan:
-                continue
             split = plan["split_seed"]
             if split not in prepared_cache:
                 prepared_cache[split] = load_prepared(Path(prepared_dir) / f"split_{split}.npz")
@@ -362,15 +427,19 @@ def run_campaign(prepared_dir, output, study, *, device="cpu", campaign="gpu_v2"
             arrays, meta = prepared["arrays"], prepared["metadata"]
             try:
                 task, name, seed = plan["task"], plan["model"], plan["seed"]
-                tree = name in ("random_forest", "xgboost")
+                tree = name in TREE_MODELS
                 run_device = "cpu" if tree else actual
                 max_epochs = smoke_epochs or (3 if study == "probe" else 60 if study == "B4" else 20 if task == "binary" else 30)
                 cfg = TrainConfig(seed=seed, max_epochs=max_epochs, alpha_mode=meta["frozen_alpha"][task],
                                   patience=10 if plan["arm"] == "patience10_min15" else 6,
                                   lr=plan.get("lr", .0015))
+                run_versions = {**versions, 'gpu_name': None} if tree else versions
                 identity = {"campaign": campaign, "plan": plan, "device": run_device, "config": dataclasses.asdict(cfg),
                             "data_fingerprint": meta["data_fingerprint"], "payload_sha256": meta["payload_sha256"],
-                            "prepared_sha256": _sha256(Path(prepared_dir) / f"split_{split}.npz"), "libraries": versions}
+                            "prepared_sha256": _sha256(Path(prepared_dir) / f"split_{split}.npz"), "libraries": run_versions}
+                if tree:
+                    identity = _resolve_tree_identity(root, identity)
+                    run_versions = identity['libraries']
                 fingerprint = run_fingerprint(identity)
                 directory = root / run_device / fingerprint
                 directory.mkdir(parents=True, exist_ok=True)
@@ -403,7 +472,15 @@ def run_campaign(prepared_dir, output, study, *, device="cpu", campaign="gpu_v2"
                 prefix = "y2_" if task == "binary" else "y12_"
                 ytrain, yval, ytest = (arrays[prefix + k] for k in ("train", "val", "test"))
                 names = ["normal", "attack"] if task == "binary" else prepared["class_names"]
-                seed_everything(seed)
+                if only == "trees":
+                    # PyTorch's global seeding helper also seeds CUDA generators.
+                    random.seed(seed)
+                    np.random.seed(seed)
+                    torch.default_generator.manual_seed(seed)
+                    torch.set_num_threads(cfg.threads)
+                    torch.use_deterministic_algorithms(True)
+                else:
+                    seed_everything(seed)
                 with warnings.catch_warnings(record=True) as config_warnings:
                     warnings.simplefilter("always")
                     configure_device(actual)
@@ -416,11 +493,16 @@ def run_campaign(prepared_dir, output, study, *, device="cpu", campaign="gpu_v2"
                                    "device": run_device, "requested_device": device, "config": dataclasses.asdict(cfg),
                                    "data_fingerprint": meta["data_fingerprint"], "payload_sha256": meta["payload_sha256"],
                                    "prepared_sha256": identity["prepared_sha256"], "run_fingerprint": fingerprint,
-                                   "libraries": versions, "warnings": warning_ledger, "effective_settings": effective_settings(),
+                                   "libraries": run_versions, "warnings": warning_ledger, "effective_settings": effective_settings(),
                                    "best_epoch": None, "best_val_macro_f1": None, "epochs_run": None, "history": [], "headline_checkpoint": "best"}
                         identity_path = directory / "run_identity.json"
-                        if identity_path.exists() and json.loads(identity_path.read_text()) != pending:
-                            raise RunStopped("Tree pending identity differs")
+                        if identity_path.exists():
+                            preserved = json.loads(identity_path.read_text())
+                            if (preserved.get('status') != 'pending' or preserved.get('run_fingerprint') != fingerprint
+                                    or _tree_record_identity(preserved, plan) != identity):
+                                raise RunStopped("Tree pending identity differs")
+                            pending = preserved
+                            warning_ledger = list(pending['warnings'])
                         if not identity_path.exists():
                             _write_json(identity_path, pending)
                     if tree:
@@ -472,10 +554,10 @@ def run_campaign(prepared_dir, output, study, *, device="cpu", campaign="gpu_v2"
                             item["state_dict_path"] = str(model_path.relative_to(root))
                             item["state_dict_sha256"] = _sha256(model_path)
                     record = {"schema_version": 1, "status": "complete", "campaign": campaign, **plan,
-                              "device": run_device, "requested_device": device, "config": dataclasses.asdict(cfg),
+                              "device": run_device, "requested_device": pending['requested_device'] if tree else device, "config": dataclasses.asdict(cfg),
                               "data_fingerprint": meta["data_fingerprint"], "payload_sha256": meta["payload_sha256"],
-                              "prepared_sha256": identity["prepared_sha256"], "run_fingerprint": fingerprint, "libraries": versions,
-                              "warnings": warning_ledger + [{"epoch": None, "phase": "run", "message": str(w.message), "category": w.category.__name__} for w in caught], "effective_settings": effective_settings(), "best_epoch": info["best_epoch"],
+                              "prepared_sha256": identity["prepared_sha256"], "run_fingerprint": fingerprint, "libraries": run_versions,
+                              "warnings": warning_ledger + [{"epoch": None, "phase": "run", "message": str(w.message), "category": w.category.__name__} for w in caught], "effective_settings": pending['effective_settings'] if tree else effective_settings(), "best_epoch": info["best_epoch"],
                               "best_val_macro_f1": info["best_val_macro_f1"], "epochs_run": info["epochs_run"],
                               "history": info["history"], "headline_checkpoint": "best", "checkpoints": checkpoints}
                     _write_json(record_path, record)
@@ -485,9 +567,7 @@ def run_campaign(prepared_dir, output, study, *, device="cpu", campaign="gpu_v2"
                     mean = float(np.mean([row["seconds"] for row in info["history"]]))
                     _write_json(probe_file, {"seconds_per_epoch": mean, "run_fingerprint": fingerprint, "environment": environment_identity(actual, versions)})
                     print(f"Probe: {mean:.3f} seconds/epoch.", flush=True)
-                    for label in ("B1", "B3", "B2", "B4", "B5"):
-                        count = sum("reuse_study" not in r for r in study_runs(label))
-                        print(f"{label}: {count} runs; rough projection {projected_neural_hours(label, mean):.2f} hours; trees and model differences excluded", flush=True)
+                    _print_neural_projections(mean, only)
                 if complete % zip_every == 0:
                     package_campaign(root, output / f"{campaign}.zip")
             except RunStopped as exc:

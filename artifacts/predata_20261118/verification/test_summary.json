@@ -1,0 +1,45 @@
+{
+  "suite_cases": 253,
+  "suite_seconds": 24.96,
+  "synthetic_cases": 4,
+  "fits": 5,
+  "epochs": 7,
+  "synthetic_case_seconds": 1.968,
+  "cases": [
+    {
+      "name": "test_benchmark_pass_only_updates_timing_from_cached_models",
+      "seconds": 0.833,
+      "synthetic_training": "true",
+      "fits": "1",
+      "epochs": "1",
+      "train_rows_per_fit": "4"
+    },
+    {
+      "name": "test_skip_benchmark_suppresses_all_timing_calls",
+      "seconds": 0.981,
+      "synthetic_training": "true",
+      "fits": "1",
+      "epochs": "1",
+      "train_rows_per_fit": "4"
+    },
+    {
+      "name": "test_changed_checkpoint_cannot_reuse_test_metrics",
+      "seconds": 0.051,
+      "synthetic_training": "true",
+      "fits": "1",
+      "epochs": "1",
+      "train_rows_per_fit": "4"
+    },
+    {
+      "name": "test_deterministic_training_restores_checkpoint",
+      "seconds": 0.103,
+      "synthetic_training": "true",
+      "fits": "2",
+      "epochs": "4",
+      "train_rows_per_fit": "24"
+    }
+  ],
+  "new_real_smoke": "NOT RUN",
+  "CUDA": "NOT RUN",
+  "benchmark": "NOT RUN"
+}

@@ -1,0 +1,86 @@
+{
+  "status": "PASS",
+  "prepared_manifest_sha256": "95eb221ecbd74f172d978abd58d3f5c2863ac9708288446a331b6fce980b7b35",
+  "manifest_unchanged": true,
+  "split42_canonical_arrays_identical": {
+    "y2_train": true,
+    "y2_test": true,
+    "y12_train": true,
+    "y12_test": true,
+    "x_val": true,
+    "x_train": true,
+    "y2_val": true,
+    "x_test": true,
+    "y12_val": true
+  },
+  "splits": [
+    {
+      "split_seed": 42,
+      "sha256": "359132d34457583794e8bddb1d5650f5a8f6e7f77e10fcd3d92573f57cab94a1",
+      "payload_sha256": "f7e919984eb63654d557a2757440a68af0b0da30f1f3b9d6f119d9d74a336b39",
+      "status": "PASS"
+    },
+    {
+      "split_seed": 43,
+      "sha256": "7b30d29d52c5d7e5f11d0a626d5a01d535a1174fff768728f358f905f8067bb5",
+      "payload_sha256": "06f9cf6e955802fdade47860f5d2d994df0cb64e6410c195c7555b2d44e56bd8",
+      "status": "PASS"
+    },
+    {
+      "split_seed": 44,
+      "sha256": "7d937923e0e19ddb4602c26a34bd506a56b6da1e30b826a4dbcd926613fd5a95",
+      "payload_sha256": "f24856debb8cf56f26d43a4133b105f416a19f82eae4b52b62a7b6d1adc04dc6",
+      "status": "PASS"
+    },
+    {
+      "split_seed": 45,
+      "sha256": "4960664b2c83369b51fd9750df0806517638ff66b8b686da71517064364685d9",
+      "payload_sha256": "f708b99fa782e8a28f685d39d1567aeb357e6a86aae7a8689e9fdfb06debc5ee",
+      "status": "PASS"
+    },
+    {
+      "split_seed": 46,
+      "sha256": "0a752c5ffdf3c5d6167e07b788b85e579347bcd304d11562f764a1b9f4a97055",
+      "payload_sha256": "ecb0b9d59a5368f43f2d412c33463acd19bb93d1d161283f824b931009758f2b",
+      "status": "PASS"
+    },
+    {
+      "split_seed": 47,
+      "sha256": "0418319d34021a33d2590c306c704bce0561aa28b0f48cc47adb397170e80930",
+      "payload_sha256": "9ac76b105114b594bc0d5b521d0ec59ed713ab62e2e36ea2b821b6e5ebc716ac",
+      "status": "PASS"
+    },
+    {
+      "split_seed": 48,
+      "sha256": "a85298e8be3e15da23eed6f1c3aae596bd14c755a141130bd4cb94f3f3df2c24",
+      "payload_sha256": "3bbce6f2e9d91f0eb2a9e72e58b616852c7cd17b1127fb922323e92c0db3a7c6",
+      "status": "PASS"
+    },
+    {
+      "split_seed": 49,
+      "sha256": "4d8cc263647bcb3eddd12daeded3b98fabe6a563e0662e13f2d65bf70400ac1b",
+      "payload_sha256": "583605cd2283a2f4093c572ea8da985c2b3df5b5dd241fccbe16045d3091c1c0",
+      "status": "PASS"
+    },
+    {
+      "split_seed": 50,
+      "sha256": "a56e25a701bca5a2b10f51ce126a9397c3a3b5aaeadefd04d447668b92d339b2",
+      "payload_sha256": "3c05654cfac5772c047e6627ccf30332616e9ec4e662c5804f870f9f604b22a4",
+      "status": "PASS"
+    },
+    {
+      "split_seed": 51,
+      "sha256": "3471a83dbcb73c184a3cb07d1eac7b1d5a1882b8e16c6a4637cdcedbe1c125b8",
+      "payload_sha256": "97ef8ec82e9339c75eadfef9a50d40c23c3c2d2d512b97867ff2d093c505d4f7",
+      "status": "PASS"
+    }
+  ],
+  "new_exports": "NOT RUN",
+  "training": "NOT RUN",
+  "CUDA": "NOT RUN",
+  "split42_canonical_indices_identical": {
+    "train": true,
+    "val": true,
+    "test": true
+  }
+}

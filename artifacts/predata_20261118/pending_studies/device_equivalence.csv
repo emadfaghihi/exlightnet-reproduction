@@ -1,0 +1,1 @@
+task,model,reference_campaign,comparison_campaign,reference_device,comparison_device,n_pairs,cpu_v1_mean,cpu_v1_sd,cpu_v1_seed42,gpu_v2_mean,gpu_v2_sd,gpu_v2_seed42,mean_difference,ci_low,ci_high,sample_label

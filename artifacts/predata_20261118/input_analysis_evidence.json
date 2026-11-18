@@ -1,0 +1,23 @@
+{
+  "old_background_size": 200,
+  "old_random_sample_size": 300,
+  "old_method": "GradientExplainer",
+  "old_nsamples": 200,
+  "old_extra_local_examples": 2,
+  "cached_model_fingerprint": "c93d66b3c7b791ac0b4cff4d9680348b799b6b6a878c21af0e18883a7d9aa3ad",
+  "per_class_test_support": {
+    "arp_poisioning": 1162,
+    "ddos_slowloris": 80,
+    "dos_syn_hping": 14199,
+    "metasploit_brute_force_ssh": 5,
+    "mqtt_publish": 622,
+    "nmap_fin_scan": 4,
+    "nmap_os_detection": 300,
+    "nmap_tcp_scan": 151,
+    "nmap_udp_scan": 389,
+    "nmap_xmas_tree_scan": 302,
+    "thing_speak": 1216,
+    "wipro_bulb": 38
+  },
+  "expected_stratified_size": 259
+}

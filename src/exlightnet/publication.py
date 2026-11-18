@@ -152,11 +152,26 @@ def limitation_paragraphs(root, rows=None, tables=None):
     return [
         "The class-stratified flow split is fixed. The five canonical seeds vary initialization and sampling, not the split; n=5, indicative only. Related attack-run flows can cross partitions because session/campaign identifiers are absent. A clustering PROXY is not campaign-disjoint validation.",
         rare_class_warning(root, rows, tables),
-        "The relation between epochs run and macro-F1 is descriptive. Early stopping combined with a cosine schedule that has not reached its horizon is a hypothesis, to be tested by [Stage B stopping-rule interventions](docs/KAGGLE_RUNBOOK.md); correlation alone does not establish causality.",
+        "The relation between epochs run and macro-F1 is descriptive. The dated stopping-rule hypothesis uses predeclared primary and secondary endpoints; even a supported result never establishes causality. See the effective declaration and Stage B report.",
         "The persisted training-dynamics table flags std_cnn instability (early best-validation epochs or large seed SD). This baseline cannot establish that ExLightNet is superior. Zero observed seed variance, including XGBoost under the paper configuration, is flagged in the generated summary; its paired test remains a test of the paired differences.",
         "PyTorch eager batch-one latency includes framework dispatch overhead. It is not pure compute cost or hardware-independent performance. The dispatch fraction is NOT MEASURED. Exported/frozen-model latency is NOT RUN; no such benchmark is inferred from the eager timings.",
         "Supplementary GPU accuracy/stopping/split studies are separate from cpu_v1; CUDA was NOT EXECUTED here. CPU/GPU device-equivalence views are descriptive and cannot pool campaigns or assert a pass/fail equivalence gate.",
     ]
+
+
+def stopping_hypothesis_declaration(root):
+    """Load the dated effective text; never reinterpret it from measured scores."""
+    path = Path(root) / 'docs/statistics_protocol.json'
+    if not path.exists():
+        return None
+    protocol = read_json(path)
+    amendment = next((item for item in protocol.get('amendments', [])
+                      if item['id'] == 'PA-20261118-1'), None)
+    if amendment is None:
+        return None
+    return {'id': amendment['id'], 'date': amendment['date'], 'rules': amendment['rules_verbatim'],
+            'original_source': 'docs/protocol_declarations/2026-11-17-original.json',
+            'effective_source': 'docs/statistics_protocol.json', 'results_source': 'REPORT_stats_v2.md'}
 
 
 def validate_publication_text(text):
@@ -192,8 +207,9 @@ def active_scope_legacy_flags(root):
     """Scan active sources/presentations/new statistics, excluding immutable history."""
     root = Path(root)
     candidates = []
-    names = ["src", "scripts", "tests", "notebooks"]
+    names = ["src", "scripts", "tests", "notebooks", "artifacts/final_analysis"]
     names += [str(path.relative_to(root)) for path in (root / "artifacts").glob("stats_*") if path.is_dir()]
+    names += [str(path.relative_to(root)) for path in (root / "artifacts").glob("predata_*/pending_studies") if path.is_dir()]
     for name in names:
         candidates.extend(path for path in (root / name).rglob("*") if path.is_file()
                           and path.suffix in (".py", ".md", ".ipynb", ".json", ".csv"))

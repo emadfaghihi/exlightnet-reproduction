@@ -189,6 +189,22 @@ EXLIGHTNET_RUN_MODE=full python scripts/execute_notebook.py
 python scripts/package_deliverables.py
 ```
 
+For the dated hosted handoff, refresh all three requested files together using
+the recorded validation statements:
+
+```bash
+python scripts/package_deliverables.py \
+  --evidence-dir artifacts/predata_20261118/verification \
+  --hosted-verification artifacts/predata_20261118/verification/hosted_checks.json
+```
+
+This additionally writes `delivery/stats_gpu_v2/hosted_handoff.zip` with
+`notebooks/kaggle_runner.ipynb`, `prepared/manifest.json`, `hosted_source.zip`
+and individual SHA256 / TESTED / NOT TESTED statements. Plain packaging refreshes
+the main/component archives only; it does not refresh an existing handoff ZIP.
+The hosted runner notebook has never been executed here. Syntax and command
+wiring checks do not establish Kaggle or CUDA execution.
+
 [notebooks/ExLightNet_reproduction.ipynb](notebooks/ExLightNet_reproduction.ipynb)
 contains outputs. Restart-and-Run-All defaults to full cached analysis and
 performs no training or test inference. Existing demonstration results appear
@@ -219,6 +235,21 @@ DeepExplainer checks additivity on two inputs before attempting the full set;
 an unsupported graph uses the prescribed GradientExplainer fallback immediately.
 Background size, random explanation sample and fallback sampling settings remain
 the declared fast/full values, and measured additivity residuals are reported.
+
+The dated stratified final analysis is separate from those original explanation
+files: `artifacts/final_analysis/stratified_shap_20261118/analysis.json` binds its
+inputs, method, warnings and twelve output checksums. It includes per-class
+top-ten rankings, equally weighted class-global rankings, twenty random deletion
+orders per class, k=10 comparisons and the earlier random-sample composition.
+Reports/notebooks read these files; they do not repeat SHAP. Its additivity
+errors are global summaries over all flow/output-logit pairs; separate logit
+summaries were not retained. It is approximate final analysis, never selection.
+
+The effective stopping rule in `docs/statistics_protocol.json` is a dated
+amendment, alongside the preserved original declaration. Fixed30 LAST versus
+paper BEST-validation is primary; fixed30 BEST is secondary. Both use the
+predeclared paired uncertainty rules, disagreement is inconclusive and no
+causality is claimed. All real supplementary studies remain pending here.
 
 ## Raspberry Pi
 

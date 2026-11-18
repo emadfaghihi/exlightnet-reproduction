@@ -114,3 +114,19 @@ training is limited to the requested two-seed, two-epoch CPU smoke. Preserve
 old derived versions before report/notebook regeneration and write fresh
 verification records to new paths. The supplied brief's hard rules and its
 a-priori interpretation rules govern the supplementary runner and aggregator.
+
+AMENDMENT 2026-11-18 — PRE-DATA RULES AND FINAL STRATIFIED ANALYSIS
+The dated PA-20261118-1 through PA-20261118-6 records appended to
+docs/statistics_protocol.json preserve and supersede the relevant original
+declaration. The stopping-hypothesis primary endpoint is fixed30 LAST versus
+paper BEST-validation, with quantified paired mean/SD-ratio uncertainty and a
+secondary fixed30 BEST endpoint; never make a causal claim. B1/B2/B3 use
+seed-major order with unchanged run identities; statistical inference excludes
+incomplete matched study blocks. Neural and tree sessions can be scheduled
+separately without skipping seeds or mixing campaigns. A separate cached-model
+CPU-only stratified SHAP final analysis is authorized (25 flows per class or all
+if rarer, exact old200 training background); old explanations remain immutable.
+The hosted notebook, prepared manifest and hosted-source ZIP must be handed
+off together with checksums and explicit tested/not-tested statements. Optional
+B6 is NOT RUN if skipped. No new training, Stage B run or benchmark is authorized
+by these mandatory changes.

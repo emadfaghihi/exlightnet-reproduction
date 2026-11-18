@@ -1,0 +1,29 @@
+{
+  "status": "PASS",
+  "hosted_source_sha256": "06fb79c18af5471174cdc99a75bcedbd39e0e0d022ee26904588fbc2bd595e6f",
+  "hosted_source_bytes": 132547,
+  "CRC": "PASS",
+  "offline_install_exit": 0,
+  "imports_exit": 0,
+  "CLI_help_exit": 0,
+  "install_command": [
+    "python3",
+    "-m",
+    "pip",
+    "install",
+    "--no-index",
+    "--no-deps",
+    "--no-build-isolation",
+    "--target",
+    "/tmp/exlightnet-hosted-check-qeni3j6n/installed",
+    "/tmp/exlightnet-hosted-check-qeni3j6n/extracted"
+  ],
+  "temp_root": "/tmp/exlightnet-hosted-check-qeni3j6n",
+  "log": "artifacts/predata_20261118/verification/hosted_install.log",
+  "dependencies_downloaded": false,
+  "real_training": "NOT RUN",
+  "new_smoke": "NOT RUN",
+  "benchmark": "NOT RUN",
+  "hosted_notebook": "NEVER EXECUTED",
+  "CUDA": "NOT EXECUTED HERE"
+}

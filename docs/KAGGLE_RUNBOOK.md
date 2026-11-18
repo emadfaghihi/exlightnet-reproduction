@@ -5,6 +5,27 @@ a separate `gpu_v2` campaign; they do not replace it. The CUDA path has not been
 executed on a GPU here. Local validation is the separately labelled CPU smoke.
 There is no SHAP, latency, size, memory or INT8 measurement in this runner.
 
+## Dated pre-data amendment — 2026-11-18
+
+The original protocol remains recorded; PA-20261118-1 through
+PA-20261118-6 in `docs/statistics_protocol.json` describe the new effective
+rules. The stopping hypothesis compares **fixed30 last epoch** with **paper
+best-validation** as its primary endpoint. Fixed30 best-validation is secondary.
+The report shows both, applies the declared paired mean-CI and SD-ratio
+bootstrap criteria, treats disagreement as inconclusive, and never claims
+causality. Neither checkpoint is selected using test performance.
+
+B1/B2/B3 are now seed-major, with the same per-run fingerprints. Every prefix
+has complete task/model/arm blocks for all but possibly its final seed. Local
+aggregation excludes incomplete predeclared study seed blocks from paired
+inference and lists them as `incomplete; excluded` in `completeness.csv`.
+Partial descriptive records are retained; no missing observation is filled in.
+
+The separate local stratified SHAP job is a **final analysis**, outside this
+hosted training runner. Old explanation files are retained. Optional B6 is
+**NOT RUN**; do not describe the unexecuted clustering PROXY as campaign-disjoint
+validation.
+
 ## 1. Prepare the two uploads locally
 
 Use the checked Python 3.11 environment. The export uses only training rows to
@@ -107,6 +128,58 @@ separate device columns. No model's sample vector pools CPU and CUDA runs.
 `STUDY = "determinism"` is a separate diagnostic: it trains the same declared
 seed twice and records maximum absolute differences in macro-F1 and logits.
 It does not establish bitwise equality with the canonical CPU campaign.
+
+### Run neural models and trees in separate sessions
+
+The new `--only` option accepts `all` (default), `neural` or `trees`. It selects
+work without changing recipes, cache identities or seeds. `all` preserves the
+combined workflow; no XGBoost seed is skipped because its results happen to be
+deterministic.
+
+For a GPU session, set `ONLY = "neural"` and `DEVICE = "cuda"` in the notebook.
+Run its matching probe before the long neural study:
+
+```bash
+python scripts/kaggle_campaign.py --prepared-dir /kaggle/input/exlightnet-prepared \
+  --output /kaggle/working --campaign gpu_v2 --study probe --device cuda --only neural
+python scripts/kaggle_campaign.py --prepared-dir /kaggle/input/exlightnet-prepared \
+  --output /kaggle/working --campaign gpu_v2 --study B1 --device cuda --only neural \
+  --time-budget-hours 8
+```
+
+For a separate CPU-only session, select no GPU accelerator, set `ONLY = "trees"`
+and `DEVICE = "cpu"`, attach the same prepared/code datasets and use:
+
+```bash
+python scripts/kaggle_campaign.py --prepared-dir /kaggle/input/exlightnet-prepared \
+  --output /kaggle/working --campaign gpu_v2 --study B1 --device cpu --only trees \
+  --time-budget-hours 8
+```
+
+Trees-only needs neither CUDA nor a neural probe; it runs every declared
+RandomForest and XGBoost seed. Use `B2` similarly for its tree split study.
+CPU-tree identity uses run-specific library provenance without the session's
+GPU name. A compatible inherited tree cache retains its original fingerprint
+and receipts; changing the selector or requested device cannot repeat its fit
+or final evaluation. Conflicting legacy candidates stop for inspection.
+Studies without tree plans must not create fake completed runs. Download the
+neural and tree result ZIPs under distinct local filenames, such as
+`gpu_v2_neural_B1.zip` and `gpu_v2_trees_B1.zip`, so one download cannot replace
+the other. Pass both archives to `aggregate_gpu_v2.py`.
+
+The aggregator merges verified records within the same `gpu_v2` campaign and
+preserves per-record devices/environment identities. Comparisons carry the
+explicit mixed-device label. A neural-only shard does not yet contain a full
+matched study block when the corresponding trees are missing: those seeds
+remain `incomplete; excluded` for inference until the other shard is imported.
+Separate campaigns are still a hard error. Do not mix different actual GPU
+models/runtime identities in one neural model's seed vector.
+
+The local three-file handoff is `delivery/stats_gpu_v2/hosted_handoff.zip`.
+`HOSTED_HANDOFF.md` and `HOSTED_HANDOFF.json` state each file's SHA256 and the
+exact checks performed. Regenerate it together with the source bundle using
+the `--hosted-verification` command in README. The Kaggle notebook and CUDA
+path have never been executed locally; packaging/import checks are separate.
 
 ## 5. Save outputs and resume an interrupted session
 

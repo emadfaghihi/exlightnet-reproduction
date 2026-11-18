@@ -1,0 +1,72 @@
+F.                                                                       [100%]
+=================================== FAILURES ===================================
+_ test_hosted_handoff_contains_all_three_artifacts_and_individual_test_status __
+
+tmp_path = PosixPath('/tmp/pytest-of-mparsict/pytest-10/test_hosted_handoff_contains_a0')
+
+    def test_hosted_handoff_contains_all_three_artifacts_and_individual_test_status(tmp_path):
+        import hashlib
+        import json
+        import zipfile
+        script = load_script()
+        names = ('notebooks/kaggle_runner.ipynb', 'prepared/manifest.json',
+                 'delivery/stats_gpu_v2/hosted_source.zip')
+        for name in names:
+            path = tmp_path / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes(name.encode())
+        verification = {name: {'tested': 'fixture checksum verification',
+                               'not_tested': 'hosted execution and CUDA', 'bytes': -1, 'sha256': 'forged'} for name in names}
+        output = tmp_path / 'delivery/stats_gpu_v2'
+>       bundle, receipt, description = script.package_hosted_handoff(tmp_path, output, verification)
+
+tests/test_packaging.py:94: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+root = PosixPath('/tmp/pytest-of-mparsict/pytest-10/test_hosted_handoff_contains_a0')
+output = PosixPath('/tmp/pytest-of-mparsict/pytest-10/test_hosted_handoff_contains_a0/delivery/stats_gpu_v2')
+verification = {'delivery/stats_gpu_v2/hosted_source.zip': {'bytes': -1, 'not_tested': 'hosted execution and CUDA', 'sha256': 'forged...'bytes': -1, 'not_tested': 'hosted execution and CUDA', 'sha256': 'forged', 'tested': 'fixture checksum verification'}}
+
+    def package_hosted_handoff(root, output, verification):
+        """Bundle the requested trio with supplied, per-artifact validation evidence."""
+        root, output = Path(root), Path(output)
+        names = ('notebooks/kaggle_runner.ipynb', 'prepared/manifest.json',
+                 'delivery/stats_gpu_v2/hosted_source.zip')
+        files = {}
+        for name in names:
+            status = verification.get(name, {})
+            if any(not isinstance(status.get(key), str) or not status[key].strip()
+                   for key in ('tested', 'not_tested')):
+                raise ValueError(f'Missing individual verification statements: {name}')
+            source = root / name
+            if source.is_symlink() or not source.is_file():
+                raise ValueError(f'Missing hosted handoff artifact: {name}')
+            files[name] = {'sha256': hashlib.sha256(source.read_bytes()).hexdigest(),
+                           'bytes': source.stat().st_size, **status}
+        output.mkdir(parents=True, exist_ok=True)
+        receipt, description = output / 'HOSTED_HANDOFF.json', output / 'HOSTED_HANDOFF.md'
+        receipt.write_text(json.dumps({'files': files}, indent=2) + '\n')
+        lines = ['# Hosted handoff', '',
+                 'Validation below does not imply Kaggle or CUDA execution.', '']
+        for name, record in files.items():
+            lines.extend([f'## {name}', '', f'SHA256: `{record["sha256"]}`', '',
+                          record['tested'], '', record['not_tested'], ''])
+        description.write_text('\n'.join(lines))
+        bundle = output / 'hosted_handoff.zip'
+        with zipfile.ZipFile(bundle, 'w', compression=zipfile.ZIP_DEFLATED, compresslevel=6) as archive:
+            for name in names:
+                archive.write(root / name, name)
+            for path in (receipt, description):
+                archive.write(path, path.name)
+        with zipfile.ZipFile(bundle) as archive:
+            if archive.testzip() is not None:
+                raise ValueError('Invalid hosted handoff archive')
+            for name, record in files.items():
+                if hashlib.sha256(archive.read(name)).hexdigest() != record['sha256']:
+>                   raise ValueError(f'Hosted handoff checksum mismatch: {name}')
+E                   ValueError: Hosted handoff checksum mismatch: notebooks/kaggle_runner.ipynb
+
+scripts/package_deliverables.py:105: ValueError
+=========================== short test summary info ============================
+FAILED tests/test_packaging.py::test_hosted_handoff_contains_all_three_artifacts_and_individual_test_status
+1 failed, 1 passed, 4 deselected in 1.94s

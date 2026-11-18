@@ -10,7 +10,8 @@ from .io import read_json
 from .metrics import summarize
 from .paper import PAPER_REPORTED
 from .publication import (execution_status, limitation_paragraphs, load_statistics,
-                          rare_class_warning, statistic_sections, validate_publication_text)
+                          rare_class_warning, statistic_sections, stopping_hypothesis_declaration,
+                          validate_publication_text)
 
 
 def md_table(headers, rows):
@@ -173,6 +174,14 @@ def build_report(root=Path("."), output=None, statistics_dir=None, evidence_dir=
                   md_table(["Scope", "Cases/runs", "Fits", "Epochs", "Seconds"],
                            [["Synthetic tests in the final full suite", synthetic["cases"], synthetic["fits"], synthetic["epochs"], synthetic["pytest_seconds"]],
                             ["Real-data CPU smoke with ZIP restore and cache restart", smoke["runs"], smoke["runs"], smoke["epochs"], smoke["seconds"]]]), ""]
+    declaration = stopping_hypothesis_declaration(root)
+    if declaration is not None:
+        lines += ['### Effective stopping-hypothesis declaration', '',
+                  declaration['id'] + ' (' + declaration['date'] + '). Original declaration: ' + declaration['original_source'] +
+                  '; effective dated amendment: ' + declaration['effective_source'] + '.', '',
+                  *[rule + '\n' for rule in declaration['rules']],
+                  'Stage B execution/completeness and both endpoints are reported separately in ' + declaration['results_source'] +
+                  '; a declared rule is not execution evidence.', '']
     for mode in ("fast", "full"):
         lines += ["## Fast demonstration (historical)" if mode == "fast" else "## Full CPU reproduction", ""]
         directory = root / "results" / mode
@@ -286,6 +295,34 @@ def build_report(root=Path("."), output=None, statistics_dir=None, evidence_dir=
             lines += ["### " + section["title"], "", section["description"], "", warning, "", "Source: " + section["source"], "", md_table(columns, _frame_rows(section["frame"], columns)), ""]
     else:
         lines += ["NOT RUN: generated cached CPU statistics are unavailable. No statistics are fabricated.", ""]
+    from .final_presentation import FINAL_ANALYSIS_PATH, load_final_analysis
+    final_analysis = load_final_analysis(root)
+    if final_analysis is not None:
+        final = final_analysis['manifest']
+        attribution = final['attribution']
+        lines += ["## Stratified SHAP — final analysis (2026-11-18)", "",
+                  final['label'] + '. No model, epoch, threshold or recipe was selected with this analysis. Original explanation files remain unchanged.', "",
+                  "Source: " + str(FINAL_ANALYSIS_PATH / 'analysis.json'), "",
+                  "Primary feature importance is mean absolute attribution to each true class’s own logit, conditional on that true class. The primary global ranking averages class vectors equally. The auxiliary all-output global ranking uses the earlier output-channel averaging definition with equal true-class weights; this separates output-target changes from class reweighting.", "",
+                  md_table(["Test sample size", "Training background size", "Method", "Gradient samples", "Max abs. additivity residual", "Mean abs. residual", "Fallback reason"],
+                           [[final['sample_size'], final['background_size'], attribution['method'], attribution.get('nsamples_gradient'), attribution.get('additivity_max_abs'), attribution.get('additivity_mean_abs'), attribution.get('fallback_reason')]]), "",
+                  f"Additivity residuals summarize {final['sample_size']} flows by {len(final['class_names'])} output logits. Separate output-logit summaries were not retained. These are approximate attributions, not exact SHAP.", '',
+                  'Recorded warnings: ' + '; '.join(attribution.get('warnings', [])), '',
+                  "Sampling and true-class support (all available flows are retained below the declared per-class cap):", "",
+                  md_table(list(final['class_summary'][0]), [[row[key] for key in final['class_summary'][0]] for row in final['class_summary']]), ""]
+        for name, title in (('earlier_random300_class_composition', 'Class composition of the earlier random sample, excluding its extra local examples'),
+                            ('per_class_top10', 'Per-class top-ten rankings for own-class logits'),
+                            ('balanced_global_ranking', 'Equal-class global ranking for own-class logits'),
+                            ('balanced_global_all_outputs_ranking', 'Equal-class auxiliary global ranking over all output logits'),
+                            ('early_deletion_k10', 'Per-class early deletion and random-order comparison')):
+            frame = final_analysis['tables'][name]
+            columns = frame.columns.tolist()
+            lines += ["### " + title, "", "Source: " + str(FINAL_ANALYSIS_PATH / (name + '.csv')), "", md_table(columns, _frame_rows(frame, columns)), ""]
+        lines += ["Deletion uses the SHAP order for each flow’s fixed original predicted-class logit and follows that class’s probability, grouped by true class. The zero-removal probability is reused from the final cache. Random-minus-SHAP at the declared early-removal point is a descriptive paired-flow contrast, not a significance test. Tiny supports, approximate additivity and distribution-shifting zero masks limit interpretation; curves need not be monotone and no causal or selection claim follows.", "",
+                  "Full curves and random-order replicates: " + str(FINAL_ANALYSIS_PATH / 'deletion_curves.csv') + ' and ' + str(FINAL_ANALYSIS_PATH / 'deletion_replicates.npz') + '.', "",
+                  f"![Balanced global final-analysis ranking]({FINAL_ANALYSIS_PATH / 'balanced_global_ranking.png'})", "",
+                  f"![Per-class final-analysis rankings]({FINAL_ANALYSIS_PATH / 'per_class_top10.png'})", "",
+                  f"![Per-class final-analysis deletion curves]({FINAL_ANALYSIS_PATH / 'deletion_panels.png'})", ""]
     lines += ["## Limitations", ""]
     for paragraph in limitation_paragraphs(root, tables=statistics):
         lines += [paragraph, ""]

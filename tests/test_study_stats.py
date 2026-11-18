@@ -11,7 +11,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from exlightnet.campaign import run_fingerprint
+from exlightnet.campaign import run_fingerprint, study_runs
 from exlightnet.stats import class_f1_from_confusion, flow_confusion, macro_f1_from_confusion
 from exlightnet.study_stats import aggregate_studies, read_study_archives, _validate_history
 
@@ -47,14 +47,15 @@ def prepared(tmp_path, split=42):
     return directory
 
 
-def evidence(seed=42, model="exlightnet", *, campaign="gpu_v2", study="B1", arm="paper", device="cuda", split=42, wrong=1, lr=.0015):
+def evidence(seed=42, model="exlightnet", *, campaign="gpu_v2", study="B1", arm="paper", device="cuda", split=42, wrong=1, lr=.0015, task=None, last_wrong=None):
+    task=task or ("multiclass" if study in ("B3","B5","probe","determinism") else "binary")
     config=dict(seed=seed,max_epochs=20,batch_size=512,patience=6,lr=lr,
                 weight_decay=.0001,alpha_mode="none",sampler="tempered",threads=1)
-    if study in ("B3","B5","determinism"):config["max_epochs"]=30
+    if task=="multiclass":config["max_epochs"]=30
     if study=="probe":config["max_epochs"]=3
     if arm=="uncapped60":config["max_epochs"]=60
     if arm=="patience10_min15":config["patience"]=10
-    plan=dict(study=study,task="multiclass" if study in ("B3","B5","probe","determinism") else "binary",model=model,seed=seed,split_seed=split,arm=arm)
+    plan=dict(study=study,task=task,model=model,seed=seed,split_seed=split,arm=arm)
     if study=="B5":plan["lr"]=lr
     y=np.array([0]*12+[1]*12,dtype=np.int8);pred=y.copy();pred[:wrong]=1
     length=config["max_epochs"] if arm=="fixed30" or study=="probe" else 15 if arm=="patience10_min15" else 7
@@ -67,7 +68,17 @@ def evidence(seed=42, model="exlightnet", *, campaign="gpu_v2", study="B1", arm=
     if model in ("random_forest","xgboost"):
         record.update(history=[],epochs_run=None,best_epoch=None,best_val_macro_f1=None)
     record["_prediction"]=(y,pred)
+    if last_wrong is not None:
+        last=y.copy();last[:last_wrong]=1
+        record["_last_prediction"]=last
     return record
+
+
+def seed_block(study,seed):
+    return [evidence(seed,row["model"],study=row.get("reuse_study",study),arm=row["arm"],
+                     split=row["split_seed"],task=row["task"],
+                     device="cpu" if row["model"] in ("random_forest","xgboost") else "cuda")
+            for row in study_runs(study) if row["seed"]==seed]
 
 
 def archive(tmp_path, records, name="results.zip", transform=None):
@@ -75,7 +86,8 @@ def archive(tmp_path, records, name="results.zip", transform=None):
     manifest=json.loads((directory/"manifest.json").read_text())
     members={}
     for original in records:
-        record=copy.deepcopy(original);y,pred=record.pop("_prediction")
+        record=copy.deepcopy(original);y,best=record.pop("_prediction")
+        last=record.pop("_last_prediction",best)
         if str(record["split_seed"]) not in manifest["splits"]:
             prepared(tmp_path,record["split_seed"])
             manifest=json.loads((directory/"manifest.json").read_text())
@@ -87,13 +99,13 @@ def archive(tmp_path, records, name="results.zip", transform=None):
             data_fingerprint=record["data_fingerprint"],payload_sha256=record["payload_sha256"],prepared_sha256=record["prepared_sha256"],libraries=record["libraries"])
         fp=run_fingerprint(identity);record["run_fingerprint"]=fp
         base=f'{record["device"]}/{fp}'
-        cm=flow_confusion(y,pred,2)
-        metrics=dict(accuracy=float(np.mean(y==pred)),macro_f1=macro_f1_from_confusion(cm),confusion_matrix=cm.tolist(),
-            per_class={k:{"f1":float(v),"support":12} for k,v in zip(["normal","attack"],class_f1_from_confusion(cm))})
-        for checkpoint in ("best","last"):
+        for checkpoint,pred in (("best",best),("last",last)):
             if record["model"] in ("random_forest","xgboost") and checkpoint=="last":
                 record["checkpoints"][checkpoint]=copy.deepcopy(record["checkpoints"]["best"])
                 continue
+            cm=flow_confusion(y,pred,2)
+            metrics=dict(accuracy=float(np.mean(y==pred)),macro_f1=macro_f1_from_confusion(cm),confusion_matrix=cm.tolist(),
+                per_class={k:{"f1":float(v),"support":12} for k,v in zip(["normal","attack"],class_f1_from_confusion(cm))})
             prefix=f"{base}/{checkpoint}"
             predictions=npz(y=y,predictions=pred)
             metricbytes=encoded(metrics)
@@ -125,18 +137,29 @@ def test_no_archives_pending_and_exact_protocol(tmp_path):
     paths=aggregate(tmp_path,[],tmp_path/"not_present")
     text=Path(paths["report"]).read_text()
     assert text.count("PENDING: study not run")==5
-    for rule in json.loads(PROTOCOL.read_text())["rules_verbatim"]:
-        assert rule in text
+    protocol=json.loads(PROTOCOL.read_text())
+    original=protocol["rules_verbatim"]
+    assert "unless fixed-budget (arm b) shows both" in original[-1]
+    active,history=text.split("### Superseded original stopping-hypothesis rule")
+    assert original[-1] in history and original[-1] not in active
+    for rule in original[:3]+protocol["amendments"][0]["rules_verbatim"]:
+        assert rule in active
+    assert protocol["amendments"][1]["clarification"] in active
+    assert "PA-20261118-1 (2026-11-18)" in active
+    stopping=pd.read_csv(paths["early_stopping_hypothesis"])
+    assert list(stopping.endpoint_role)==["PRIMARY","SECONDARY"]
+    assert set(stopping.endpoint_decision)=={"PENDING"}
+    assert stopping.mean_difference.isna().all()
     for name,path in paths.items():
         if str(path).endswith(".csv"):
             assert len(pd.read_csv(path).columns)>0
 
 
 def test_valid_dedup_zip_and_hash_manifest(tmp_path):
-    zip_path,directory=archive(tmp_path,[evidence(),evidence(model="mlp",wrong=2)])
+    zip_path,directory=archive(tmp_path,seed_block("B1",42))
     paths=aggregate(tmp_path,[zip_path,zip_path],directory)
     manifest=json.loads(Path(paths["manifest"]).read_text())
-    assert manifest["n_unique_runs"]==2
+    assert manifest["n_unique_runs"]==11
     assert manifest["input_archives"][str(zip_path)]["sha256"]==sha(zip_path.read_bytes())
     paired=pd.read_csv(paths["paired_tests"])
     assert paired.iloc[0].n_pairs==1
@@ -187,11 +210,11 @@ def test_evidence_corruption_rejected(tmp_path,corruption):
 
 
 def test_mixed_gpu_neural_cpu_tree_label_and_same_model_device_error(tmp_path):
-    z,d=archive(tmp_path,[evidence(),evidence(model="random_forest",device="cpu")])
+    z,d=archive(tmp_path,seed_block("B1",42))
     table=pd.read_csv(aggregate(tmp_path,[z],d)["paired_tests"])
     assert set(table.device_label)=={"mixed-device within gpu_v2; trees are device-independent"}
     assert set(table.reference_device)=={"cuda"}
-    assert set(table.comparison_device)=={"cpu"}
+    assert set(table[table.model.isin(["random_forest","xgboost"])].comparison_device)=={"cpu"}
     z,d=archive(tmp_path,[evidence(),evidence(seed=43,device="cpu")],"bad_devices.zip")
     with pytest.raises(ValueError,match="device"):aggregate(tmp_path,[z],d)
 
@@ -203,17 +226,17 @@ def test_smoke_cannot_write_canonical_report(tmp_path):
 
 
 def test_b3_reuses_b1_paper_without_duplicate_training_records(tmp_path):
-    b1=evidence();b1.update(task="multiclass");b1["config"]["max_epochs"]=30
-    b3=evidence(study="B3",arm="fixed30",wrong=0)
-    z,d=archive(tmp_path,[b1,b3])
+    z,d=archive(tmp_path,seed_block("B3",42))
     paths=aggregate(tmp_path,[z],d)
     summary=pd.read_csv(paths["summaries"])
-    assert set(summary[summary.study=="B3"].arm)=={"paper","fixed30"}
+    assert set(summary[summary.study=="B3"].arm)=={"paper","fixed30","patience10_min15"}
     tests=pd.read_csv(paths["paired_tests"])
     arms=tests[(tests.study=="B3")&(tests.comparison_type=="arm")]
-    assert len(arms)==2
+    assert len(arms)==16
     assert set(arms.comparison_arm)=={"paper"}
-    assert set(arms.reference_arm)=={"fixed30"}
+    assert set(arms.reference_arm)=={"fixed30","patience10_min15"}
+    rows=pd.read_csv(paths["per_run"])
+    assert set(rows[(rows.study=="B3")&(rows.arm=="paper")].source_study)=={"B1"}
 
 
 def test_b5_incomplete_arms_never_select_lr(tmp_path):
@@ -222,6 +245,27 @@ def test_b5_incomplete_arms_never_select_lr(tmp_path):
     table=pd.read_csv(paths["lr_selection"])
     assert table.selected_lr.isna().all()
     assert "PENDING" in table.iloc[0].status
+
+
+def test_b5_pairs_only_seed_blocks_with_all_three_declared_arms(tmp_path):
+    records=[evidence(seed,model="std_cnn",study="B5",arm=f"lr_{lr:g}",lr=lr)
+             for seed in (42,43) for lr in (.0003,.001,.0015) if (seed,lr)!=(43,.001)]
+    z,d=archive(tmp_path,records)
+    paths=aggregate(tmp_path,[z],d)
+    assert set(pd.read_csv(paths["paired_tests"]).seeds)=={42}
+    assert pd.read_csv(paths["lr_selection"]).selected_lr.isna().all()
+
+
+def test_b4_pairs_require_both_uncapped_models_and_their_b1_references(tmp_path):
+    records=[evidence(seed,model,study=study,arm=arm) for seed in (42,43)
+             for model in ("exlightnet","mlp") for study,arm in (("B4","uncapped60"),("B1","paper"))
+             if (seed,model,study)!=(43,"mlp","B1")]
+    z,d=archive(tmp_path,records)
+    paths=aggregate(tmp_path,[z],d)
+    assert set(pd.read_csv(paths["paired_tests"]).query('study == "B4"').seeds)=={42}
+    missing=pd.read_csv(paths["completeness"]).query('study == "B4" and seed == 43').iloc[0]
+    assert missing.status=="incomplete; excluded"
+    assert json.loads(missing.missing_identities)[0]["study"]=="B1"
 
 
 def test_noncomplete_record_ignored_and_counted(tmp_path):
@@ -246,13 +290,13 @@ def test_complete_b5_selects_by_validation_even_when_test_prefers_other_lr(tmp_p
     assert set(selection.selected_lr)=={.001}
     assert selection.set_index("lr").loc[.001,"selected"]
     assert not selection.set_index("lr").loc[.0015,"selected"]
-    complete=pd.read_csv(paths["completeness"]).set_index("study")
+    complete=pd.read_csv(paths["completeness"]).query('row_type == "study"').set_index("study")
     assert complete.loc["B5","status"]=="complete"
 
 
 def test_b2_pairs_split_seeds_and_bootstraps_within_each_split(tmp_path):
-    records=[evidence(seed,model=model,study="B2",split=seed,wrong=wrong)
-             for seed in [42,43] for model,wrong in [("exlightnet",1),("mlp",2)]]
+    records=seed_block("B2",42)+seed_block("B2",43)
+    records.extend(r for r in seed_block("B2",44) if r["task"]=="binary")
     z,d=archive(tmp_path,records)
     paths=aggregate(tmp_path,[z],d)
     paired=pd.read_csv(paths["paired_tests"])
@@ -260,13 +304,14 @@ def test_b2_pairs_split_seeds_and_bootstraps_within_each_split(tmp_path):
     flows=pd.read_csv(paths["paired_flow_bootstrap"])
     assert set(flows.pairing)=={"PAIRED"}
     assert set(flows.n_seeds)=={2}
+    assert set(flows.seed_unit)=={"split_seed (train seed equals split seed)"}
 
 
 def test_device_equivalence_has_side_by_side_ci_without_inference_labels(tmp_path):
-    z,d=archive(tmp_path,[evidence(seed) for seed in [42,43]])
+    z,d=archive(tmp_path,seed_block("B1",42)+seed_block("B1",43)+[evidence(44)])
     directory=tmp_path/"cpu";directory.mkdir()
     records=[dict(task="binary",model="exlightnet",seed=s,macro_f1=.8+s/10000,
-                  data_fingerprint="a"*64) for s in [42,43]]
+                  data_fingerprint="a"*64) for s in [42,43,44]]
     (directory/"results.json").write_text(json.dumps(records))
     (directory/"manifest.json").write_text(json.dumps({"mode":"full","seeds":list(range(42,47))}))
     paths=aggregate_studies([z],d,tmp_path/"out",tmp_path/"Report.md",directory/"results.json",protocol_path=PROTOCOL,replicates=25)
@@ -298,18 +343,91 @@ def test_corrupt_incremental_duplicate_artifact_not_hidden_by_good_copy(tmp_path
 def test_b1_correlation_bootstrap_resamples_seed_pairs(tmp_path):
     records=[]
     for seed,length,wrong in [(42,7,3),(43,8,2),(44,9,1)]:
-        r=evidence(seed,wrong=wrong)
+        block=seed_block("B1",seed)
+        r=next(r for r in block if r["task"]=="binary" and r["model"]=="exlightnet")
+        r["_prediction"]=evidence(wrong=wrong)["_prediction"]
         best=length-6
         r["history"]=[dict(epoch=i,train_loss=.2,val_macro_f1=.8 if i==best else .7,lr=.0015,seconds=.1) for i in range(1,length+1)]
         r["best_epoch"]=best
-        r["epochs_run"]=length;records.append(r)
+        r["epochs_run"]=length;records.extend(block)
+    incomplete=set_history(evidence(45,wrong=5),[.7]*4+[.8]+[.7]*6)
+    records.extend([incomplete,evidence(45,model="mlp")])
     z,d=archive(tmp_path,records)
     paths=aggregate(tmp_path,[z],d)
     table=pd.read_csv(paths["correlations"])
+    assert table.iloc[0].n==3
     assert table.iloc[0].spearman_rho==pytest.approx(1)
     assert table.iloc[0].defined_replicates>0
     assert table.iloc[0].ci_low==pytest.approx(1)
     assert table.iloc[0].ci_high==pytest.approx(1)
+
+
+def test_b1_merges_shards_before_admitting_only_complete_seed_blocks(tmp_path):
+    records=seed_block("B1",42)+seed_block("B1",43)
+    records=[r for r in records if not (r["seed"]==43 and r["task"]=="multiclass" and r["model"]=="xgboost")]
+    neural,d=archive(tmp_path,[r for r in records if r["device"]=="cuda"],"neural.zip")
+    trees,_=archive(tmp_path,[r for r in records if r["device"]=="cpu"],"trees.zip")
+    for shard in (neural,trees):
+        paths=aggregate(tmp_path,[shard],d)
+        assert pd.read_csv(paths["paired_tests"]).empty
+    paths=aggregate(tmp_path,[neural,trees],d)
+    assert set(pd.read_csv(paths["paired_tests"]).seeds)=={42}
+    assert set(pd.read_csv(paths["paired_flow_bootstrap"]).n_seeds)=={1}
+    completeness=pd.read_csv(paths["completeness"],dtype={"eligible_seeds":"string"}).query('study == "B1"')
+    summary=completeness.query('row_type == "study"').iloc[0]
+    assert summary.eligible_seeds=="42"
+    missing=completeness[completeness.seed==43].iloc[0]
+    assert missing.status=="incomplete; excluded"
+    assert missing.missing_count==1
+    assert json.loads(missing.missing_identities)==[
+        {"study":"B1","task":"multiclass","model":"xgboost","seed":43,"split_seed":42,"arm":"paper"}]
+    summaries=pd.read_csv(paths["summaries"]).query('study == "B1" and task == "binary"')
+    assert set(summaries.n)=={2}
+    assert set(summaries.n_eligible)=={1}
+    assert set(summaries.observation_scope)=={"partial; observed runs only; descriptive"}
+
+
+def test_b3_excludes_seeds_missing_an_unrelated_reference_or_arm(tmp_path):
+    records=sum((seed_block("B3",seed) for seed in [42,43,44]),[])
+    records=[r for r in records if not (
+        (r["seed"]==43 and r["study"]=="B1" and r["model"]=="std_cnn") or
+        (r["seed"]==44 and r["arm"]=="patience10_min15" and r["model"]=="mlp"))]
+    z,d=archive(tmp_path,records)
+    paths=aggregate(tmp_path,[z],d)
+    pairs=pd.read_csv(paths["paired_tests"]).query('study == "B3"')
+    assert set(pairs.seeds)=={42}
+    assert set(pd.read_csv(paths["paired_flow_bootstrap"]).query('study == "B3"').n_seeds)=={1}
+    missing=pd.read_csv(paths["completeness"]).query('study == "B3" and seed in [43,44]').set_index("seed")
+    assert set(missing.status)=={"incomplete; excluded"}
+    assert set(missing.missing_count)=={1}
+    assert json.loads(missing.loc[43,"missing_identities"])[0]["study"]=="B1"
+    assert json.loads(missing.loc[44,"missing_identities"])[0]["arm"]=="patience10_min15"
+    hypothesis=pd.read_csv(paths["early_stopping_hypothesis"])
+    assert set(hypothesis.n_pairs)=={1}
+    assert set(hypothesis.overall_decision)=={"PENDING"}
+
+
+def test_b3_full_blocks_apply_primary_last_and_secondary_best_to_verified_checkpoints(tmp_path):
+    records=[]
+    for seed in range(42,57):
+        for record in seed_block("B3",seed):
+            if record["model"]=="exlightnet" and record["arm"]=="paper":
+                record=evidence(seed,task="multiclass",wrong=3+(seed-42)%7,last_wrong=0)
+            if record["model"]=="exlightnet" and record["arm"]=="fixed30":
+                record=evidence(seed,study="B3",arm="fixed30",wrong=11,last_wrong=0)
+            records.append(record)
+    z,d=archive(tmp_path,records)
+    paths=aggregate(tmp_path,[z],d)
+    table=pd.read_csv(paths["early_stopping_hypothesis"]).set_index("endpoint_role")
+    primary,secondary=table.loc["PRIMARY"],table.loc["SECONDARY"]
+    assert primary.n_pairs==secondary.n_pairs==15
+    assert primary.fixed30_mean==1
+    assert primary.paper_mean==secondary.paper_mean<1
+    assert primary.endpoint_decision=="conditions supported"
+    assert secondary.endpoint_decision=="not supported"
+    assert set(table.overall_decision)=={"inconclusive"}
+    assert set(table.bootstrap_replicates)=={2000}  # CLI flow count is 50.
+    assert set(table.b1_n)=={0}  # B3 references suffice for B3, not for B1 correlation.
 
 
 def test_probe_projects_explicit_assumptions_and_determinism_verifies_logits(tmp_path):

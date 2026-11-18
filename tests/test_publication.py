@@ -62,6 +62,16 @@ def test_active_scope_also_covers_supplementary_outputs(tmp_path):
     assert len(publication().active_scope_legacy_flags(tmp_path)) == 4
 
 
+def test_active_scope_covers_final_analysis_and_new_predata_tables(tmp_path):
+    names = ('artifacts/final_analysis/stratified_shap_20261118/analysis.json',
+             'artifacts/predata_20261118/pending_studies/summary.csv')
+    for name in names:
+        path = tmp_path / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(obsolete_flag())
+    assert {item['path'] for item in publication().active_scope_legacy_flags(tmp_path)} == set(names)
+
+
 def status_fixture(root):
     directory = root / "results/full"
     write_json(directory / "manifest.json", {"full_five_seed_headlines_complete":True,"failures":[],"seeds":[42,43,44,45,46]})
@@ -141,6 +151,10 @@ def test_report_renders_generated_statistics_without_old_ablation_reads(tmp_path
     assert "read-only .git" not in text
     assert "mostly" not in text.lower()
     assert "effective_status" in text and "complete_with_stopped_branches" in text
+    assert 'AdaptiveMaxPool1d' in text
+    assert 'Separate output-logit summaries were not retained' in text
+    assert 'PRIMARY stopping-hypothesis endpoint: fixed30 LAST-epoch' in text
+    assert 'Never claim causality.' in text
 
 
 def test_notebook_ablation_and_statistics_display_use_new_tables(monkeypatch, capsys):
@@ -172,6 +186,8 @@ def test_notebook_generator_defaults_to_full_without_publishing(tmp_path):
     assert nb.metadata["exlightnet"]["default_run_mode"] == "full"
     publication().validate_notebook_content(nb,"full")
     assert any("show_statistics" in cell.source for cell in nb.cells)
+    assert any("show_stopping_hypothesis_declaration" in cell.source for cell in nb.cells)
+    assert 'causality remains' not in '\n'.join(cell.source for cell in nb.cells)
     assert all("prepare_data(" not in cell.source for cell in nb.cells)
     assert all(not cell.get("outputs") for cell in nb.cells if cell.cell_type == "code")
 

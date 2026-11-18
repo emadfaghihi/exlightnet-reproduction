@@ -1,0 +1,71 @@
+{
+  "aggregator_source_sha256": "abcf99cab26cbaa16ea753c65dc1c6ea5a3e73e52ce2e77f7c0ac80a45fa2193",
+  "artifact_sha256": {},
+  "bootstrap_replicates": 2000,
+  "campaign": "gpu_v2",
+  "cuda_executed_here": false,
+  "device_label": "no observations",
+  "environment_identity_fields": "device,numpy,torch,scikit-learn,xgboost; CUDA additionally cuda,cudnn,gpu_name; CPU ignores unused GPU fields",
+  "execution_environments": {},
+  "headline_checkpoint": "best",
+  "input_archives": {},
+  "n_incomplete_records": 0,
+  "n_unique_runs": 0,
+  "outputs": {
+    "completeness": {
+      "path": "/home/mparsict/projects/me/exlightnet/artifacts/predata_20261118/pending_studies/completeness.csv",
+      "sha256": "299b2cba2c7f1daa9532964cb4770024e1355bbf37476d3b2546699abbd4e21f"
+    },
+    "correlations": {
+      "path": "/home/mparsict/projects/me/exlightnet/artifacts/predata_20261118/pending_studies/correlations.csv",
+      "sha256": "b8113a3dcdee55cd6e18ba373ff01ca207c909263d9d8621a3749dd4072f2815"
+    },
+    "determinism": {
+      "path": "/home/mparsict/projects/me/exlightnet/artifacts/predata_20261118/pending_studies/determinism.csv",
+      "sha256": "6435ae3627786dcb28f6175d324e646e603417b28d04e558b3e237957529380e"
+    },
+    "device_equivalence": {
+      "path": "/home/mparsict/projects/me/exlightnet/artifacts/predata_20261118/pending_studies/device_equivalence.csv",
+      "sha256": "0ccb3c1a976f603c90ff98bad94d52c64bd827cc125b93c4c4acb55f0d4c66e8"
+    },
+    "early_stopping_hypothesis": {
+      "path": "/home/mparsict/projects/me/exlightnet/artifacts/predata_20261118/pending_studies/early_stopping_hypothesis.csv",
+      "sha256": "278c19a75b653b60a5d28d0ca5a889c175c3a3de2e5f699a3de73c32bf9e4cfd"
+    },
+    "lr_selection": {
+      "path": "/home/mparsict/projects/me/exlightnet/artifacts/predata_20261118/pending_studies/lr_selection.csv",
+      "sha256": "8e9055164ca997186766a25617539874f83dfff575eaa195c651ea365bb616ee"
+    },
+    "paired_flow_bootstrap": {
+      "path": "/home/mparsict/projects/me/exlightnet/artifacts/predata_20261118/pending_studies/paired_flow_bootstrap.csv",
+      "sha256": "3c1ea6f214d867ee36a04680e439833393a7880b8e29defb66275bcdf75ab214"
+    },
+    "paired_tests": {
+      "path": "/home/mparsict/projects/me/exlightnet/artifacts/predata_20261118/pending_studies/paired_tests.csv",
+      "sha256": "99921a76486029ffec1d10d2c27fec710ced9d320efe258ee7a7a4093c0049ee"
+    },
+    "per_run": {
+      "path": "/home/mparsict/projects/me/exlightnet/artifacts/predata_20261118/pending_studies/per_run.csv",
+      "sha256": "702df2752c233d2177b074b13d8e5cc0d361dda654c9af96846010954aff26f9"
+    },
+    "probe": {
+      "path": "/home/mparsict/projects/me/exlightnet/artifacts/predata_20261118/pending_studies/probe.csv",
+      "sha256": "de9698c9c72ebcca8a90d12276295c42d61c2127c3b778fd0f46c8d96818c695"
+    },
+    "report": {
+      "path": "/home/mparsict/projects/me/exlightnet/REPORT_stats_v2.md",
+      "sha256": "6865581b9f0a152be5f5ceb7a5d130faa9ff661db756af3608798c1054b3eab6"
+    },
+    "summaries": {
+      "path": "/home/mparsict/projects/me/exlightnet/artifacts/predata_20261118/pending_studies/summaries.csv",
+      "sha256": "18807ca6a9b78861177a69213a485455bf01f44ce5450a12a994490a4ef50847"
+    }
+  },
+  "prepared_manifest_sha256": null,
+  "protocol_sha256": "915075b54fe347379888795a0f4778dbc62a77874a5fe8e53acaa4dba1e47c94",
+  "random_seed": 42,
+  "schema_version": 1,
+  "secondary_checkpoint": "last",
+  "seed_block_protocol": "PA-20261118-2",
+  "stopping_hypothesis_protocol": "PA-20261118-1"
+}

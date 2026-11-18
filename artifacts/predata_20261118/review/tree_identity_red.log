@@ -1,0 +1,172 @@
+FFFFF                                                                    [100%]
+=================================== FAILURES ===================================
+______ test_new_tree_fingerprint_matches_all_cuda_and_trees_only_sessions ______
+
+prepared_b1 = (PosixPath('/tmp/pytest-of-mparsict/pytest-5/test_new_tree_fingerprint_matc0/prepared'), {'data_fingerprint': '1d3a56a...ae7443f6241b021a51cbee', 'schema_version': 1, ...}, '469354848398982432775f3f8dba45496e5d0d5e52ec13711058df7346fabcbf')
+one_tree = {'arm': 'paper', 'model': 'random_forest', 'seed': 42, 'split_seed': 42, ...}
+tmp_path = PosixPath('/tmp/pytest-of-mparsict/pytest-5/test_new_tree_fingerprint_matc0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f12d4ebbd50>
+
+    def test_new_tree_fingerprint_matches_all_cuda_and_trees_only_sessions(
+        prepared_b1, one_tree, tmp_path, monkeypatch
+    ):
+        prepared, metadata, sha = prepared_b1
+        output = tmp_path / 'out'
+        root = output / 'gpu_v2'
+        monkeypatch.setattr(device, 'configure_device', lambda requested='cpu': requested)
+        monkeypatch.setattr(torch.cuda, 'get_device_name', lambda index: 'synthetic GPU name')
+        def stop(*args):
+            raise campaign.RunStopped('Stop before any fit')
+        monkeypatch.setattr(baselines, 'build_model', stop)
+        campaign.run_campaign(prepared, output, 'B1', only='all', device='cuda')
+        expected = baseline_fingerprint(baseline_identity(one_tree, 'cpu', _cpu_versions(), metadata, sha))
+>       assert {p.name for p in (root / 'cpu').iterdir()} == {expected}
+E       AssertionError: assert {'8c57bd81524...dd471aea0420'} == {'c120d021e9d...3e52bd36e357'}
+E         
+E         Extra items in the left set:
+E         '8c57bd81524ce5dcd26637ac0a18c5c0129516663da52a9e48cadd471aea0420'
+E         Extra items in the right set:
+E         'c120d021e9dc647996e738df2e617aef9514aa9ba5ea9cd391ce3e52bd36e357'
+E         Use -v to get more diff
+
+tests/test_tree_session_identity.py:33: AssertionError
+_______ test_tree_resume_retains_opaque_legacy_cuda_session_fingerprint ________
+
+prepared_b1 = (PosixPath('/tmp/pytest-of-mparsict/pytest-5/test_tree_resume_retains_opaqu0/prepared'), {'data_fingerprint': '1d3a56a...ae7443f6241b021a51cbee', 'schema_version': 1, ...}, '469354848398982432775f3f8dba45496e5d0d5e52ec13711058df7346fabcbf')
+one_tree = {'arm': 'paper', 'model': 'random_forest', 'seed': 42, 'split_seed': 42, ...}
+tmp_path = PosixPath('/tmp/pytest-of-mparsict/pytest-5/test_tree_resume_retains_opaqu0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f12d537bdd0>
+
+    def test_tree_resume_retains_opaque_legacy_cuda_session_fingerprint(
+        prepared_b1, one_tree, tmp_path, monkeypatch
+    ):
+        prepared, metadata, sha = prepared_b1
+        output = tmp_path / 'out'
+        root = output / 'gpu_v2'
+        versions = {**_cpu_versions(), 'gpu_name': 'legacy GPU name'}
+        _write_completed(root, [one_tree], metadata, sha, versions)
+        before = {p: p.read_bytes() for p in root.rglob('record.json')}
+        _forbid_cuda(monkeypatch)
+        monkeypatch.setattr(baselines, 'build_model', lambda *args: pytest.fail('Duplicate model creation'))
+>       result = campaign.run_campaign(prepared, output, 'B1', only='trees', device='auto')
+
+tests/test_tree_session_identity.py:50: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/exlightnet/campaign.py:449: in run_campaign
+    model = build_model(name, len(names), seed)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = ('random_forest', 2, 42)
+
+>   monkeypatch.setattr(baselines, 'build_model', lambda *args: pytest.fail('Duplicate model creation'))
+E   Failed: Duplicate model creation
+
+tests/test_tree_session_identity.py:49: Failed
+----------------------------- Captured stdout call -----------------------------
+Using CPU for --only trees (requested device: auto).
+B1: 1 selected tree runs on CPU; no neural timing probe required.
+_ test_pending_tree_resumes_after_session_changes_without_altering_provenance __
+
+prepared_b1 = (PosixPath('/tmp/pytest-of-mparsict/pytest-5/test_pending_tree_resumes_afte0/prepared'), {'data_fingerprint': '1d3a56a...ae7443f6241b021a51cbee', 'schema_version': 1, ...}, '469354848398982432775f3f8dba45496e5d0d5e52ec13711058df7346fabcbf')
+one_tree = {'arm': 'paper', 'model': 'random_forest', 'seed': 42, 'split_seed': 42, ...}
+tmp_path = PosixPath('/tmp/pytest-of-mparsict/pytest-5/test_pending_tree_resumes_afte0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f12d5084fd0>
+
+    def test_pending_tree_resumes_after_session_changes_without_altering_provenance(
+        prepared_b1, one_tree, tmp_path, monkeypatch
+    ):
+        prepared, metadata, sha = prepared_b1
+        output = tmp_path / 'out'
+        root = output / 'gpu_v2'
+        directory, pending = pending_tree(root, one_tree, metadata, sha)
+        before = (directory / 'run_identity.json').read_bytes()
+        (directory / 'tree_in_progress.pkl').write_bytes(pickle.dumps({'synthetic checkpoint': True}))
+        _forbid_cuda(monkeypatch)
+        monkeypatch.setattr(baselines, 'build_model', lambda *args: object())
+        monkeypatch.setattr(baselines, 'fit_tree', lambda *args: pytest.fail('Repeated fit'))
+        monkeypatch.setattr(campaign, '_evaluate', lambda path, *args: {
+            key + '_path': str(path / 'best' / (key + '.fixture')) for key in ('prediction', 'metrics', 'receipt')})
+>       result = campaign.run_campaign(prepared, output, 'B1', only='trees', device='auto')
+
+tests/test_tree_session_identity.py:86: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/exlightnet/campaign.py:469: in run_campaign
+    fit_tree(model, name, arrays["x_train"], ytrain)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = (<object object at 0x7f12d5a329a0>, 'random_forest', array([[  0.,   1.,   2.,   3.,   4.,   5.,   6.,   7.,   8.,   9... 472.,
+        473., 474., 475., 476., 477., 478., 479.]], dtype=float32), array([1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 0]))
+
+>   monkeypatch.setattr(baselines, 'fit_tree', lambda *args: pytest.fail('Repeated fit'))
+E   Failed: Repeated fit
+
+tests/test_tree_session_identity.py:83: Failed
+----------------------------- Captured stdout call -----------------------------
+Using CPU for --only trees (requested device: auto).
+B1: 1 selected tree runs on CPU; no neural timing probe required.
+________ test_legacy_claimed_tree_blocks_new_fingerprint_and_evaluation ________
+
+prepared_b1 = (PosixPath('/tmp/pytest-of-mparsict/pytest-5/test_legacy_claimed_tree_block0/prepared'), {'data_fingerprint': '1d3a56a...ae7443f6241b021a51cbee', 'schema_version': 1, ...}, '469354848398982432775f3f8dba45496e5d0d5e52ec13711058df7346fabcbf')
+one_tree = {'arm': 'paper', 'model': 'random_forest', 'seed': 42, 'split_seed': 42, ...}
+tmp_path = PosixPath('/tmp/pytest-of-mparsict/pytest-5/test_legacy_claimed_tree_block0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f12d4e3d290>
+
+    def test_legacy_claimed_tree_blocks_new_fingerprint_and_evaluation(
+        prepared_b1, one_tree, tmp_path, monkeypatch
+    ):
+        prepared, metadata, sha = prepared_b1
+        output = tmp_path / 'out'
+        root = output / 'gpu_v2'
+        directory, _ = pending_tree(root, one_tree, metadata, sha)
+        (directory / 'best').mkdir()
+        receipt = directory / 'best/receipt.json'
+        receipt.write_text('{"status":"claimed"}')
+        _forbid_cuda(monkeypatch)
+        monkeypatch.setattr(baselines, 'build_model', lambda *args: pytest.fail('Repeated claimed run'))
+>       result = campaign.run_campaign(prepared, output, 'B1', only='trees')
+
+tests/test_tree_session_identity.py:107: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/exlightnet/campaign.py:449: in run_campaign
+    model = build_model(name, len(names), seed)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = ('random_forest', 2, 42)
+
+>   monkeypatch.setattr(baselines, 'build_model', lambda *args: pytest.fail('Repeated claimed run'))
+E   Failed: Repeated claimed run
+
+tests/test_tree_session_identity.py:106: Failed
+----------------------------- Captured stdout call -----------------------------
+B1: 1 selected tree runs on CPU; no neural timing probe required.
+___________ test_ambiguous_legacy_tree_candidates_stop_without_a_fit ___________
+
+prepared_b1 = (PosixPath('/tmp/pytest-of-mparsict/pytest-5/test_ambiguous_legacy_tree_can0/prepared'), {'data_fingerprint': '1d3a56a...ae7443f6241b021a51cbee', 'schema_version': 1, ...}, '469354848398982432775f3f8dba45496e5d0d5e52ec13711058df7346fabcbf')
+one_tree = {'arm': 'paper', 'model': 'random_forest', 'seed': 42, 'split_seed': 42, ...}
+tmp_path = PosixPath('/tmp/pytest-of-mparsict/pytest-5/test_ambiguous_legacy_tree_can0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f12d4e45a50>
+
+    def test_ambiguous_legacy_tree_candidates_stop_without_a_fit(
+        prepared_b1, one_tree, tmp_path, monkeypatch
+    ):
+        prepared, metadata, sha = prepared_b1
+        output = tmp_path / 'out'
+        root = output / 'gpu_v2'
+        _write_completed(root, [one_tree], metadata, sha, _cpu_versions())
+        _write_completed(root, [one_tree], metadata, sha, {**_cpu_versions(), 'gpu_name': 'legacy GPU'})
+        _forbid_cuda(monkeypatch)
+        monkeypatch.setattr(baselines, 'build_model', lambda *args: pytest.fail('Ambiguous fit'))
+        result = campaign.run_campaign(prepared, output, 'B1', only='trees')
+>       assert result['stopped_count'] == 1
+E       assert 0 == 1
+
+tests/test_tree_session_identity.py:125: AssertionError
+----------------------------- Captured stdout call -----------------------------
+B1: 1 selected tree runs on CPU; no neural timing probe required.
+=========================== short test summary info ============================
+FAILED tests/test_tree_session_identity.py::test_new_tree_fingerprint_matches_all_cuda_and_trees_only_sessions
+FAILED tests/test_tree_session_identity.py::test_tree_resume_retains_opaque_legacy_cuda_session_fingerprint
+FAILED tests/test_tree_session_identity.py::test_pending_tree_resumes_after_session_changes_without_altering_provenance
+FAILED tests/test_tree_session_identity.py::test_legacy_claimed_tree_blocks_new_fingerprint_and_evaluation
+FAILED tests/test_tree_session_identity.py::test_ambiguous_legacy_tree_candidates_stop_without_a_fit
+5 failed in 2.05s

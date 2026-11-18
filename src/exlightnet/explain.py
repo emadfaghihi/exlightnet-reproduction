@@ -67,14 +67,18 @@ def explain_attributions(model, background, inputs, nsamples=200):
             "output_space": "logits; additivity checked separately for each class"}
 
 
-def deletion_curve(model, inputs, predicted, order):
+def deletion_curve(model, inputs, predicted, order, *, original_probabilities=None):
     n, width = inputs.shape
     perturbed = np.repeat(inputs[:, None, :], width + 1, axis=1)
     for k in range(1, width + 1):
         perturbed[:, k, :] = perturbed[:, k - 1, :]
         perturbed[np.arange(n), k, order[:, k - 1]] = 0.
-    probs = predict_proba(model, perturbed.reshape(-1, width)).reshape(n, width + 1, -1)
-    mean = probs[np.arange(n)[:, None], np.arange(width + 1)[None, :], predicted[:, None]].mean(0)
+    start = int(original_probabilities is not None)
+    steps = width + 1 - start
+    probs = predict_proba(model, perturbed[:, start:].reshape(-1, width)).reshape(n, steps, -1)
+    mean = probs[np.arange(n)[:, None], np.arange(steps)[None, :], predicted[:, None]].mean(0)
+    if original_probabilities is not None:
+        return np.concatenate((np.mean(original_probabilities, dtype=np.float64, keepdims=True), mean))
     return mean
 
 

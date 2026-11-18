@@ -272,3 +272,142 @@ the smoke; the real-study report preserves them verbatim with PENDING sections.
 Component/delivery ZIP rebuilding and final checksum/CRC verification follow.
 
 Final refresh after the generated verification table was added to REPORT:199tests pass,923warnings,17.15s,exit0. Four synthetic-training cases/fivefits/sevenepochs took1.381s combined pytest case wall time in this invocation; prior verification and hashes were copied to final/previous_suite/. Both gate groups remain allPASS and all916 original file hashes remain unchanged. The task plan is complete; final ZIP/component checksums are generated after this documentation closeout.
+
+2026-11-18 — baseline commit and dated pre-data amendments.
+User explicitly requested a local commit first. cbbea40 records the completed
+cached-statistics/hosted-runner work, after a fresh199-test pass (19.91s,
+923upstream warnings). Diagnostic log/XML whitespace is preserved verbatim via
+.gitattributes rather than edited to satisfy whitespace checks. No push/merge.
+Only old gpu_v2_smoke data exists; no real Stage B observations were found.
+All916 original raw hashes still match and the stage lock was available.
+An expanded1047-file existing-evidence snapshot is recorded in
+artifacts/predata_20261118/immutable_before.json. Prior protocol/report/notebook/
+handoff versions and their SHA are archived under archive/predata_20261118/.
+
+DATED AMENDMENT PA-20261118-1: stopping-hypothesis PRIMARY is fixed30 LAST
+versus paper BEST-validation; fixed30 BEST versus paper BEST is SECONDARY.
+Report both, use all matched42--56 seeds, require SD ratio<=0.75 and upper95%
+paired-seed bootstrap ratio CI<1 (2000draws,seed42), plus a positive paired95%
+mean-difference CI. Disagreement/undefined ratios are inconclusive; never claim
+causality. Original protocol declaration remains verbatim with this appended
+superseding amendment, not a silent rewrite.
+
+DATED AMENDMENT PA-20261118-2: B1/B2/B3 are seed-major with identical run
+identities. User explicitly clarified the mathematical prefix edge: every
+possible prefix may have at most its last seed incomplete; all earlier seed
+blocks contain all tasks/models/arms. Inference excludes incomplete comparison
+blocks and completeness.csv states incomplete; excluded. No imputation.
+
+DATED AMENDMENT PA-20261118-3: --only all/neural/trees defaults all. Trees may
+run in a CPU-only session of gpu_v2 without GPU or neural probe, retaining all
+RF/XGBoost seeds/recipes and actual devices. Verified shards may merge within
+gpu_v2 under the existing explicit mixed-device policy; campaigns never pool.
+
+DATED AMENDMENT PA-20261118-4: hand off kaggle_runner.ipynb, prepared/manifest.json
+and hosted_source.zip together with per-fileSHA and individual tested/not-tested
+statements. Syntax/import/installation checks are not hosted CUDA execution.
+
+DATED AMENDMENT PA-20261118-5: one new CPU-only final analysis is authorized on
+the cached seed42 multiclass FP32 model:25 flows per true class or all if rarer,
+exact previous200-flow training background, existing Deep/Gradient settings,
+measured additivity. Primary class ranking targets the class's own logit;
+an auxiliary all-output average preserves comparability with the old definition.
+Global ranking gives equal weight to each true class. Deletion keeps the
+original predicted-class target and20random permutations, grouped by true
+class, with k10 comparisons. Report the earlier300random-flow class composition
+from saved indices without the two extra local examples. Old explanation files
+are immutable; this is final analysis and cannot select a model or recipe.
+
+DATED AMENDMENT PA-20261118-6: optional B6 leakage PROXY is deferred, NOT RUN.
+No B6 code, export or training is claimed. No new real training, smoke or
+benchmark is authorized or needed for the mandatory amendments. CUDA remains
+NOT RUN locally. Implementation/execution ledger is in the dated plan.
+
+2026-11-18 — completed stratified final analysis and review fix pass.
+The CPU-only analysis completed with exit0 in233.015562949s (supervised wall
+time),259test flows and the exact prior200 training-background positions.
+Five SSH-brute-force and four FIN-scan flows were all retained; the other
+ten classes contributed25each. GradientExplainer used200samples after the
+same DeepExplainer additivity preflight failed. The preserved warning is
+unrecognized nn.Module: AdaptiveMaxPool1d. Absolute logit-additivity residuals
+are max3.3370019332892307 and mean0.2966468941682444, aggregated across259x12
+flow/output pairs. Separate output-logit summaries were not retained; this is
+the same aggregate reporting as before, not an exact SHAP claim. PA-5's
+classwise-logit wording describes that computation, not per-output saved
+summaries. No new inference was added to reconstruct missing diagnostics.
+
+The first supervised attempt was deliberately interrupted before saving any
+attribution checkpoint after a NumPy-metadata serialization bug was found.
+Its original claim/logs remain under the separate attempt1_interrupted path;
+analysis_recovery.json records the reason and unchanged declared inputs.
+The corrected implementation was frozen before the successful retry. A failed
+supervisor bootstrap quoting attempt also remains recorded. No receipt was
+reset and no earlier explanation or source campaign evidence was edited.
+
+The new analysis is final, never selection. All12 output checksums, all
+per-class/global rankings,240random orders, cached k0 values, k10 contrasts
+and the old300-flow composition were independently checked without model
+queries. The old sample contained232dos_syn_hping flows and zero flows from
+ddos_slowloris, SSH-brute-force and FIN-scan; the two extra local examples
+are not counted. All1047 expanded preservation hashes remained unchanged.
+
+Independent review found four important issues, now covered by RED/GREEN
+regressions: CPU-tree GPU-name provenance could change a fingerprint across
+selectors; pending-tree resume compared mutable session metadata; final
+presentation could accept an incomplete output-hash set; presentations
+omitted warnings/effective stopping endpoints. New CPU-tree fingerprints use
+run-specific GPU-name=null; compatible legacy identities retain their opaque
+fingerprints, pending provenance and receipts. Ambiguous/mismatching identities
+stop rather than create a duplicate. The raw fingerprint function is unchanged,
+and all pre-amendment plan/fingerprint multiset tests still apply. Claimed
+legacy receipts remain blocked. Tree recovery checks passed46tests in6.11s.
+Presentation checks passed21tests in3.00s. A single test initially expected
+the word claimed rather than the existing incomplete-receipt message; its
+assertion was corrected without changing receipt behavior.
+
+The review's minor handoff issue is fixed too: measured sizes/hashes cannot
+be replaced by supplied status metadata, and each rendered statement has an
+explicit TESTED or NOT TESTED label. Packaging tests passed6cases in1.97s;
+README documents the full handoff refresh command. No review findings remain
+deferred. Final suite, notebook, source-install and archive checks follow below.
+
+Final full-suite evidence is under artifacts/predata_20261118/verification/:
+253passed,923upstream warnings,24.96s,exit0. The four tiny synthetic-training
+cases performed five fits/seven epochs on4or24rows and consumed1.968s combined
+pytest case wall time. Real-data smoke in this follow-up: NOT RUN. The earlier
+two-seed/two-epoch smoke evidence and its10.875827762s supervisor duration remain
+historical, unmodified and separate. No real B1--B5 observations exist.
+
+The regenerated cached-analysis notebook executed17/17cells without errors in
+3.367093211s; a second fresh-kernel Restart-and-Run-All took3.379028596s with
+17/17cells andzeroerrors. Its new records do not overwrite old metadata.
+The thin Kaggle notebook was NEVER EXECUTED locally or on Kaggle; its schema,
+syntax and stubbed command wiring were checked. CUDA remains NOT EXECUTED HERE.
+
+All ten prepared splits passed current file/payload/schema checks. Split42's
+nine arrays and three split-index vectors equal the canonical cached bytes.
+prepared/manifest.json remains unchanged, SHA256
+95eb221ecbd74f172d978abd58d3f5c2863ac9708288446a331b6fce980b7b35.
+The current hosted source ZIP passed CRC/member checks and a clean offline
+no-dependency install; imports and CLI --help used the installed copy. No
+download, dependency addition, actual hosted fit or GPU probe occurred.
+
+The requested three-file handoff includes HOSTED_HANDOFF.json/.md with a full
+SHA256 and individual TESTED/NOT TESTED statement for each artifact. Prepared
+arrays are excluded. Gates PA1--5 pass implementation/evidence verification;
+this does not mean real GPU studies ran. Optional B6 is NOT RUN. Final main/
+component ZIP checksums and CRC validation are emitted after packaging.
+
+Delivery verification passed: all main/component ZIP CRCs, every packaged file
+against both disk and archive manifest hashes, all SHA256SUMS entries and all
+three handoff files/status statements. REPORT.md contains59valid Markdown
+tables and REPORT_stats_v2.md contains3; the candidate-accounting wording and
+INT8 weights-only/full-artifact breakdown remain intact. No pickle, raw data,
+prepared arrays, optimizer recovery checkpoint, recursive ZIP, credential or
+process lock entered deliverables.zip. Local tree checkpoints were preserved.
+The source ZIP equals the offline-installed copy. Old derived delivery bytes
+and their hashes were archived again before the final closeout refresh.
+No Python behavior changed after the253-test pass; documentation/manifest
+closeout and the authorized explicit-path local commit finish this task.
+No merge or push. Final archive hashes are external in delivery/stats_gpu_v2/
+SHA256SUMS and DELIVERY_AUDIT.json, avoiding a self-referential archive hash.

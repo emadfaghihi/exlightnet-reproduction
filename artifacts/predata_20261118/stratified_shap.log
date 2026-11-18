@@ -1,0 +1,69 @@
+Computing FP32 SHAP on the stratified test sample
+Traceback (most recent call last):
+  File "/home/mparsict/projects/me/exlightnet/src/exlightnet/explain.py", line 51, in explain_attributions
+    explainer.shap_values(inputs[:preflight_samples], check_additivity=True)
+  File "/home/mparsict/projects/me/exlightnet/.venv/lib/python3.11/site-packages/shap/explainers/_deep/__init__.py", line 159, in shap_values
+    return self.explainer.shap_values(X, ranked_outputs, output_rank_order, check_additivity=check_additivity)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mparsict/projects/me/exlightnet/.venv/lib/python3.11/site-packages/shap/explainers/_deep/deep_pytorch.py", line 214, in shap_values
+    _check_additivity(self, model_output_values.cpu(), output_phis)
+  File "/home/mparsict/projects/me/exlightnet/.venv/lib/python3.11/site-packages/shap/explainers/_deep/deep_utils.py", line 20, in _check_additivity
+    assert maxdiff < TOLERANCE, "The SHAP explanations do not sum up to the model's output! This is either because of a " \
+           ^^^^^^^^^^^^^^^^^^^
+AssertionError: The SHAP explanations do not sum up to the model's output! This is either because of a rounding error or because an operator in your computation graph was not fully supported. If the sum difference of %f is significant compared to the scale of your model outputs, please post as a github issue, with a reproducible example so we can debug it. Used framework: pytorch - Max. diff: 2.368308211240219 - Tolerance: 0.01
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/mparsict/projects/me/exlightnet/scripts/stratified_shap.py", line 22, in <module>
+    main()
+  File "/home/mparsict/projects/me/exlightnet/scripts/stratified_shap.py", line 17, in main
+    result = run_stratified_shap(args.root, args.output)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mparsict/projects/me/exlightnet/src/exlightnet/final_analysis.py", line 485, in run_stratified_shap
+    
+  File "/home/mparsict/projects/me/exlightnet/src/exlightnet/final_analysis.py", line 440, in _run_analysis
+    
+  File "/home/mparsict/projects/me/exlightnet/src/exlightnet/final_analysis.py", line 277, in _attribution_stage
+    start = time.perf_counter()
+             ^^^^^^^^^^^^^^^^^^^
+  File "/home/mparsict/projects/me/exlightnet/src/exlightnet/explain.py", line 58, in explain_attributions
+    raw = explainer.shap_values(inputs, nsamples=nsamples, rseed=42)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mparsict/projects/me/exlightnet/.venv/lib/python3.11/site-packages/shap/explainers/_gradient.py", line 158, in shap_values
+    return self.explainer.shap_values(X, nsamples, ranked_outputs, output_rank_order, rseed, return_variances)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mparsict/projects/me/exlightnet/.venv/lib/python3.11/site-packages/shap/explainers/_gradient.py", line 598, in shap_values
+    grads.append(self.gradient(find, batch))
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mparsict/projects/me/exlightnet/.venv/lib/python3.11/site-packages/shap/explainers/_gradient.py", line 478, in gradient
+    outputs = self.model(*X)
+              ^^^^^^^^^^^^^^
+  File "/home/mparsict/projects/me/exlightnet/.venv/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1739, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mparsict/projects/me/exlightnet/.venv/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1750, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mparsict/projects/me/exlightnet/src/exlightnet/model.py", line 54, in forward
+    return self.head(torch.cat([self.avg(x).squeeze(-1), self.maximum(x).squeeze(-1)], dim=1))
+                                                         ^^^^^^^^^^^^^^^
+  File "/home/mparsict/projects/me/exlightnet/.venv/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1739, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mparsict/projects/me/exlightnet/.venv/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1750, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mparsict/projects/me/exlightnet/.venv/lib/python3.11/site-packages/torch/nn/modules/pooling.py", line 1292, in forward
+    return F.adaptive_max_pool1d(input, self.output_size, self.return_indices)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mparsict/projects/me/exlightnet/.venv/lib/python3.11/site-packages/torch/_jit_internal.py", line 624, in fn
+    return if_false(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mparsict/projects/me/exlightnet/.venv/lib/python3.11/site-packages/torch/nn/functional.py", line 1227, in _adaptive_max_pool1d
+    return adaptive_max_pool1d_with_indices(input, output_size)[0]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mparsict/projects/me/exlightnet/.venv/lib/python3.11/site-packages/torch/nn/functional.py", line 1211, in adaptive_max_pool1d_with_indices
+    return torch.adaptive_max_pool1d(input, output_size)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyboardInterrupt

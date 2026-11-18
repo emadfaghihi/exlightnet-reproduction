@@ -1,0 +1,7 @@
+Original data fingerprint: dfba90bd116f9288bc72a837160516984ba773b11904e98561c80cda7dedcf5c
+Original checkpoint fingerprint: c93d66b3c7b791ac0b4cff4d9680348b799b6b6a878c21af0e18883a7d9aa3ad
+Sampled test array: (259, 40)
+Exact original background: (200, 40)
+Stratified counts: [25, 25, 25, 5, 25, 4, 25, 25, 25, 25, 25, 25]
+Original random sample counts: [16, 0, 232, 0, 11, 0, 6, 3, 3, 5, 22, 2]
+Original seed-42 multiclass ExLightNet and explanation hashes verified: 12 files

@@ -1,0 +1,14 @@
+{
+  "notebooks/kaggle_runner.ipynb": {
+    "tested": "nbformat schema; Python syntax for both code cells; stubbed --only command wiring in the 253-test suite.",
+    "not_tested": "NEVER EXECUTED as a notebook locally or on Kaggle. CUDA and hosted training/resume were NEVER EXECUTED here."
+  },
+  "prepared/manifest.json": {
+    "tested": "Original SHA unchanged; all 10 split NPZ file hashes, payloads and schemas; split42 nine arrays and three index vectors equal the canonical cache.",
+    "not_tested": "A data manifest is not executable. Hosted/CUDA ingestion was NOT EXECUTED. Prepared arrays are separate, excluded data artifacts."
+  },
+  "delivery/stats_gpu_v2/hosted_source.zip": {
+    "tested": "CRC and member content; offline installation without dependency downloads; installed-package imports and --help; corresponding source passed all 253 CPU tests.",
+    "not_tested": "Actual Kaggle/CUDA execution, new real-data smoke, full Stage B studies and separate hosted tree fitting were NOT RUN. The historical CPU smoke was not repeated."
+  }
+}

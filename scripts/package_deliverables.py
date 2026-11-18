@@ -16,7 +16,7 @@ def excluded(relative):
     return (any(part in {'__pycache__', '.locks', '.aws', '.codex', '.agents', '.venv', 'cache', 'prepared'} for part in relative.parts)
             or any(part.endswith('.egg-info') or part == '.env' or part.startswith('.env.') for part in relative.parts)
             or relative.suffix in {'.pyc', '.pkl', '.zip', '.lock', '.tmp', '.partial'}
-            or relative.name in {'cache_arrays.npz', 'package_verification.log', 'epoch_checkpoint.pt', 'source_review.txt'}
+            or relative.name in {'cache_arrays.npz', 'package_verification.log', 'epoch_checkpoint.pt', 'source_review.txt', 'review_package.txt'}
             or (relative.suffix == '.npz' and relative.name.startswith('split_') and relative.name != 'split_indices.npz'))
 
 
@@ -66,6 +66,47 @@ def write_checksums(root, paths, output):
     return output
 
 
+def package_hosted_handoff(root, output, verification):
+    """Bundle the requested trio with supplied, per-artifact validation evidence."""
+    root, output = Path(root), Path(output)
+    names = ('notebooks/kaggle_runner.ipynb', 'prepared/manifest.json',
+             'delivery/stats_gpu_v2/hosted_source.zip')
+    files = {}
+    for name in names:
+        status = verification.get(name, {})
+        if any(not isinstance(status.get(key), str) or not status[key].strip()
+               for key in ('tested', 'not_tested')):
+            raise ValueError(f'Missing individual verification statements: {name}')
+        source = root / name
+        if source.is_symlink() or not source.is_file():
+            raise ValueError(f'Missing hosted handoff artifact: {name}')
+        files[name] = {'sha256': hashlib.sha256(source.read_bytes()).hexdigest(),
+                       'bytes': source.stat().st_size,
+                       'tested': status['tested'], 'not_tested': status['not_tested']}
+    output.mkdir(parents=True, exist_ok=True)
+    receipt, description = output / 'HOSTED_HANDOFF.json', output / 'HOSTED_HANDOFF.md'
+    receipt.write_text(json.dumps({'files': files}, indent=2) + '\n')
+    lines = ['# Hosted handoff', '',
+             'Validation below does not imply Kaggle or CUDA execution.', '']
+    for name, record in files.items():
+        lines.extend([f'## {name}', '', f'SHA256: `{record["sha256"]}`', '',
+                      'TESTED: ' + record['tested'], '', 'NOT TESTED: ' + record['not_tested'], ''])
+    description.write_text('\n'.join(lines))
+    bundle = output / 'hosted_handoff.zip'
+    with zipfile.ZipFile(bundle, 'w', compression=zipfile.ZIP_DEFLATED, compresslevel=6) as archive:
+        for name in names:
+            archive.write(root / name, name)
+        for path in (receipt, description):
+            archive.write(path, path.name)
+    with zipfile.ZipFile(bundle) as archive:
+        if archive.testzip() is not None:
+            raise ValueError('Invalid hosted handoff archive')
+        for name, record in files.items():
+            if hashlib.sha256(archive.read(name)).hexdigest() != record['sha256']:
+                raise ValueError(f'Hosted handoff checksum mismatch: {name}')
+    return bundle, receipt, description
+
+
 def validate_notebook(path):
     nb = nbformat.read(path, as_version=4)
     cells = [c for c in nb.cells if c.cell_type == "code"]
@@ -84,6 +125,8 @@ def main():
 
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--evidence-dir', type=Path, help='current verification directory for generated report')
+    parser.add_argument('--hosted-verification', type=Path,
+                        help='JSON of individual tested/not_tested statements for the hosted handoff trio')
     args = parser.parse_args()
     cells = validate_notebook(ROOT / "notebooks/ExLightNet_reproduction.ipynb")
     build_report(ROOT, evidence_dir=args.evidence_dir)
@@ -102,10 +145,14 @@ def main():
         for name, expected in manifest["files"].items():
             assert hashlib.sha256(archive.read(name)).hexdigest() == expected, name
     components = package_components(ROOT, paths, ROOT / 'delivery/stats_gpu_v2')
-    checksums = write_checksums(ROOT, [*paths, path, ROOT / 'deliverables_manifest.json', *components.values()],
+    handoff = (package_hosted_handoff(ROOT, ROOT / 'delivery/stats_gpu_v2',
+                                    json.loads(args.hosted_verification.read_text()))
+               if args.hosted_verification else ())
+    checksums = write_checksums(ROOT, [*paths, path, ROOT / 'deliverables_manifest.json', *components.values(), *handoff],
                                ROOT / 'delivery/stats_gpu_v2/SHA256SUMS')
     print(json.dumps({"archive": str(path), "files": len(paths) + 1, "bytes": path.stat().st_size, "sha256": sha256(path),
-                      "notebook_code_cells": cells, "components": {k: str(v) for k,v in components.items()}, "checksums": str(checksums)}))
+                      "notebook_code_cells": cells, "components": {k: str(v) for k,v in components.items()},
+                      "hosted_handoff": [str(p) for p in handoff], "checksums": str(checksums)}))
 
 
 if __name__ == "__main__":

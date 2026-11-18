@@ -25,6 +25,10 @@ archive/
 delivery/
 *.partial
 .locks/
+*.lock
+artifacts/**/epoch_checkpoint.pt
+artifacts/**/review/source_review.txt
+artifacts/**/review/review_package.txt
 
 # Credentials and machine-specific agent/editor state.
 .env

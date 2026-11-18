@@ -75,3 +75,43 @@ def test_component_bundles_and_checksum_file_are_verifiable(tmp_path):
     for line in checksum.read_text().splitlines():
         expected, name = line.split('  ', 1)
         assert hashlib.sha256((tmp_path / name).read_bytes()).hexdigest() == expected
+
+
+def test_hosted_handoff_contains_all_three_artifacts_and_individual_test_status(tmp_path):
+    import hashlib
+    import json
+    import zipfile
+    script = load_script()
+    names = ('notebooks/kaggle_runner.ipynb', 'prepared/manifest.json',
+             'delivery/stats_gpu_v2/hosted_source.zip')
+    for name in names:
+        path = tmp_path / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(name.encode())
+    verification = {name: {'tested': 'fixture checksum verification',
+                           'not_tested': 'hosted execution and CUDA', 'bytes': -1, 'sha256': 'forged'} for name in names}
+    output = tmp_path / 'delivery/stats_gpu_v2'
+    bundle, receipt, description = script.package_hosted_handoff(tmp_path, output, verification)
+    manifest = json.loads(receipt.read_text())
+    assert set(manifest['files']) == set(names)
+    with zipfile.ZipFile(bundle) as archive:
+        assert archive.testzip() is None
+        assert set(names) <= set(archive.namelist())
+        for name in names:
+            assert archive.read(name) == (tmp_path / name).read_bytes()
+            record = manifest['files'][name]
+            assert record['sha256'] == hashlib.sha256(archive.read(name)).hexdigest()
+            assert record['bytes'] == len(archive.read(name))
+            assert record['tested'] == verification[name]['tested']
+            assert record['not_tested'] == verification[name]['not_tested']
+            assert name in description.read_text()
+        assert 'TESTED: fixture checksum verification' in description.read_text()
+        assert 'NOT TESTED: hosted execution and CUDA' in description.read_text()
+        assert archive.read(receipt.name) == receipt.read_bytes()
+        assert archive.read(description.name) == description.read_bytes()
+
+
+def test_hosted_handoff_refuses_missing_artifacts_or_unsubstantiated_status(tmp_path):
+    script = load_script()
+    with pytest.raises(ValueError, match='verification'):
+        script.package_hosted_handoff(tmp_path, tmp_path / 'delivery', {})

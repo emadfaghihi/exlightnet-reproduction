@@ -30,11 +30,12 @@ from .stats import (campaign_device_label, class_f1_from_confusion, flow_confusi
 
 STUDIES = ("B1", "B3", "B2", "B4", "B5")
 TREES = {"random_forest", "xgboost"}
+RUN_FIELDS = ("study", "arm", "task", "model", "seed", "split_seed")
 MAX_JSON = 16*1024*1024
 MAX_ARRAY = 256*1024*1024
 EMPTY_COLUMNS = {
-    "per_run": ["campaign","study","source_study","arm","task","model","device","seed","split_seed","checkpoint","macro_f1","accuracy","best_val_macro_f1","epochs_run","best_epoch","max_epochs","lr","run_fingerprint"],
-    "summaries": ["campaign","study","arm","task","model","checkpoint","device","device_label","n","sample_label","macro_f1_mean","macro_f1_sd","macro_f1_seed42","zero_seed_variance","best_val_macro_f1_mean","epochs_run_mean","n_epoch_observed","n_hit_cap","unstable"],
+    "per_run": ["campaign","study","source_study","arm","task","model","device","seed","split_seed","checkpoint","macro_f1","accuracy","best_val_macro_f1","epochs_run","best_epoch","max_epochs","lr","run_fingerprint","inference_eligible"],
+    "summaries": ["campaign","study","arm","task","model","checkpoint","device","device_label","n","n_eligible","sample_label","observation_scope","macro_f1_mean","macro_f1_sd","macro_f1_seed42","zero_seed_variance","best_val_macro_f1_mean","epochs_run_mean","n_epoch_observed","n_hit_cap","unstable"],
     "paired_tests": ["campaign","study","arm","task","comparison_type","reference","model","reference_arm","comparison_arm","checkpoint","reference_device","comparison_device","device_label","seeds","n_pairs","mean_difference","difference_sd","t_statistic","p_value","ci_low","ci_high","cohens_dz","p_holm","interpretation"],
     "paired_flow_bootstrap": ["campaign","study","task","model","reference","reference_arm","comparison_arm","checkpoint","comparison_type","reference_device","comparison_device","device_label","mean_difference","ci_low","ci_high","pairing","replicates","n_seeds","sample_label","estimand"],
     "correlations": ["campaign","study","task","model","device","device_label","n","spearman_rho","p_value","ci_low","ci_high","bootstrap_replicates","defined_replicates","bootstrap_unit","interpretation"],
@@ -147,7 +148,11 @@ class _ArchiveIndex:
 
 
 def _identity(record):
-    return tuple(record[k] for k in ("campaign","study","arm","task","model","seed","split_seed"))
+    return (record["campaign"], *_run_identity(record))
+
+
+def _run_identity(record):
+    return tuple(record[key] for key in RUN_FIELDS)
 
 
 def _plan(record):
@@ -384,14 +389,27 @@ def read_study_archives(archives,prepared_dir):
             execution_environments={r["_environment_id"]:r["_environment"] for r in records})
 
 
+def _study_plans(study):
+    plans=study_runs(study)
+    if study=="B4":
+        # B4 declares its paper-20 comparisons against the B1 binary records.
+        plans.extend([dict(plan,arm="paper",reuse_study="B1") for plan in plans])
+    return plans
+
+
 def _expanded_records(records):
     result=list(records)
-    for study,models,task in [("B3",{"exlightnet","standard_conv","mlp","std_cnn"},"multiclass"),("B4",{"exlightnet","mlp"},"binary")]:
-        if any(r["study"]==study for r in records):
-            for record in records:
-                if record["study"]=="B1" and record["task"]==task and record["model"] in models and 42<=record["seed"]<=56:
-                    reused=dict(record,study=study,source_study="B1",arm="paper")
-                    result.append(reused)
+    lookup={_run_identity(r):r for r in records}
+    observed_studies={r["study"] for r in records}
+    for study in ("B3","B4"):
+        if study not in observed_studies:
+            continue
+        for plan in _study_plans(study):
+            if "reuse_study" in plan:
+                source_study=plan["reuse_study"]
+                record=lookup.get(_run_identity(dict(plan,study=source_study)))
+                if record is not None:
+                    result.append(dict(record,study=study,source_study=source_study))
     return result
 
 
@@ -410,7 +428,7 @@ def _run_rows(records):
     return rows
 
 
-def _summary(rows,label):
+def _summary(rows,label,expected_seed_counts):
     output=[]
     frame=pd.DataFrame(rows)
     if frame.empty:
@@ -418,9 +436,15 @@ def _summary(rows,label):
     for keys,g in frame.groupby(["study","arm","task","model","checkpoint"],sort=True):
         study,arm,task,model,checkpoint=keys
         n=len(g);sd=g.macro_f1.std(ddof=1)
+        n_eligible=int(g.inference_eligible.sum())
+        observation_scope="descriptive"
+        if study in expected_seed_counts:
+            observation_scope=("complete; descriptive" if n==n_eligible==expected_seed_counts[study]
+                               else "partial; observed runs only; descriptive")
         epochs=g.dropna(subset=["epochs_run"])
         output.append(dict(campaign=g.iloc[0].campaign,study=study,arm=arm,task=task,model=model,checkpoint=checkpoint,
             device=g.iloc[0].device,device_label=label,n=n,sample_label="n=5, indicative only" if n==5 else f"n={n}",
+            n_eligible=n_eligible,observation_scope=observation_scope,
             environment_id=g.iloc[0].environment_id,execution_environment=g.iloc[0].execution_environment,
             macro_f1_mean=g.macro_f1.mean(),macro_f1_sd=sd,
             macro_f1_seed42=g[g.seed==42].macro_f1.iloc[0] if (g.seed==42).any() else np.nan,
@@ -495,7 +519,7 @@ def _correlations(records,replicates,random_seed,label):
         if record["study"]=="B1":
             groups.setdefault((record["task"],record["model"]),[]).append(record)
     for (task,model),group in sorted(groups.items()):
-        observed=[r for r in group if r["epochs_run"] is not None]
+        observed=sorted((r for r in group if r["epochs_run"] is not None),key=lambda r:r["seed"])
         x=np.asarray([r["epochs_run"] for r in observed],dtype=float)
         y=np.asarray([r["checkpoints"]["best"]["metrics"]["macro_f1"] for r in observed])
         defined=len(x)>1 and np.ptp(x)>0 and np.ptp(y)>0
@@ -535,28 +559,57 @@ def _lr_selection(records,label):
             lr=float(arm.removeprefix("lr_")),best_val_macro_f1_mean=value,
             selected_lr=float(selected.removeprefix("lr_")) if selected else np.nan,
             selected=arm==selected if complete else None,
+            observation_scope="complete; descriptive" if complete else "partial; observed validation runs only; descriptive",
             status="validation-only selection; tie chooses lower LR" if complete else "PENDING: complete equal seed sets for all three LR arms required"))
     return pd.DataFrame(rows)
 
 
 def _completeness(records):
-    observed={_identity(r)[1:] for r in records}
+    """Match verified records to whole predeclared study seed blocks."""
+    observed={_run_identity(r) for r in records}
     rows=[]
+    eligible={}
     for study in STUDIES:
-        expected=study_runs(study)
-        new=[r for r in expected if "reuse_study" not in r]
-        references=[r for r in expected if "reuse_study" in r]
-        if study=="B4":
-            references=[dict(p,arm="paper",study="B4") for p in new]
-        completed=0;reused=0
-        for plan in new:
-            key=tuple(plan[k] for k in ("study","arm","task","model","seed","split_seed"))
-            completed+=key in observed
-        for plan in references:
-            reused+=any(r["study"]=="B1" and all(r[k]==plan[k] for k in ("task","model","seed","split_seed")) for r in records)
-        status="PENDING: study not run" if completed==0 else "complete" if completed==len(new) and reused==len(references) else "PARTIAL: missing planned runs or B1 references"
-        rows.append(dict(study=study,expected_new_runs=len(new),completed_new_runs=completed,expected_b1_references=len(references),available_b1_references=reused,status=status))
-    return pd.DataFrame(rows)
+        blocks={}
+        for plan in _study_plans(study):
+            blocks.setdefault(plan["seed"],[]).append(plan)
+        eligible[study]=set()
+        seed_rows=[]
+        totals=dict(expected_new_runs=0,completed_new_runs=0,
+                    expected_b1_references=0,available_b1_references=0)
+        for seed,plans in sorted(blocks.items()):
+            counts=dict.fromkeys(totals,0)
+            missing=[]
+            for plan in plans:
+                identity=dict(plan,study=plan.get("reuse_study",study))
+                present=_run_identity(identity) in observed
+                if "reuse_study" in plan:
+                    counts["expected_b1_references"]+=1
+                    counts["available_b1_references"]+=present
+                else:
+                    counts["expected_new_runs"]+=1
+                    counts["completed_new_runs"]+=present
+                if not present:
+                    missing.append({key:identity[key] for key in RUN_FIELDS})
+            if not missing:
+                eligible[study].add(seed)
+            for key in totals:
+                totals[key]+=counts[key]
+            seed_rows.append(dict(study=study,row_type="seed",seed=seed,split_seed=plans[0]["split_seed"],
+                eligible_seeds=str(seed) if not missing else "",expected_seed_blocks=1,n_eligible=int(not missing),
+                **counts,missing_count=len(missing),missing_identities=json.dumps(missing,sort_keys=True),
+                status="incomplete; excluded" if missing else "complete"))
+        if totals["completed_new_runs"]==0:
+            status="PENDING: study not run"
+        else:
+            status="complete" if len(eligible[study])==len(blocks) else "PARTIAL: missing planned runs or B1 references"
+        rows.append(dict(study=study,row_type="study",seed=None,split_seed=None,
+            expected_seed_blocks=len(blocks),n_eligible=len(eligible[study]),
+            eligible_seeds=",".join(map(str,sorted(eligible[study]))),**totals,
+            missing_count=sum(row["missing_count"] for row in seed_rows),status=status))
+        rows.extend(seed_rows)
+    frame=pd.DataFrame(rows).astype({"seed":"Int64","split_seed":"Int64"})
+    return frame,eligible
 
 
 def _device_equivalence(records,reference_cpu):
@@ -588,23 +641,83 @@ def _device_equivalence(records,reference_cpu):
     return pd.DataFrame(rows,columns=columns)
 
 
-def _hypothesis(summaries,correlations,records):
-    columns=["model","headline_checkpoint","paper_mean","paper_sd","fixed30_mean","fixed30_sd","b1_spearman_rho","directional_condition_met","interpretation"]
-    if summaries.empty:
-        return pd.DataFrame(columns=columns)
-    subset=summaries[(summaries.study=="B3")&(summaries.model=="exlightnet")&(summaries.checkpoint=="best")]
-    arms={r.arm:r for r in subset.itertuples()}
-    if not {"paper","fixed30"}<=set(arms):
-        return pd.DataFrame(columns=columns)
-    a,b=arms["paper"],arms["fixed30"]
-    seeds={arm:{r["seed"] for r in records if r["study"]=="B3" and r["model"]=="exlightnet" and r["arm"]==arm} for arm in ("paper","fixed30")}
-    complete=all(values==set(range(42,57)) for values in seeds.values())
-    rho=correlations[(correlations.task=="multiclass")&(correlations.model=="exlightnet")].spearman_rho.iloc[0] if not correlations.empty and ((correlations.task=="multiclass")&(correlations.model=="exlightnet")).any() else np.nan
-    defined=complete and np.isfinite([a.macro_f1_sd,b.macro_f1_sd]).all()
-    match=bool(defined and b.macro_f1_sd<a.macro_f1_sd and b.macro_f1_mean>a.macro_f1_mean)
-    return pd.DataFrame([dict(model="exlightnet",headline_checkpoint="best",paper_mean=a.macro_f1_mean,paper_sd=a.macro_f1_sd,
-        fixed30_mean=b.macro_f1_mean,fixed30_sd=b.macro_f1_sd,b1_spearman_rho=rho,directional_condition_met=match if defined else None,
-        interpretation="directions match hypothesis; descriptive only, no causal claim" if match else "not supported" if defined else "PENDING: complete matched seed sets 42-56 required")],columns=columns)
+def _stopping_endpoint(fixed,paper,amendment):
+    """Compute the paired t interval and percentile interval over paired seeds."""
+    bootstrap=amendment["sd_ratio_bootstrap"]
+    paired=paired_summary(fixed,paper)
+    paper_sd=0. if paired["comparison_zero_seed_variance"] else paired["comparison_sd"]
+    fixed_sd=0. if paired["reference_zero_seed_variance"] else paired["reference_sd"]
+    higher_mean=bool(paired["ci_low"]>0)
+    ratio=low=high=np.nan
+    smaller_sd=None
+    defined=0
+    decision="inconclusive"
+    if paper_sd==0:
+        reason="paper sample SD is zero"
+    else:
+        ratio=fixed_sd/paper_sd
+        rng=np.random.default_rng(bootstrap["random_seed"])
+        indices=rng.integers(0,len(paper),size=(bootstrap["replicates"],len(paper)))
+        paper_draws=paper[indices]
+        valid=np.ptp(paper_draws,axis=1)>0
+        defined=int(valid.sum())
+        if not valid.all():
+            reason="one or more paired bootstrap draws have zero paper SD"
+        else:
+            fixed_draws=fixed[indices]
+            # Center on the first sampled value to avoid roundoff from offsets
+            # between the arms, including a constant fixed30 resample.
+            fixed_draw_sd=np.std(fixed_draws-fixed_draws[:,:1],axis=1,ddof=1)
+            paper_draw_sd=np.std(paper_draws-paper_draws[:,:1],axis=1,ddof=1)
+            alpha=(1-bootstrap["confidence_level"])/2
+            low,high=np.quantile(fixed_draw_sd/paper_draw_sd,[alpha,1-alpha])
+            smaller_sd=bool(ratio<=amendment["sd_ratio_maximum"] and high<bootstrap["upper_bound_strictly_below"])
+            decision="conditions supported" if smaller_sd and higher_mean else "not supported"
+            reason="both predeclared conditions met" if decision=="conditions supported" else "one or both predeclared conditions unmet"
+    return dict(paper_mean=paired["comparison_mean"],paper_sd=paper_sd,fixed30_mean=paired["reference_mean"],fixed30_sd=fixed_sd,
+        mean_difference=paired["mean_difference"],mean_difference_ci_low=paired["ci_low"],mean_difference_ci_high=paired["ci_high"],
+        sd_ratio=ratio,sd_ratio_ci_low=low,sd_ratio_ci_high=high,defined_replicates=defined,
+        smaller_sd=smaller_sd,higher_mean=higher_mean,endpoint_decision=decision,decision_reason=reason)
+
+
+def _hypothesis(records,correlations,amendment):
+    """Evaluate both designated ExLightNet endpoints on eligible B3 blocks."""
+    study,task,model="B3","multiclass","exlightnet"
+    lookup={(r["arm"],r["seed"]):r["checkpoints"] for r in records
+            if (r["study"],r["task"],r["model"])==(study,task,model)}
+    b1={}
+    if not correlations.empty:
+        matches=correlations[(correlations.task==task)&(correlations.model==model)]
+        if not matches.empty:
+            b1=matches.iloc[0]
+    required=amendment["matched_seeds"]
+    bootstrap=amendment["sd_ratio_bootstrap"]
+    rows=[]
+    for role in ("PRIMARY","SECONDARY"):
+        endpoint=amendment[f"{role.lower()}_endpoint"]
+        experimental=endpoint["experimental_arm"],endpoint["experimental_checkpoint"]
+        reference=endpoint["reference_arm"],endpoint["reference_checkpoint"]
+        seeds=[seed for seed in required if all(checkpoint in lookup.get((arm,seed),{})
+                                               for arm,checkpoint in (experimental,reference))]
+        missing=sorted(set(required)-set(seeds))
+        row=dict(study=study,task=task,model=model,endpoint_role=role,**endpoint,
+            n_pairs=len(seeds),seeds=",".join(map(str,seeds)),missing_seeds=",".join(map(str,missing)),
+            paper_mean=np.nan,paper_sd=np.nan,fixed30_mean=np.nan,fixed30_sd=np.nan,
+            mean_difference=np.nan,mean_difference_ci_low=np.nan,mean_difference_ci_high=np.nan,
+            sd_ratio=np.nan,sd_ratio_ci_low=np.nan,sd_ratio_ci_high=np.nan,
+            bootstrap_replicates=bootstrap["replicates"],bootstrap_random_seed=bootstrap["random_seed"],defined_replicates=0,
+            smaller_sd=None,higher_mean=None,endpoint_decision="PENDING",decision_reason="all declared matched seed blocks are required",
+            b1_n=b1.get("n",0),b1_spearman_rho=b1.get("spearman_rho",np.nan),
+            b1_ci_low=b1.get("ci_low",np.nan),b1_ci_high=b1.get("ci_high",np.nan))
+        if not missing:
+            fixed,paper=(np.asarray([lookup[(arm,seed)][checkpoint]["metrics"]["macro_f1"] for seed in seeds])
+                         for arm,checkpoint in (experimental,reference))
+            row.update(_stopping_endpoint(fixed,paper,amendment))
+        rows.append(row)
+    decisions={row["endpoint_decision"] for row in rows}
+    overall=("PENDING" if "PENDING" in decisions else next(iter(decisions))
+             if len(decisions)==1 else "inconclusive")
+    return pd.DataFrame(rows).assign(overall_decision=overall)
 
 
 def _probe_determinism(records):
@@ -644,16 +757,27 @@ def _markdown(frame):
     return "\n".join(lines)
 
 
-def _report(protocol,campaign,tables,device_label):
-    lines=[f"# Supplementary accuracy studies: {campaign}","", "Source protocol: [`docs/statistics_protocol.json`](docs/statistics_protocol.json). Rules were recorded before Stage B data. Headline: best-validation checkpoint; last epoch is secondary. No test metric selects an epoch, checkpoint, learning rate or arm.","", "## A-priori interpretation rules",""]
-    lines.extend("- "+rule for rule in protocol["rules_verbatim"])
+def _report(protocol,campaign,tables,device_label,stopping,blocks):
+    lines=[f"# Supplementary accuracy studies: {campaign}","", "Source protocol: [`docs/statistics_protocol.json`](docs/statistics_protocol.json). Rules were recorded before Stage B data. General study summaries headline the best-validation checkpoint and list the last epoch second. The stopping hypothesis follows its designated primary and secondary checkpoints below. No test metric selects an epoch, checkpoint, learning rate or arm.","", "## A-priori interpretation rules",""]
+    original=protocol["rules_verbatim"]
+    superseded=stopping["supersedes_rule_index"]
+    lines.extend("- "+rule for index,rule in enumerate(original) if index!=superseded)
+    lines.extend(["",f"### {stopping['id']} ({stopping['date']}) — Stopping hypothesis",""])
+    lines.extend("- "+rule for rule in stopping["rules_verbatim"])
+    lines.extend(["",f"### {blocks['id']} ({blocks['date']}) — Complete seed blocks","",
+                  blocks["rule"],"",blocks["clarification"],"",
+                  "### Superseded original stopping-hypothesis rule","",original[superseded]])
     lines.extend(["",protocol["bootstrap_interpretation"],"", "Fixed split/training-seed variation and split-seed variation are reported separately. Tiny-class support makes macro-F1 noisy; unstable controls and zero-variance baselines cannot establish superiority. n=5, indicative only. Correlations are descriptive, not causal.","",f"Device label: {device_label}.",""])
     if campaign!="gpu_v2":
         lines.extend(["**Separate smoke/supplementary campaign. These observations do not fill canonical gpu_v2 studies.**",""])
+    completeness=tables["completeness"].query('row_type == "study"').set_index("study")
     for study in STUDIES:
-        status=tables["completeness"].set_index("study").loc[study,"status"]
+        complete=completeness.loc[study]
+        status=complete.status
         lines.extend([f"## {study}: {protocol['studies'][study]['title']}","",status,""])
-        if status=="PENDING: study not run":
+        lines.extend([f"Complete seed blocks for paired analyses: {complete.n_eligible} of {complete.expected_seed_blocks}. "
+                      f"Eligible seeds: {complete.eligible_seeds or 'none'}. Missing run identities are recorded by seed in `completeness.csv`.",""])
+        if status=="PENDING: study not run" and study!="B3":
             continue
         lines.extend([_markdown(tables["summaries"][tables["summaries"].study==study]),""])
         paired=tables["paired_tests"]
@@ -666,12 +790,23 @@ def _report(protocol,campaign,tables,device_label):
         if study=="B1":
             lines.extend(["Descriptive epochs-versus-F1 correlation and paired-seed bootstrap CI:","",_markdown(tables["correlations"]),""])
         if study=="B3":
-            lines.extend(["B1 paper-rule observations are referenced by seed, never retrained. Correlation and fixed-budget directions side by side:","",_markdown(tables["early_stopping_hypothesis"]),""])
+            endpoints=tables["early_stopping_hypothesis"]
+            roles=["endpoint_role","experimental_arm","experimental_checkpoint","reference_arm","reference_checkpoint",
+                   "n_pairs","missing_seeds","smaller_sd","higher_mean","endpoint_decision","decision_reason"]
+            effects=["endpoint_role","paper_mean","paper_sd","fixed30_mean","fixed30_sd","mean_difference",
+                     "mean_difference_ci_low","mean_difference_ci_high","sd_ratio","sd_ratio_ci_low","sd_ratio_ci_high",
+                     "defined_replicates"]
+            b1=["b1_n","b1_spearman_rho","b1_ci_low","b1_ci_high"]
+            lines.extend(["B1 supplies the paper-rule checkpoint for each seed. The mean-difference interval uses the paired Student t distribution. The SD-ratio interval uses paired-seed percentile resampling.","",
+                f"Overall stopping-hypothesis decision — **{endpoints.overall_decision.iloc[0]}**.","",
+                _markdown(endpoints[roles]),"",_markdown(endpoints[effects]),"",
+                "B1 descriptive epochs-versus-F1 correlation for multiclass ExLightNet and its paired-seed bootstrap interval.","",
+                _markdown(endpoints[b1].drop_duplicates()),""])
         if study=="B4":
             lines.extend(["The paper-20 reference is reused from B1. Cap counts and best/last results appear above; no reference is regenerated.",""])
         if study=="B5":
             lines.extend(["Learning-rate selection uses validation means only, requires every predeclared seed in all three arms, and breaks a validation tie toward lower LR:","",_markdown(tables["lr_selection"]),""])
-    lines.extend(["## Device-equivalence view", "", "Explicit side-by-side campaigns on matched seeds 42–46. Difference is gpu_v2 minus cpu_v1. No hypothesis p-values, pass/fail decisions or pooled campaigns.","",_markdown(tables["device_equivalence"]),"", "## Probe and determinism studies", "",_markdown(tables["probe"]),"",_markdown(tables["determinism"]),"", "CUDA execution is NOT RUN locally. Cached hosted GPU observations, if imported, do not imply local CUDA validation.","", "## Supplementary frozen/exported-model latency", "", "NOT RUN: this task prohibits benchmark reruns. Canonical CPU latency/size/INT8/memory evidence stays separate.",""])
+    lines.extend(["## Device-equivalence view", "", "Descriptive side-by-side differences and confidence intervals for matched seeds 42–46 with complete gpu_v2 B1 blocks. Differences are gpu_v2 minus cpu_v1.","",_markdown(tables["device_equivalence"]),"", "## Probe and determinism studies", "",_markdown(tables["probe"]),"",_markdown(tables["determinism"]),"", "CUDA execution is NOT RUN locally. Cached hosted GPU observations, if imported, do not imply local CUDA validation.","", "## Supplementary frozen/exported-model latency", "", "NOT RUN: this task prohibits benchmark reruns. Canonical CPU latency/size/INT8/memory evidence stays separate.",""])
     return "\n".join(lines)
 
 
@@ -686,6 +821,10 @@ def aggregate_studies(archives,prepared_dir,output,report,reference_cpu=None,*,p
     protocol=_json(protocol_path.read_bytes())
     if not protocol.get("declared_before_stage_b_data") or replicates<1:
         raise ValueError("A predeclared protocol and positive bootstrap count are required")
+    amendments={row["id"]:row for row in protocol.get("amendments",[])}
+    if not {"PA-20261118-1","PA-20261118-2"}<=amendments.keys():
+        raise ValueError("The predeclared stopping-hypothesis and seed-block amendments are required")
+    stopping,blocks=(amendments[key] for key in ("PA-20261118-1","PA-20261118-2"))
     loaded=read_study_archives(archives,prepared_dir)
     records=loaded["records"];campaign=loaded["campaign"]
     output,report=Path(output).resolve(),Path(report).resolve()
@@ -699,16 +838,20 @@ def aggregate_studies(archives,prepared_dir,output,report,reference_cpu=None,*,p
     if report.suffix.lower()!=".md" or report==repository/"REPORT.md":
         raise ValueError("Use a separate Markdown statistics report path")
     label=loaded.get("device_label","no observations")
+    completeness,eligible=_completeness(records)
     expanded=_expanded_records(records);rows=_run_rows(expanded)
     for row in rows:
         row["device_label"]=label
-    summaries=_summary(rows,label)
-    paired,flow=_pair_tables(expanded,rows,replicates,random_seed,label)
-    correlations=_correlations(records,replicates,random_seed,label)
+        row["inference_eligible"]=row["seed"] in eligible.get(row["study"],set())
+    inferential=[record for record in expanded if record["seed"] in eligible.get(record["study"],set())]
+    expected={row.study:row.expected_seed_blocks for row in completeness.itertuples() if row.row_type=="study"}
+    summaries=_summary(rows,label,expected)
+    paired,flow=_pair_tables(inferential,[row for row in rows if row["inference_eligible"]],replicates,random_seed,label)
+    correlations=_correlations(inferential,replicates,random_seed,label)
     probe,determinism=_probe_determinism(records)
     tables=dict(per_run=pd.DataFrame(rows),summaries=summaries,paired_tests=paired,paired_flow_bootstrap=flow,
-        correlations=correlations,lr_selection=_lr_selection(records,label),completeness=_completeness(records),
-        device_equivalence=_device_equivalence(records,reference_cpu),early_stopping_hypothesis=_hypothesis(summaries,correlations,expanded),
+        correlations=correlations,lr_selection=_lr_selection(records,label),completeness=completeness,
+        device_equivalence=_device_equivalence(inferential,reference_cpu),early_stopping_hypothesis=_hypothesis(inferential,correlations,stopping),
         probe=probe,determinism=determinism)
     for name,frame in tables.items():
         if name!="device_equivalence":
@@ -723,7 +866,7 @@ def aggregate_studies(archives,prepared_dir,output,report,reference_cpu=None,*,p
     for name,columns in EMPTY_COLUMNS.items():
         if tables[name].empty:
             tables[name]=tables[name].reindex(columns=list(dict.fromkeys(columns+["device_label","campaign"])))
-    report_text=_report(protocol,campaign,tables,label)
+    report_text=_report(protocol,campaign,tables,label,stopping,blocks)
     output.mkdir(parents=True,exist_ok=True);report.parent.mkdir(parents=True,exist_ok=True)
     paths={}
     for name,frame in tables.items():
@@ -737,6 +880,7 @@ def aggregate_studies(archives,prepared_dir,output,report,reference_cpu=None,*,p
         environment_identity_fields="device,numpy,torch,scikit-learn,xgboost; CUDA additionally cuda,cudnn,gpu_name; CPU ignores unused GPU fields",
         bootstrap_replicates=replicates,random_seed=random_seed,
         headline_checkpoint="best",secondary_checkpoint="last",cuda_executed_here=False,
+        stopping_hypothesis_protocol=stopping["id"],seed_block_protocol=blocks["id"],
         outputs={name:dict(path=path,sha256=_hash_file(path)) for name,path in paths.items()})
     if reference_cpu and records:
         manifest["reference_cpu_sha256"]=_hash_file(reference_cpu)
