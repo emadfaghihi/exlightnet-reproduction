@@ -1,0 +1,12 @@
+WARNING: The directory '/home/mparsict/.cache/pip' or its parent directory is not owned or is not writable by the current user. The cache has been disabled. Check the permissions and owner of that directory. If executing pip with sudo, you should use sudo's -H flag.
+Processing /home/mparsict/projects/me/exlightnet
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Building wheels for collected packages: exlightnet-reproduction
+  Building wheel for exlightnet-reproduction (pyproject.toml): started
+  Building wheel for exlightnet-reproduction (pyproject.toml): finished with status 'done'
+  Created wheel for exlightnet-reproduction: filename=exlightnet_reproduction-0.1.0-py3-none-any.whl size=91095 sha256=fd7eaec7b11ef2be6b570d4d56bdf35b9386b08ff2723dffab893f1fc4001ff7
+  Stored in directory: /tmp/pip-ephem-wheel-cache-su0g8n9q/wheels/ec/11/9e/0735b4cc9661cc01b3a5096b78813a31b1681a0589cc3765e4
+Successfully built exlightnet-reproduction
+Installing collected packages: exlightnet-reproduction
+Successfully installed exlightnet-reproduction-0.1.0

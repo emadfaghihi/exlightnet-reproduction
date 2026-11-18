@@ -1,0 +1,20 @@
+PAUSED_AFTER_ATOMIC_CHECKPOINT /home/mparsict/projects/me/exlightnet/artifacts/stats_cpu_v1/smoke/first_attempt/gpu_v2_smoke/cpu/ca5364c9584721e42f13407f86027e260ecd4b91ed960a1b5c367c9c8469d17a/epoch_checkpoint.pt
+Traceback (most recent call last):
+  File "/home/mparsict/projects/me/exlightnet/scripts/kaggle_campaign.py", line 47, in <module>
+    main()
+  File "/home/mparsict/projects/me/exlightnet/scripts/kaggle_campaign.py", line 39, in main
+    result = run_campaign(args.prepared_dir, args.output, args.study, device=args.device, campaign=args.campaign,
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mparsict/projects/me/exlightnet/src/exlightnet/campaign.py", line 367, in run_campaign
+    info = fit_resumable(model, arrays["x_train"], ytrain, arrays["x_val"], yval, cfg, directory,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mparsict/projects/me/exlightnet/src/exlightnet/train.py", line 201, in fit_resumable
+    checkpoint_hook(epoch, path)
+  File "/home/mparsict/projects/me/exlightnet/scripts/kaggle_campaign.py", line 38, in pause
+    threading.Event().wait()
+  File "/usr/lib/python3.11/threading.py", line 622, in wait
+    signaled = self._cond.wait(timeout)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/threading.py", line 320, in wait
+    waiter.acquire()
+KeyboardInterrupt

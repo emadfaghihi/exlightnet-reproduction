@@ -1,0 +1,69 @@
+{
+  "aggregator_source_sha256": "3fa21bfe53b475841992b7303a09cf115accefa5d5c0caadd5173b2828e40247",
+  "artifact_sha256": {},
+  "bootstrap_replicates": 2000,
+  "campaign": "gpu_v2",
+  "cuda_executed_here": false,
+  "device_label": "no observations",
+  "environment_identity_fields": "device,numpy,torch,scikit-learn,xgboost; CUDA additionally cuda,cudnn,gpu_name; CPU ignores unused GPU fields",
+  "execution_environments": {},
+  "headline_checkpoint": "best",
+  "input_archives": {},
+  "n_incomplete_records": 0,
+  "n_unique_runs": 0,
+  "outputs": {
+    "completeness": {
+      "path": "/home/mparsict/projects/me/exlightnet/artifacts/stats_gpu_v2_final/completeness.csv",
+      "sha256": "43d1bc75e69b93c30db1597f66b90348f10a5276296760548a5851918c3e0f71"
+    },
+    "correlations": {
+      "path": "/home/mparsict/projects/me/exlightnet/artifacts/stats_gpu_v2_final/correlations.csv",
+      "sha256": "b8113a3dcdee55cd6e18ba373ff01ca207c909263d9d8621a3749dd4072f2815"
+    },
+    "determinism": {
+      "path": "/home/mparsict/projects/me/exlightnet/artifacts/stats_gpu_v2_final/determinism.csv",
+      "sha256": "6435ae3627786dcb28f6175d324e646e603417b28d04e558b3e237957529380e"
+    },
+    "device_equivalence": {
+      "path": "/home/mparsict/projects/me/exlightnet/artifacts/stats_gpu_v2_final/device_equivalence.csv",
+      "sha256": "0ccb3c1a976f603c90ff98bad94d52c64bd827cc125b93c4c4acb55f0d4c66e8"
+    },
+    "early_stopping_hypothesis": {
+      "path": "/home/mparsict/projects/me/exlightnet/artifacts/stats_gpu_v2_final/early_stopping_hypothesis.csv",
+      "sha256": "b7952ec63fd7a6973168bad5e8d029318f75bdbbda75353fb07ae47b1461dd57"
+    },
+    "lr_selection": {
+      "path": "/home/mparsict/projects/me/exlightnet/artifacts/stats_gpu_v2_final/lr_selection.csv",
+      "sha256": "8e9055164ca997186766a25617539874f83dfff575eaa195c651ea365bb616ee"
+    },
+    "paired_flow_bootstrap": {
+      "path": "/home/mparsict/projects/me/exlightnet/artifacts/stats_gpu_v2_final/paired_flow_bootstrap.csv",
+      "sha256": "3c1ea6f214d867ee36a04680e439833393a7880b8e29defb66275bcdf75ab214"
+    },
+    "paired_tests": {
+      "path": "/home/mparsict/projects/me/exlightnet/artifacts/stats_gpu_v2_final/paired_tests.csv",
+      "sha256": "99921a76486029ffec1d10d2c27fec710ced9d320efe258ee7a7a4093c0049ee"
+    },
+    "per_run": {
+      "path": "/home/mparsict/projects/me/exlightnet/artifacts/stats_gpu_v2_final/per_run.csv",
+      "sha256": "dce0376f8fc0711918f92e7df65c9d655599c12f5eff53aa80c4b58104897626"
+    },
+    "probe": {
+      "path": "/home/mparsict/projects/me/exlightnet/artifacts/stats_gpu_v2_final/probe.csv",
+      "sha256": "de9698c9c72ebcca8a90d12276295c42d61c2127c3b778fd0f46c8d96818c695"
+    },
+    "report": {
+      "path": "/home/mparsict/projects/me/exlightnet/REPORT_stats_v2.md",
+      "sha256": "b60539288e58619a4833a8967ac59d1c09b67b8550c4bb80813a1fac7594b746"
+    },
+    "summaries": {
+      "path": "/home/mparsict/projects/me/exlightnet/artifacts/stats_gpu_v2_final/summaries.csv",
+      "sha256": "fc8becf7127576ad28fa21528a3fe41ba7f4bd164a7badff8951dd870c033ea8"
+    }
+  },
+  "prepared_manifest_sha256": null,
+  "protocol_sha256": "398ebec61066a5c3abe75325a78b3bbd399c3e236dbef845ab74345228d7095d",
+  "random_seed": 42,
+  "schema_version": 1,
+  "secondary_checkpoint": "last"
+}

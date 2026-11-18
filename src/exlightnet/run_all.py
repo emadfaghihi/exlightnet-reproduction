@@ -164,24 +164,21 @@ def _load_run_model(name, classes, directory):
     return model.eval()
 
 
-def ablation_comparison(rows):
-    frame = summarize([r for r in rows if r["task"] == "multiclass"])
-    if frame.empty or "exlightnet" not in frame.model.values:
+def ablation_comparison(rows, campaign="cpu_v1"):
+    """Compute future paired ablation output from copies, with task-wide Holm."""
+    from .stats import paired_tests
+    normalized = [{**row, "campaign": row.get("campaign", campaign),
+                   "device": row.get("device", "cpu"), "split_seed": row.get("split_seed", 42)}
+                  for row in rows if row["task"] == "multiclass"]
+    if not normalized or not any(row["model"] == "exlightnet" for row in normalized):
         return []
-    base = frame.loc[frame.model == "exlightnet"].iloc[0]
-    output = []
-    for _, row in frame[frame.model.isin(ABLATIONS)].iterrows():
-        paired = {r["seed"]: r["macro_f1"] for r in rows if r["task"] == "multiclass" and r["model"] == row.model}
-        full = {r["seed"]: r["macro_f1"] for r in rows if r["task"] == "multiclass" and r["model"] == "exlightnet"}
-        diff = [paired[s] - full[s] for s in sorted(set(paired) & set(full))]
-        delta = float(np.mean(diff)) if diff else None
-        sd = float(np.std(diff, ddof=1)) if len(diff) > 1 else None
-        output.append({"variant": row.model, "paired_seeds": sorted(set(paired) & set(full)), "delta_macro_f1": delta,
-                       "paired_delta_std": sd, "full_seed_std": base.macro_f1_std,
-                       "exceeds_full_seed_std": bool(abs(delta) > base.macro_f1_std) if delta is not None and base.macro_f1_std is not None else None,
-                       "exceeds_paired_seed_std": bool(abs(delta) > sd) if delta is not None and sd is not None else None,
-                       "interpretation": "comparison with seed SD, not a significance test"})
-    return output
+    frame = paired_tests(normalized)
+    if frame.empty:
+        return []
+    selected = frame[frame.model.isin(ABLATIONS)]
+    return [{**{key: (None if isinstance(value, float) and not np.isfinite(value) else value)
+                for key, value in record.items()}, "variant": record["model"]}
+            for record in selected.to_dict(orient="records")]
 
 
 def sampler_gate(y):
@@ -291,7 +288,7 @@ def _run_core(root=Path("."), mode="fast", models=MODELS, tasks=("binary", "mult
                 except Exception as exc:
                     failure(f"ablation/{name}/{seed}", exc)
     if not seed_worker:
-        write_json(directory / "ablations.json", ablation_comparison(rows))
+        write_json(directory / "ablations.json", ablation_comparison(rows, campaign="cpu_v1" if mode == "full" else "fast_demo"))
     # Phase 8: separate W8 artifact receives exactly one final test prediction pass.
     quant_pass = {}
     quant_rows = []
@@ -393,7 +390,9 @@ def _run_core(root=Path("."), mode="fast", models=MODELS, tasks=("binary", "mult
 
 
 def run(root=Path("."), mode="fast", models=MODELS, tasks=("binary", "multiclass"), seeds=None, epochs=None, ablations=True, explanations=True, leakage_proxy=False,
-        skip_benchmark=False, alpha_only=False, seed_worker=False, aggregate_only=False, benchmark_only=False):
+        skip_benchmark=False, alpha_only=False, seed_worker=False, aggregate_only=False, benchmark_only=False, device="cpu"):
+    if device != "cpu":
+        raise ValueError("Canonical run_all is CPU-only; use the separate supplementary campaign runner for CUDA/auto")
     from .execution import configure_single_thread, execution_lock
     if sum((alpha_only, seed_worker, aggregate_only, benchmark_only)) > 1:
         raise ValueError("Choose one execution stage")
@@ -412,6 +411,7 @@ def run(root=Path("."), mode="fast", models=MODELS, tasks=("binary", "multiclass
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--mode", choices=["fast", "full"], default="fast")
+    parser.add_argument("--device", choices=["cpu"], default="cpu", help="canonical CPU reproduction; supplementary devices use scripts/kaggle_campaign.py")
     parser.add_argument("--root", type=Path, default=Path("."))
     parser.add_argument("--models", nargs="+", choices=MODELS, default=list(MODELS))
     parser.add_argument("--tasks", nargs="+", choices=["binary", "multiclass"], default=["binary", "multiclass"])
@@ -428,7 +428,7 @@ def main():
     stages.add_argument("--benchmark-only", action="store_true", help="one process, idle CPU, cached models only; refresh timing and summaries")
     args = parser.parse_args()
     result = run(args.root, args.mode, args.models, args.tasks, args.seeds, args.epochs, not args.no_ablations, not args.no_explanations, args.leakage_proxy,
-                 args.skip_benchmark, args.alpha_only, args.seed_worker, args.aggregate_only, args.benchmark_only)
+                 args.skip_benchmark, args.alpha_only, args.seed_worker, args.aggregate_only, args.benchmark_only, device=args.device)
     if result.get("status") == "blocked":
         raise SystemExit(2)
 

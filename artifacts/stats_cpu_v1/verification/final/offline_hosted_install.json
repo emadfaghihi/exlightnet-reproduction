@@ -1,0 +1,15 @@
+{
+  "status": "complete",
+  "install_source": "delivery/stats_gpu_v2/hosted_source.zip",
+  "source_sha256": "91c5fc772e5a5a6c9e30562b27ab11d243ac55dd81ba2e567be5f0b88845e952",
+  "source_matches_current_workspace": true,
+  "offline_install": true,
+  "no_dependency_downloads": true,
+  "installer": "system Python3.11 pip; target executed by task venv Python3.11",
+  "prepared_split42_fingerprint": "dfba90bd116f9288bc72a837160516984ba773b11904e98561c80cda7dedcf5c",
+  "hosted_notebook_syntax": "PASS",
+  "hosted_notebook_execution": "NOT RUN",
+  "cuda": "NOT RUN",
+  "training": "NOT RUN",
+  "actual_optimizer_updates": 0
+}

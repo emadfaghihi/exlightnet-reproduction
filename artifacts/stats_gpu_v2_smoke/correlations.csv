@@ -1,0 +1,2 @@
+campaign,study,task,model,device,device_label,n,n_epoch_observed,spearman_rho,p_value,ci_low,ci_high,bootstrap_replicates,defined_replicates,bootstrap_unit,sample_label,interpretation
+gpu_v2_smoke,B1,multiclass,mlp,cpu,cpu,2,2,,,,,2000,0,"paired training-seed (epochs,F1) observations",n=2,"descriptive only, not causal"

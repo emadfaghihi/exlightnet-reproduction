@@ -1,0 +1,746 @@
+"""Verified, cache-only supplementary study aggregation from unextracted ZIPs.
+
+No PyTorch, pickle, model fitting or prediction is imported or executed here.
+The prepared manifest is the local trust anchor; archived records and every
+referenced artifact are independently verified before any output is written.
+"""
+from __future__ import annotations
+
+from contextlib import ExitStack
+import copy
+import hashlib
+import io
+import json
+from pathlib import Path, PurePosixPath
+import re
+import stat
+import zipfile
+
+import numpy as np
+import pandas as pd
+from scipy import stats as scipy_stats
+
+from .campaign import projected_neural_hours, run_fingerprint, study_runs
+from .device import environment_identity
+from .stats import (campaign_device_label, class_f1_from_confusion, flow_confusion,
+                    holm_adjust, interpretation, load_campaign_rows,
+                    macro_f1_from_confusion, paired_flow_bootstrap, paired_summary,
+                    paired_tests)
+
+
+STUDIES = ("B1", "B3", "B2", "B4", "B5")
+TREES = {"random_forest", "xgboost"}
+MAX_JSON = 16*1024*1024
+MAX_ARRAY = 256*1024*1024
+EMPTY_COLUMNS = {
+    "per_run": ["campaign","study","source_study","arm","task","model","device","seed","split_seed","checkpoint","macro_f1","accuracy","best_val_macro_f1","epochs_run","best_epoch","max_epochs","lr","run_fingerprint"],
+    "summaries": ["campaign","study","arm","task","model","checkpoint","device","device_label","n","sample_label","macro_f1_mean","macro_f1_sd","macro_f1_seed42","zero_seed_variance","best_val_macro_f1_mean","epochs_run_mean","n_epoch_observed","n_hit_cap","unstable"],
+    "paired_tests": ["campaign","study","arm","task","comparison_type","reference","model","reference_arm","comparison_arm","checkpoint","reference_device","comparison_device","device_label","seeds","n_pairs","mean_difference","difference_sd","t_statistic","p_value","ci_low","ci_high","cohens_dz","p_holm","interpretation"],
+    "paired_flow_bootstrap": ["campaign","study","task","model","reference","reference_arm","comparison_arm","checkpoint","comparison_type","reference_device","comparison_device","device_label","mean_difference","ci_low","ci_high","pairing","replicates","n_seeds","sample_label","estimand"],
+    "correlations": ["campaign","study","task","model","device","device_label","n","spearman_rho","p_value","ci_low","ci_high","bootstrap_replicates","defined_replicates","bootstrap_unit","interpretation"],
+    "lr_selection": ["campaign","study","task","model","arm","device","device_label","n","lr","best_val_macro_f1_mean","selected_lr","selected","status"],
+    "probe": ["campaign","device","study","seconds_per_epoch","projected_neural_hours","assumptions"],
+    "determinism": ["campaign","device","checkpoint","max_abs_logit_difference","abs_macro_f1_difference"],
+}
+
+
+def _hash_file(path):
+    digest=hashlib.sha256()
+    with open(path,"rb") as stream:
+        for chunk in iter(lambda:stream.read(1024*1024),b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _safe_path(name):
+    if not isinstance(name,str) or not name or name.startswith("/") or "\\" in name or "\0" in name or re.match(r"^[A-Za-z]:",name):
+        raise ValueError("Unsafe archive path")
+    if any(part in ("", ".", "..") for part in name.rstrip("/").split("/")):
+        raise ValueError("Unsafe archive path component")
+    return str(PurePosixPath(name))
+
+
+def _json(data):
+    if len(data)>MAX_JSON:
+        raise ValueError("JSON exceeds safe size")
+    def pairs(items):
+        result={}
+        for key,value in items:
+            if key in result:
+                raise ValueError("Duplicate JSON key")
+            result[key]=value
+        return result
+    try:
+        return json.loads(data,object_pairs_hook=pairs,
+                          parse_constant=lambda value: (_ for _ in ()).throw(ValueError(f"Nonfinite JSON {value}")))
+    except (UnicodeDecodeError,json.JSONDecodeError) as exc:
+        raise ValueError("Invalid archived JSON") from exc
+
+
+def _array_file(data, keys):
+    try:
+        with zipfile.ZipFile(io.BytesIO(data)) as inner:
+            if sum(info.file_size for info in inner.infolist())>MAX_ARRAY:
+                raise ValueError("Expanded NPZ exceeds safe size")
+        with np.load(io.BytesIO(data),allow_pickle=False) as arrays:
+            return {key:arrays[key].copy() for key in keys}
+    except (OSError,KeyError,zipfile.BadZipFile,EOFError) as exc:
+        raise ValueError("Invalid prediction NPZ") from exc
+
+
+class _ArchiveIndex:
+    def __init__(self, archives, stack):
+        self.members={}
+        self.archive_evidence={}
+        for path in dict.fromkeys(map(Path,archives)):
+            archive=stack.enter_context(zipfile.ZipFile(path))
+            self.archive_evidence[str(path)]={"sha256":_hash_file(path),"size_bytes":path.stat().st_size}
+            seen=set()
+            for item in archive.infolist():
+                name=_safe_path(item.filename)
+                mode=item.external_attr>>16
+                if stat.S_ISLNK(mode):
+                    raise ValueError("Archive symlink is forbidden")
+                if stat.S_IFMT(mode) not in (0,stat.S_IFREG,stat.S_IFDIR):
+                    raise ValueError("Archive special file is forbidden")
+                if name in seen:
+                    raise ValueError("Duplicate archive member path")
+                seen.add(name)
+                if not item.is_dir():
+                    self.members.setdefault(name,[]).append((archive,item))
+
+    @staticmethod
+    def read_member(archive,item,limit):
+        if item.file_size>limit:
+            raise ValueError("Archived data exceeds safe size")
+        with archive.open(item) as stream:
+            data=stream.read(limit+1)
+        if len(data)>limit:
+            raise ValueError("Archived data exceeds safe size")
+        return data
+
+    def verified(self,name,expected,*,read=True):
+        name=_safe_path(name)
+        if not isinstance(expected,str) or not re.fullmatch("[0-9a-f]{64}",expected):
+            raise ValueError("Invalid artifact SHA256")
+        found=False;result=None
+        for archive,item in self.members.get(name,[]):
+            digest=hashlib.sha256()
+            content=bytearray() if read else None
+            if read and item.file_size>MAX_ARRAY:
+                raise ValueError("Archived artifact exceeds safe size")
+            with archive.open(item) as stream:
+                for chunk in iter(lambda:stream.read(1024*1024),b""):
+                    digest.update(chunk)
+                    if read:
+                        content.extend(chunk)
+                        if len(content)>MAX_ARRAY:
+                            raise ValueError("Archived artifact exceeds safe size")
+            if digest.hexdigest()!=expected:
+                raise ValueError(f"Conflicting or SHA256-mismatched completed artifact: {name}")
+            found=True
+            if read and result is None:
+                result=bytes(content)
+        if not found:
+            raise ValueError(f"Missing or SHA256-mismatched artifact: {name}")
+        return result
+
+
+def _identity(record):
+    return tuple(record[k] for k in ("campaign","study","arm","task","model","seed","split_seed"))
+
+
+def _plan(record):
+    plan={k:record[k] for k in ("study","task","model","seed","split_seed","arm")}
+    if record["study"]=="B5":
+        plan["lr"]=record["lr"]
+    expected=[r for r in study_runs(record["study"]) if "reuse_study" not in r]
+    if plan not in expected:
+        raise ValueError("Record is outside the predeclared study plan")
+    return plan
+
+
+def _validate_recipe(record, manifest):
+    config=record["config"]
+    expected=dict(seed=record["seed"],max_epochs=3 if record["study"]=="probe" else 60 if record["study"]=="B4" else 20 if record["task"]=="binary" else 30,
+        batch_size=512,patience=10 if record["arm"]=="patience10_min15" else 6,
+        lr=record.get("lr",.0015),weight_decay=.0001,
+        alpha_mode=manifest["frozen_alpha"][record["task"]],sampler="tempered",threads=1)
+    if record["campaign"]!="gpu_v2":
+        # Smoke has an explicitly separate campaign and shorter epoch cap.
+        expected["max_epochs"]=config.get("max_epochs")
+        if not isinstance(expected["max_epochs"],int) or expected["max_epochs"]<1:
+            raise ValueError("Invalid supplementary epoch cap")
+    if config!=expected:
+        raise ValueError("Record configuration differs from the frozen study recipe")
+
+
+def _validate_history(record):
+    if record["model"] in TREES:
+        if record["history"] or record["epochs_run"] is not None or record["best_epoch"] is not None:
+            raise ValueError("Tree record has neural epoch metadata")
+        return
+    history=record["history"]
+    if not history or record["epochs_run"]!=len(history) or [r["epoch"] for r in history]!=list(range(1,len(history)+1)):
+        raise ValueError("History and epochs_run disagree")
+    scores=np.asarray([r["val_macro_f1"] for r in history],dtype=float)
+    times=np.asarray([r["seconds"] for r in history],dtype=float)
+    if not np.isfinite(scores).all() or not np.isfinite(times).all() or np.any(times<0):
+        raise ValueError("Nonfinite history or negative epoch duration")
+    best=int(np.argmax(scores))+1
+    if record["best_epoch"]!=best or not np.isclose(record["best_val_macro_f1"],scores[best-1],atol=1e-12,rtol=0):
+        raise ValueError("Best checkpoint was not selected by validation history")
+    if len(history)>record["config"]["max_epochs"]:
+        raise ValueError("History exceeds epoch cap")
+    cap=record["config"]["max_epochs"]
+    if record["arm"]=="fixed30" or record["study"]=="probe":
+        if len(history)!=cap:
+            raise ValueError(f"Completed {record['arm']} arm must run its full epoch budget")
+        return
+    # Replay fit_resumable exactly: strict validation improvement resets stale;
+    # ties increment it. At the start of the NEXT epoch, stale>=patience and
+    # epoch>min_epochs stop execution. Thus a legal terminal epoch is >=min.
+    minimum=15 if record["arm"]=="patience10_min15" else 0
+    patience=record["config"]["patience"]
+    running_best=-1.;stale=0;earliest_stop=None
+    for epoch,score in enumerate(scores,1):
+        if score>running_best:
+            running_best=float(score);stale=0
+        else:
+            stale+=1
+        if stale>=patience and epoch>=minimum:
+            earliest_stop=epoch
+            break
+    if earliest_stop is not None and len(history)>earliest_stop:
+        raise ValueError("History continues past the earliest legal stopping epoch")
+    if len(history)<cap and earliest_stop!=len(history):
+        raise ValueError("Completed history terminates prematurely before stopping rule or cap")
+
+
+def read_study_archives(archives,prepared_dir):
+    """Return verified unique records plus loaded class labels/predictions.
+
+    No archive member is extracted. Identical incremental completed records
+    deduplicate; conflicting completed identities fail, even with a new run
+    fingerprint. Incomplete records are counted but never scored. Model files
+    are hash-checked as opaque streams only; pickle and PyTorch are not loaded.
+    """
+    archives=list(archives)
+    if not archives:
+        return {"records":[],"campaign":"gpu_v2","input_archives":{},"n_incomplete_records":0,"prepared_manifest_sha256":None}
+    prepared_dir=Path(prepared_dir).resolve()
+    manifest_path=prepared_dir/"manifest.json"
+    manifest_bytes=manifest_path.read_bytes()
+    manifest=_json(manifest_bytes)
+    manifest_sha=hashlib.sha256(manifest_bytes).hexdigest()
+    trusted={}
+    with ExitStack() as stack:
+        index=_ArchiveIndex(archives,stack)
+        unique={};campaigns=set();incomplete=0
+        for name,sources in sorted(index.members.items()):
+            if PurePosixPath(name).name!="record.json":
+                continue
+            for archive,item in sources:
+                record=_json(index.read_member(archive,item,MAX_JSON))
+                if not isinstance(record,dict):
+                    raise ValueError("Run record must be a JSON object")
+                if record.get("campaign"):
+                    campaigns.add(record["campaign"])
+                if record.get("status")!="complete":
+                    incomplete+=1
+                    continue
+                try:
+                    key=_identity(record)
+                except KeyError as exc:
+                    raise ValueError("Incomplete completed-run identity") from exc
+                if key in unique and unique[key][0]!=record:
+                    raise ValueError("Conflicting duplicate completed identity")
+                expected_path=f'{record["device"]}/{record["run_fingerprint"]}/record.json'
+                if name!=expected_path:
+                    raise ValueError("Record path/run fingerprint mismatch")
+                unique[key]=(record,name)
+        if len(campaigns)>1:
+            raise ValueError("Mixed campaigns in archives are forbidden")
+        campaign=next(iter(campaigns),"gpu_v2")
+        if not re.fullmatch("[A-Za-z0-9_-]+",campaign) or campaign=="cpu_v1":
+            raise ValueError("Invalid supplementary campaign")
+        records=[]
+        artifact_hashes={}
+        for record,record_path in unique.values():
+            required={"schema_version","status","campaign","study","arm","task","model","seed","split_seed","device","config","data_fingerprint","payload_sha256","prepared_sha256","run_fingerprint","libraries","history","best_epoch","best_val_macro_f1","epochs_run","headline_checkpoint","checkpoints"}
+            if not required<=record.keys() or not all(type(record[k]) is int for k in ("seed","split_seed")):
+                raise ValueError("Completed run is missing required fields or integer seed identities")
+            if record.get("schema_version")!=1 or record.get("headline_checkpoint")!="best" or set(record.get("checkpoints",{}))!={"best","last"}:
+                raise ValueError("Unsupported record schema/checkpoint declaration")
+            if record["device"]!="cpu" and not re.fullmatch(r"cuda(?::[0-9]+)?",record["device"]):
+                raise ValueError("Record device must be resolved to CPU or single CUDA")
+            if record["model"] in TREES and record["device"]!="cpu":
+                raise ValueError("Tree models must run on the host CPU")
+            plan=_plan(record)
+            split=record["split_seed"]
+            if split not in trusted:
+                try:
+                    entry=manifest["splits"][str(split)]
+                    filename=_safe_path(entry.get("path",f"split_{split}.npz"))
+                    path=(prepared_dir/filename).resolve()
+                    if path.parent!=prepared_dir or _hash_file(path)!=entry["sha256"]:
+                        raise ValueError("Trusted prepared file SHA256 mismatch")
+                    with np.load(path,allow_pickle=False) as arrays:
+                        labels={task:arrays[key].copy() for task,key in [("binary","y2_test"),("multiclass","y12_test")]}
+                    trusted[split]=(entry,labels)
+                except (KeyError,OSError) as exc:
+                    raise ValueError("Prepared manifest split is missing or invalid") from exc
+            entry,labels=trusted[split]
+            for record_key,entry_key in [("data_fingerprint","data_fingerprint"),("payload_sha256","payload_sha256"),("prepared_sha256","sha256")]:
+                if record.get(record_key)!=entry[entry_key]:
+                    raise ValueError("Record data/payload/prepared fingerprint mismatch")
+            _validate_recipe(record,manifest)
+            _validate_history(record)
+            identity=dict(campaign=campaign,plan=plan,device=record["device"],config=record["config"],
+                data_fingerprint=record["data_fingerprint"],payload_sha256=record["payload_sha256"],
+                prepared_sha256=record["prepared_sha256"],libraries=record["libraries"])
+            if run_fingerprint(identity)!=record["run_fingerprint"]:
+                raise ValueError("Completed run fingerprint is inconsistent with identity")
+            names=["normal","attack"] if record["task"]=="binary" else entry["class_names"]
+            loaded={}
+            for checkpoint,item in record["checkpoints"].items():
+                needed={"metrics","prediction_path","prediction_sha256","metrics_path","metrics_sha256","receipt_path","receipt_sha256"}
+                if not isinstance(item,dict) or not needed<=item.keys():
+                    raise ValueError("Checkpoint evidence is incomplete")
+                content={}
+                tree_alias=(record["model"] in TREES and checkpoint=="last" and item==record["checkpoints"]["best"])
+                checkpoint_directory=PurePosixPath(record_path).parent/("best" if tree_alias else checkpoint)
+                for key in ("prediction","metrics","receipt",*( ["state_dict"] if "state_dict_path" in item else [] ),*( ["logits"] if "logits_path" in item else [] )):
+                    path=_safe_path(item[f"{key}_path"])
+                    if not path.startswith(str(PurePosixPath(record_path).parent)+"/"):
+                        raise ValueError("Checkpoint artifact path is outside its run")
+                    if key!="state_dict" and PurePosixPath(path).parent!=checkpoint_directory:
+                        raise ValueError("Checkpoint artifact path is outside its declared checkpoint")
+                    content[key]=index.verified(path,item[f"{key}_sha256"],read=key!="state_dict")
+                    artifact_hashes[path]=item[f"{key}_sha256"]
+                metrics=_json(content["metrics"]);receipt=_json(content["receipt"])
+                expected_fp=f'{record["run_fingerprint"]}:{checkpoint}'
+                if tree_alias:
+                    expected_fp=f'{record["run_fingerprint"]}:best'
+                if receipt.get("status")!="complete" or receipt.get("fingerprint")!=expected_fp or receipt.get("test_prediction_passes")!=1:
+                    raise ValueError("Incomplete or inconsistent checkpoint receipt")
+                if receipt.get("prediction_sha256")!=item["prediction_sha256"] or receipt.get("metrics_sha256")!=item["metrics_sha256"] or metrics!=item["metrics"]:
+                    raise ValueError("Receipt hashes or inline/file metrics disagree")
+                arrays=_array_file(content["prediction"],("y","predictions"))
+                y,pred=arrays["y"],arrays["predictions"]
+                if y.dtype!=np.int8 or pred.dtype!=np.int8 or not np.array_equal(y,labels[record["task"]]):
+                    raise ValueError("Prediction labels/dtype do not align with trusted prepared split")
+                cm=flow_confusion(y,pred,len(names))
+                if not np.array_equal(cm,metrics["confusion_matrix"]) or not np.isclose(macro_f1_from_confusion(cm),metrics["macro_f1"],rtol=0,atol=1e-12) or not np.isclose(np.mean(y==pred),metrics["accuracy"],rtol=0,atol=1e-12):
+                    raise ValueError("Saved predictions and scored metrics disagree")
+                if list(metrics["per_class"])!=names:
+                    # JSON writers sort keys; compare mappings, not insertion order.
+                    if set(metrics["per_class"])!=set(names):
+                        raise ValueError("Per-class labels differ from prepared class axis")
+                for i,class_name in enumerate(names):
+                    value=metrics["per_class"][class_name]
+                    if value["support"]!=int(cm[i].sum()) or not np.isclose(value["f1"],class_f1_from_confusion(cm)[i],rtol=0,atol=1e-12):
+                        raise ValueError("Per-class F1/support differs from predictions")
+                loaded[checkpoint]={"y":y,"prediction":pred}
+                if "logits" in content:
+                    if receipt.get("logits_sha256")!=item["logits_sha256"]:
+                        raise ValueError("Logit receipt hash mismatch")
+                    logits=_array_file(content["logits"],("logits",))["logits"]
+                    if logits.shape!=(len(y),len(names)) or not np.isfinite(logits).all() or not np.array_equal(logits.argmax(1),pred):
+                        raise ValueError("Logits do not match saved predictions")
+                    loaded[checkpoint]["logits"]=logits
+            record=copy.deepcopy(record)
+            record["_environment"]=environment_identity(record["device"],record["libraries"])
+            if record["device"].startswith("cuda") and any(value is None or value=="" for value in record["_environment"].values()):
+                raise ValueError("CUDA execution environment lacks recorded hardware/runtime identity")
+            record["_environment_id"]=run_fingerprint(record["_environment"])
+            record["_predictions"]=loaded
+            record["_record_path"]=record_path
+            record["_classes"]=names
+            records.append(record)
+        # Each study/arm vector has a single device per model; global model
+        # devices also cannot change between arms or studies in one campaign.
+        model_devices={}
+        model_environments={}
+        for record in records:
+            model_devices.setdefault((record["task"],record["model"]),set()).add(record["device"])
+            model_environments.setdefault((record["task"],record["model"]),set()).add(record["_environment_id"])
+        if any(len(v)>1 for v in model_devices.values()):
+            raise ValueError("Multiple devices for the same model seed vector")
+        if any(len(v)>1 for v in model_environments.values()):
+            raise ValueError("Mixed actual execution environment for the same model seed vector")
+        device_rows=[];seen=set()
+        for r in records:
+            key=(r["task"],r["model"],r["seed"])
+            if key not in seen:
+                device_rows.append(dict(campaign=campaign,device=r["device"],task=r["task"],model=r["model"],seed=r["seed"],macro_f1=r["checkpoints"]["best"]["metrics"]["macro_f1"]))
+                seen.add(key)
+        device_label=campaign_device_label(device_rows) if device_rows else campaign
+        if _hash_file(manifest_path)!=manifest_sha or any(_hash_file(path)!=value["sha256"] for path,value in index.archive_evidence.items()):
+            raise ValueError("Input archive or prepared manifest changed during aggregation")
+        return dict(records=records,campaign=campaign,input_archives=index.archive_evidence,
+            n_incomplete_records=incomplete,prepared_manifest_sha256=manifest_sha,
+            artifact_sha256=artifact_hashes,device_label=device_label,
+            execution_environments={r["_environment_id"]:r["_environment"] for r in records})
+
+
+def _expanded_records(records):
+    result=list(records)
+    for study,models,task in [("B3",{"exlightnet","standard_conv","mlp","std_cnn"},"multiclass"),("B4",{"exlightnet","mlp"},"binary")]:
+        if any(r["study"]==study for r in records):
+            for record in records:
+                if record["study"]=="B1" and record["task"]==task and record["model"] in models and 42<=record["seed"]<=56:
+                    reused=dict(record,study=study,source_study="B1",arm="paper")
+                    result.append(reused)
+    return result
+
+
+def _run_rows(records):
+    rows=[]
+    for r in records:
+        for checkpoint in ("best","last"):
+            metric=r["checkpoints"][checkpoint]["metrics"]
+            rows.append(dict(campaign=r["campaign"],study=r["study"],source_study=r.get("source_study",r["study"]),
+                arm=r["arm"],task=r["task"],model=r["model"],device=r["device"],seed=r["seed"],split_seed=r["split_seed"],
+                checkpoint=checkpoint,macro_f1=metric["macro_f1"],accuracy=metric["accuracy"],
+                best_val_macro_f1=r["best_val_macro_f1"],epochs_run=r["epochs_run"],best_epoch=r["best_epoch"],
+                max_epochs=r["config"]["max_epochs"],lr=r["config"]["lr"],run_fingerprint=r["run_fingerprint"],
+                environment_id=r["_environment_id"],execution_environment=json.dumps(r["_environment"],sort_keys=True),
+                **{key:r["_environment"].get(key) for key in ("gpu_name","torch","cuda","cudnn","numpy","scikit-learn","xgboost")}))
+    return rows
+
+
+def _summary(rows,label):
+    output=[]
+    frame=pd.DataFrame(rows)
+    if frame.empty:
+        return frame
+    for keys,g in frame.groupby(["study","arm","task","model","checkpoint"],sort=True):
+        study,arm,task,model,checkpoint=keys
+        n=len(g);sd=g.macro_f1.std(ddof=1)
+        epochs=g.dropna(subset=["epochs_run"])
+        output.append(dict(campaign=g.iloc[0].campaign,study=study,arm=arm,task=task,model=model,checkpoint=checkpoint,
+            device=g.iloc[0].device,device_label=label,n=n,sample_label="n=5, indicative only" if n==5 else f"n={n}",
+            environment_id=g.iloc[0].environment_id,execution_environment=g.iloc[0].execution_environment,
+            macro_f1_mean=g.macro_f1.mean(),macro_f1_sd=sd,
+            macro_f1_seed42=g[g.seed==42].macro_f1.iloc[0] if (g.seed==42).any() else np.nan,
+            zero_seed_variance=bool(n>1 and g.macro_f1.nunique()==1),
+            best_val_macro_f1_mean=g.best_val_macro_f1.mean(),epochs_run_mean=epochs.epochs_run.mean(),
+            n_epoch_observed=len(epochs),n_hit_cap=int((epochs.epochs_run>=epochs.max_epochs).sum()) if len(epochs) else np.nan,
+            unstable=bool((g.best_epoch.dropna()<=3).any() or (np.isfinite(sd) and sd>.05))))
+    return pd.DataFrame(output)
+
+
+def _pair_tables(records,rows,replicates,random_seed,label):
+    output=[];bootstraps=[]
+    frame=pd.DataFrame(rows)
+    if frame.empty:
+        return pd.DataFrame(),pd.DataFrame()
+    lookup={(r["study"],r["arm"],r["task"],r["model"],r["seed"]):r for r in records}
+    comparisons=[]
+    for (study,arm,checkpoint),g in frame[frame.study.isin(STUDIES)].groupby(["study","arm","checkpoint"]):
+        data=g.to_dict("records")
+        for result in paired_tests(data).to_dict("records"):
+            result.update(study=study,arm=arm,checkpoint=checkpoint,comparison_type="model",reference_arm=arm,comparison_arm=arm)
+            comparisons.append(result)
+    for study,baseline,arms in [("B3","paper",("fixed30","patience10_min15")),("B4","paper",("uncapped60",)),("B5","lr_0.0015",("lr_0.0003","lr_0.001"))]:
+        for (task,model,checkpoint),g in frame[frame.study==study].groupby(["task","model","checkpoint"]):
+            paper=g[g.arm==baseline].set_index("seed")
+            for arm in arms:
+                experimental=g[g.arm==arm].set_index("seed")
+                seeds=sorted(set(paper.index)&set(experimental.index))
+                if not seeds:
+                    continue
+                summary=paired_summary(experimental.loc[seeds,"macro_f1"],paper.loc[seeds,"macro_f1"])
+                comparisons.append(dict(campaign=g.iloc[0].campaign,study=study,task=task,model=model,reference=model,
+                    arm=arm,checkpoint=checkpoint,comparison_type="arm",reference_arm=arm,comparison_arm=baseline,
+                    seeds=",".join(map(str,seeds)),reference_device=experimental.iloc[0].device,
+                    comparison_device=paper.iloc[0].device,device_label=label,**summary))
+    for result in comparisons:
+        study,task,model,checkpoint=result["study"],result["task"],result["model"],result["checkpoint"]
+        seed_caches=[]
+        for seed in map(int,result["seeds"].split(",")):
+            a=lookup[(study,result["reference_arm"],task,result["reference"],seed)]
+            b=lookup[(study,result["comparison_arm"],task,model,seed)]
+            if a["split_seed"]!=b["split_seed"] or a["data_fingerprint"]!=b["data_fingerprint"] or a["payload_sha256"]!=b["payload_sha256"]:
+                raise ValueError("Paired runs have different split/data fingerprints")
+            pa,pb=a["_predictions"][checkpoint],b["_predictions"][checkpoint]
+            seed_caches.append(dict(y=pa["y"],reference=pa["prediction"],prediction=pb["prediction"],prediction_y=pb["y"]))
+        bootstrap=paired_flow_bootstrap(seed_caches,len(a["_classes"]),replicates,random_seed)
+        result["reference_environment_id"]=a["_environment_id"]
+        result["comparison_environment_id"]=b["_environment_id"]
+        result["reference_environment"]=json.dumps(a["_environment"],sort_keys=True)
+        result["comparison_environment"]=json.dumps(b["_environment"],sort_keys=True)
+        seed_unit="split_seed (train seed equals split seed)" if study=="B2" else "training_seed"
+        bootstraps.append({k:result[k] for k in ("campaign","study","task","model","reference","reference_arm","comparison_arm","checkpoint","comparison_type","reference_device","comparison_device")}|dict(device_label=label,**bootstrap))
+        bootstraps[-1]["seed_unit"]=seed_unit
+        bootstraps[-1].update({key:result[key] for key in ("reference_environment_id","comparison_environment_id","reference_environment","comparison_environment")})
+        result["pairing_unit"]=seed_unit
+        result["device_label"]=label
+        output.append(result)
+    paired=pd.DataFrame(output)
+    if not paired.empty:
+        paired["p_holm"]=np.nan
+        for _,g in paired.groupby(["study","task"]):
+            paired.loc[g.index,"p_holm"]=holm_adjust(g.p_value)
+        paired["interpretation"]=[interpretation(r.ci_low,r.ci_high,r.p_holm,r.task) for r in paired.itertuples()]
+        paired["holm_family"]="all available predeclared comparisons within task and study, best and last included"
+    return paired,pd.DataFrame(bootstraps)
+
+
+def _correlations(records,replicates,random_seed,label):
+    rows=[]
+    groups={}
+    for record in records:
+        if record["study"]=="B1":
+            groups.setdefault((record["task"],record["model"]),[]).append(record)
+    for (task,model),group in sorted(groups.items()):
+        observed=[r for r in group if r["epochs_run"] is not None]
+        x=np.asarray([r["epochs_run"] for r in observed],dtype=float)
+        y=np.asarray([r["checkpoints"]["best"]["metrics"]["macro_f1"] for r in observed])
+        defined=len(x)>1 and np.ptp(x)>0 and np.ptp(y)>0
+        rho,p=scipy_stats.spearmanr(x,y) if defined else (np.nan,np.nan)
+        rng=np.random.default_rng(random_seed); draws=[]
+        if defined:
+            for _ in range(replicates):
+                indices=rng.integers(0,len(x),len(x));xx,yy=x[indices],y[indices]
+                if np.ptp(xx)>0 and np.ptp(yy)>0:
+                    draws.append(float(scipy_stats.spearmanr(xx,yy).statistic))
+        low,high=np.quantile(draws,[.025,.975]) if draws else (np.nan,np.nan)
+        rows.append(dict(campaign=group[0]["campaign"],study="B1",task=task,model=model,device=group[0]["device"],device_label=label,
+            n=len(group),n_epoch_observed=len(observed),spearman_rho=rho,p_value=p,ci_low=low,ci_high=high,bootstrap_replicates=replicates,
+            defined_replicates=len(draws),bootstrap_unit="paired training-seed (epochs,F1) observations",
+            sample_label="n=5, indicative only" if len(group)==5 else f"n={len(group)}",
+            interpretation="descriptive only, not causal"))
+    return pd.DataFrame(rows)
+
+
+def _lr_selection(records,label):
+    rows=[]
+    group=[r for r in records if r["study"]=="B5"]
+    if not group:
+        return pd.DataFrame(columns=["campaign","task","selected_lr","status"])
+    expected=study_runs("B5")
+    expected_ids={(p["arm"],p["seed"]) for p in expected}
+    observed={(r["arm"],r["seed"]) for r in group}
+    complete=observed==expected_ids
+    val={}
+    for arm in sorted({r["arm"] for r in group}):
+        arm_rows=[r for r in group if r["arm"]==arm]
+        val[arm]=np.mean([r["best_val_macro_f1"] for r in arm_rows])
+    selected=min(val,key=lambda arm:(-val[arm],float(arm.removeprefix("lr_")))) if complete else None
+    for arm,value in val.items():
+        rows.append(dict(campaign=group[0]["campaign"],study="B5",task="multiclass",model="std_cnn",arm=arm,
+            device=group[0]["device"],device_label=label,n=sum(r["arm"]==arm for r in group),
+            lr=float(arm.removeprefix("lr_")),best_val_macro_f1_mean=value,
+            selected_lr=float(selected.removeprefix("lr_")) if selected else np.nan,
+            selected=arm==selected if complete else None,
+            status="validation-only selection; tie chooses lower LR" if complete else "PENDING: complete equal seed sets for all three LR arms required"))
+    return pd.DataFrame(rows)
+
+
+def _completeness(records):
+    observed={_identity(r)[1:] for r in records}
+    rows=[]
+    for study in STUDIES:
+        expected=study_runs(study)
+        new=[r for r in expected if "reuse_study" not in r]
+        references=[r for r in expected if "reuse_study" in r]
+        if study=="B4":
+            references=[dict(p,arm="paper",study="B4") for p in new]
+        completed=0;reused=0
+        for plan in new:
+            key=tuple(plan[k] for k in ("study","arm","task","model","seed","split_seed"))
+            completed+=key in observed
+        for plan in references:
+            reused+=any(r["study"]=="B1" and all(r[k]==plan[k] for k in ("task","model","seed","split_seed")) for r in records)
+        status="PENDING: study not run" if completed==0 else "complete" if completed==len(new) and reused==len(references) else "PARTIAL: missing planned runs or B1 references"
+        rows.append(dict(study=study,expected_new_runs=len(new),completed_new_runs=completed,expected_b1_references=len(references),available_b1_references=reused,status=status))
+    return pd.DataFrame(rows)
+
+
+def _device_equivalence(records,reference_cpu):
+    columns=["task","model","reference_campaign","comparison_campaign","reference_device","comparison_device","n_pairs","cpu_v1_mean","cpu_v1_sd","cpu_v1_seed42","gpu_v2_mean","gpu_v2_sd","gpu_v2_seed42","mean_difference","ci_low","ci_high","sample_label"]
+    gpu=[r for r in records if r["campaign"]=="gpu_v2" and r["study"]=="B1" and r["split_seed"]==42 and 42<=r["seed"]<=46]
+    if not gpu or reference_cpu is None:
+        return pd.DataFrame(columns=columns)
+    cpu=load_campaign_rows(reference_cpu)
+    if any(r["campaign"]!="cpu_v1" or r["device"]!="cpu" for r in cpu):
+        raise ValueError("Device-equivalence requires an explicit cpu_v1 CPU reference")
+    lookup={(r["task"],r["model"],r["seed"]):r for r in cpu}
+    groups={}
+    for record in gpu:
+        key=(record["task"],record["model"],record["seed"])
+        if key in lookup:
+            original=lookup[key]
+            if original["data_fingerprint"]!=record["data_fingerprint"]:
+                raise ValueError("Device-equivalence reference data differs")
+            groups.setdefault(key[:2],[]).append((original,record))
+    rows=[]
+    for (task,model),group in sorted(groups.items()):
+        summary=paired_summary([r["checkpoints"]["best"]["metrics"]["macro_f1"] for _,r in group],[r["macro_f1"] for r,_ in group])
+        rows.append(dict(task=task,model=model,reference_campaign="cpu_v1",comparison_campaign=group[0][1]["campaign"],reference_device="cpu",comparison_device=group[0][1]["device"],
+            n_pairs=summary["n_pairs"],cpu_v1_mean=summary["comparison_mean"],cpu_v1_sd=summary["comparison_sd"],
+            cpu_v1_seed42=next((a["macro_f1"] for a,b in group if a["seed"]==42),np.nan),
+            gpu_v2_mean=summary["reference_mean"],gpu_v2_sd=summary["reference_sd"],
+            gpu_v2_seed42=next((b["checkpoints"]["best"]["metrics"]["macro_f1"] for a,b in group if b["seed"]==42),np.nan),
+            mean_difference=summary["mean_difference"],ci_low=summary["ci_low"],ci_high=summary["ci_high"],sample_label=summary["sample_label"]))
+    return pd.DataFrame(rows,columns=columns)
+
+
+def _hypothesis(summaries,correlations,records):
+    columns=["model","headline_checkpoint","paper_mean","paper_sd","fixed30_mean","fixed30_sd","b1_spearman_rho","directional_condition_met","interpretation"]
+    if summaries.empty:
+        return pd.DataFrame(columns=columns)
+    subset=summaries[(summaries.study=="B3")&(summaries.model=="exlightnet")&(summaries.checkpoint=="best")]
+    arms={r.arm:r for r in subset.itertuples()}
+    if not {"paper","fixed30"}<=set(arms):
+        return pd.DataFrame(columns=columns)
+    a,b=arms["paper"],arms["fixed30"]
+    seeds={arm:{r["seed"] for r in records if r["study"]=="B3" and r["model"]=="exlightnet" and r["arm"]==arm} for arm in ("paper","fixed30")}
+    complete=all(values==set(range(42,57)) for values in seeds.values())
+    rho=correlations[(correlations.task=="multiclass")&(correlations.model=="exlightnet")].spearman_rho.iloc[0] if not correlations.empty and ((correlations.task=="multiclass")&(correlations.model=="exlightnet")).any() else np.nan
+    defined=complete and np.isfinite([a.macro_f1_sd,b.macro_f1_sd]).all()
+    match=bool(defined and b.macro_f1_sd<a.macro_f1_sd and b.macro_f1_mean>a.macro_f1_mean)
+    return pd.DataFrame([dict(model="exlightnet",headline_checkpoint="best",paper_mean=a.macro_f1_mean,paper_sd=a.macro_f1_sd,
+        fixed30_mean=b.macro_f1_mean,fixed30_sd=b.macro_f1_sd,b1_spearman_rho=rho,directional_condition_met=match if defined else None,
+        interpretation="directions match hypothesis; descriptive only, no causal claim" if match else "not supported" if defined else "PENDING: complete matched seed sets 42-56 required")],columns=columns)
+
+
+def _probe_determinism(records):
+    probes=[];determinism=[]
+    for record in records:
+        if record["study"]=="probe":
+            seconds=float(np.mean([r["seconds"] for r in record["history"]]))
+            for study in STUDIES:
+                probes.append(dict(campaign=record["campaign"],device=record["device"],study=study,seconds_per_epoch=seconds,
+                    projected_neural_hours=projected_neural_hours(study,seconds),assumptions="ExLightNet epoch speed for all neural models; ignores trees/model speed differences/early stopping"))
+    repeats={r["arm"]:r for r in records if r["study"]=="determinism"}
+    if {"repeat1","repeat2"}<=set(repeats):
+        a,b=repeats["repeat1"],repeats["repeat2"]
+        for cp in ("best","last"):
+            pa,pb=a["_predictions"][cp],b["_predictions"][cp]
+            if "logits" not in pa or "logits" not in pb:
+                raise ValueError("Determinism study lacks verified logits")
+            if a["payload_sha256"]!=b["payload_sha256"] or not np.array_equal(pa["y"],pb["y"]):
+                raise ValueError("Determinism repeat data differs")
+            determinism.append(dict(campaign=a["campaign"],device=a["device"],checkpoint=cp,
+                max_abs_logit_difference=float(np.max(np.abs(pa["logits"]-pb["logits"]))),
+                abs_macro_f1_difference=abs(a["checkpoints"][cp]["metrics"]["macro_f1"]-b["checkpoints"][cp]["metrics"]["macro_f1"])))
+    return pd.DataFrame(probes),pd.DataFrame(determinism)
+
+
+def _markdown(frame):
+    if frame.empty:
+        return "PENDING: no verified observations"
+    def cell(value):
+        if pd.isna(value):
+            return "—"
+        if isinstance(value,(float,np.floating)):
+            return f"{value:.6g}"
+        return str(value).replace("|","\\|").replace("\n"," ")
+    lines=["| "+" | ".join(map(str,frame.columns))+" |","| "+" | ".join("---" for _ in frame.columns)+" |"]
+    lines.extend("| "+" | ".join(cell(v) for v in row)+" |" for row in frame.itertuples(index=False,name=None))
+    return "\n".join(lines)
+
+
+def _report(protocol,campaign,tables,device_label):
+    lines=[f"# Supplementary accuracy studies: {campaign}","", "Source protocol: [`docs/statistics_protocol.json`](docs/statistics_protocol.json). Rules were recorded before Stage B data. Headline: best-validation checkpoint; last epoch is secondary. No test metric selects an epoch, checkpoint, learning rate or arm.","", "## A-priori interpretation rules",""]
+    lines.extend("- "+rule for rule in protocol["rules_verbatim"])
+    lines.extend(["",protocol["bootstrap_interpretation"],"", "Fixed split/training-seed variation and split-seed variation are reported separately. Tiny-class support makes macro-F1 noisy; unstable controls and zero-variance baselines cannot establish superiority. n=5, indicative only. Correlations are descriptive, not causal.","",f"Device label: {device_label}.",""])
+    if campaign!="gpu_v2":
+        lines.extend(["**Separate smoke/supplementary campaign. These observations do not fill canonical gpu_v2 studies.**",""])
+    for study in STUDIES:
+        status=tables["completeness"].set_index("study").loc[study,"status"]
+        lines.extend([f"## {study}: {protocol['studies'][study]['title']}","",status,""])
+        if status=="PENDING: study not run":
+            continue
+        lines.extend([_markdown(tables["summaries"][tables["summaries"].study==study]),""])
+        paired=tables["paired_tests"]
+        if not paired.empty:
+            display=["task","comparison_type","reference","model","reference_arm","comparison_arm","checkpoint","reference_device","comparison_device","n_pairs","mean_difference","ci_low","ci_high","p_value","p_holm","interpretation"]
+            lines.extend(["Paired reference differences (positive favors the reference); Holm family is task/study, including best and last comparisons:","",_markdown(paired[paired.study==study][display]),""])
+        flow=tables["paired_flow_bootstrap"]
+        if not flow.empty:
+            lines.extend(["Paired seed-then-flow bootstrap; single-random-run uncertainty:","",_markdown(flow[flow.study==study].drop(columns=["estimand"],errors="ignore")),""])
+        if study=="B1":
+            lines.extend(["Descriptive epochs-versus-F1 correlation and paired-seed bootstrap CI:","",_markdown(tables["correlations"]),""])
+        if study=="B3":
+            lines.extend(["B1 paper-rule observations are referenced by seed, never retrained. Correlation and fixed-budget directions side by side:","",_markdown(tables["early_stopping_hypothesis"]),""])
+        if study=="B4":
+            lines.extend(["The paper-20 reference is reused from B1. Cap counts and best/last results appear above; no reference is regenerated.",""])
+        if study=="B5":
+            lines.extend(["Learning-rate selection uses validation means only, requires every predeclared seed in all three arms, and breaks a validation tie toward lower LR:","",_markdown(tables["lr_selection"]),""])
+    lines.extend(["## Device-equivalence view", "", "Explicit side-by-side campaigns on matched seeds 42–46. Difference is gpu_v2 minus cpu_v1. No hypothesis p-values, pass/fail decisions or pooled campaigns.","",_markdown(tables["device_equivalence"]),"", "## Probe and determinism studies", "",_markdown(tables["probe"]),"",_markdown(tables["determinism"]),"", "CUDA execution is NOT RUN locally. Cached hosted GPU observations, if imported, do not imply local CUDA validation.","", "## Supplementary frozen/exported-model latency", "", "NOT RUN: this task prohibits benchmark reruns. Canonical CPU latency/size/INT8/memory evidence stays separate.",""])
+    return "\n".join(lines)
+
+
+def aggregate_studies(archives,prepared_dir,output,report,reference_cpu=None,*,protocol_path=None,replicates=2000,random_seed=42):
+    """Verify ZIP evidence, write CSVs/report/manifest, return path mapping.
+
+    Empty archives produce a canonical PENDING skeleton without reading arrays.
+    A non-gpu_v2 campaign cannot write a report named REPORT_stats_v2.md.
+    """
+    repository=Path(__file__).resolve().parents[2]
+    protocol_path=Path(protocol_path or repository/"docs/statistics_protocol.json")
+    protocol=_json(protocol_path.read_bytes())
+    if not protocol.get("declared_before_stage_b_data") or replicates<1:
+        raise ValueError("A predeclared protocol and positive bootstrap count are required")
+    loaded=read_study_archives(archives,prepared_dir)
+    records=loaded["records"];campaign=loaded["campaign"]
+    output,report=Path(output).resolve(),Path(report).resolve()
+    if campaign!="gpu_v2" and report.name=="REPORT_stats_v2.md":
+        raise ValueError("Non-gpu_v2 observations cannot write the canonical report")
+    for forbidden in (repository/"results",Path(prepared_dir).resolve(),repository/"artifacts/stats_cpu_v1"):
+        if output==forbidden or forbidden in output.parents:
+            raise ValueError("Output directory overlaps immutable/prepared evidence")
+        if report==forbidden or forbidden in report.parents:
+            raise ValueError("Report path overlaps immutable/prepared evidence")
+    if report.suffix.lower()!=".md" or report==repository/"REPORT.md":
+        raise ValueError("Use a separate Markdown statistics report path")
+    label=loaded.get("device_label","no observations")
+    expanded=_expanded_records(records);rows=_run_rows(expanded)
+    for row in rows:
+        row["device_label"]=label
+    summaries=_summary(rows,label)
+    paired,flow=_pair_tables(expanded,rows,replicates,random_seed,label)
+    correlations=_correlations(records,replicates,random_seed,label)
+    probe,determinism=_probe_determinism(records)
+    tables=dict(per_run=pd.DataFrame(rows),summaries=summaries,paired_tests=paired,paired_flow_bootstrap=flow,
+        correlations=correlations,lr_selection=_lr_selection(records,label),completeness=_completeness(records),
+        device_equivalence=_device_equivalence(records,reference_cpu),early_stopping_hypothesis=_hypothesis(summaries,correlations,expanded),
+        probe=probe,determinism=determinism)
+    for name,frame in tables.items():
+        if name!="device_equivalence":
+            if "device_label" not in frame:
+                frame["device_label"]=label
+            if "campaign" not in frame:
+                frame["campaign"]=campaign
+            if not frame.empty and {"task","model"}<=set(frame.columns) and "environment_id" not in frame and "reference_environment_id" not in frame:
+                environments={(r["task"],r["model"]):(r["_environment_id"],json.dumps(r["_environment"],sort_keys=True)) for r in records}
+                frame["environment_id"]=[environments.get((r.task,r.model),(None,None))[0] for r in frame.itertuples()]
+                frame["execution_environment"]=[environments.get((r.task,r.model),(None,None))[1] for r in frame.itertuples()]
+    for name,columns in EMPTY_COLUMNS.items():
+        if tables[name].empty:
+            tables[name]=tables[name].reindex(columns=list(dict.fromkeys(columns+["device_label","campaign"])))
+    report_text=_report(protocol,campaign,tables,label)
+    output.mkdir(parents=True,exist_ok=True);report.parent.mkdir(parents=True,exist_ok=True)
+    paths={}
+    for name,frame in tables.items():
+        path=output/f"{name}.csv";frame.to_csv(path,index=False);paths[name]=str(path)
+    report.write_text(report_text);paths["report"]=str(report)
+    manifest=dict(schema_version=1,campaign=campaign,n_unique_runs=len(records),n_incomplete_records=loaded["n_incomplete_records"],
+        input_archives=loaded["input_archives"],prepared_manifest_sha256=loaded["prepared_manifest_sha256"],
+        protocol_sha256=_hash_file(protocol_path),aggregator_source_sha256=_hash_file(__file__),
+        artifact_sha256=loaded.get("artifact_sha256",{}),device_label=label,
+        execution_environments=loaded.get("execution_environments",{}),
+        environment_identity_fields="device,numpy,torch,scikit-learn,xgboost; CUDA additionally cuda,cudnn,gpu_name; CPU ignores unused GPU fields",
+        bootstrap_replicates=replicates,random_seed=random_seed,
+        headline_checkpoint="best",secondary_checkpoint="last",cuda_executed_here=False,
+        outputs={name:dict(path=path,sha256=_hash_file(path)) for name,path in paths.items()})
+    if reference_cpu and records:
+        manifest["reference_cpu_sha256"]=_hash_file(reference_cpu)
+    manifest_path=output/"aggregation_manifest.json"
+    manifest_path.write_text(json.dumps(manifest,sort_keys=True,indent=2,allow_nan=False)+"\n")
+    paths["manifest"]=str(manifest_path)
+    return paths

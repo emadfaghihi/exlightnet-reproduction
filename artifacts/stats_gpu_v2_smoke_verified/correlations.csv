@@ -1,0 +1,2 @@
+campaign,study,task,model,device,device_label,n,n_epoch_observed,spearman_rho,p_value,ci_low,ci_high,bootstrap_replicates,defined_replicates,bootstrap_unit,sample_label,interpretation,environment_id,execution_environment
+gpu_v2_smoke,B1,multiclass,mlp,cpu,cpu,2,2,,,,,2000,0,"paired training-seed (epochs,F1) observations",n=2,"descriptive only, not causal",58429cc3e1cedf753c3d2093a85a1b40a96244f2ce2244429f01eeb4a90ba9a0,"{""device"": ""cpu"", ""numpy"": ""1.26.4"", ""scikit-learn"": ""1.6.1"", ""torch"": ""2.6.0+cpu"", ""xgboost"": ""2.1.4""}"

@@ -19,6 +19,10 @@ artifacts/cache/
 artifacts/cache_arrays.npz
 *.pkl
 deliverables.zip
+*.zip
+prepared/
+archive/
+delivery/
 *.partial
 .locks/
 

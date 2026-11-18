@@ -6,7 +6,44 @@ authoritative brief is preserved in [docs/BRIEF.txt](docs/BRIEF.txt). See
 limitations. Fast results are explicitly separate from full five-seed results.
 The included full campaign contains 95 model results across seeds 42--46 and
 95 isolated single-thread benchmarks. The delivered notebook was executed in
-full mode from these caches; all 14 code cells completed without errors.
+full mode from these caches. Current notebook/statistics verification is stored
+under `artifacts/stats_cpu_v1/verification/`; the original verification records
+remain historical evidence.
+
+## Cached statistics and supplementary GPU studies
+
+The canonical `cpu_v1` experiment is complete. Do not rerun training or timing
+to refresh its presentation. The statistical follow-up reads its existing
+probabilities, metrics and epoch logs:
+
+```bash
+python scripts/make_stats.py --help
+python scripts/aggregate_gpu_v2.py --prepared-dir prepared \
+  --output artifacts/stats_gpu_v2 --report REPORT_stats_v2.md
+```
+
+`artifacts/stats_cpu_v1/` contains paired t tests, confidence intervals, Holm
+adjustment, training dynamics, flow bootstraps and post-hoc sensitivity tables.
+Tables with five seeds are labelled **n=5, indicative only**. The original
+ablation JSON is preserved for audit and is never read by current reports or
+notebooks. New tables replace its obsolete SD-overlap interpretation. Tiny
+class supports make multiclass macro-F1 noisy; training seeds do not estimate
+split uncertainty. Bootstrap tables distinguish paired flows and describe a
+randomly selected training run plus flow uncertainty, not the seed-mean CI.
+
+For user-operated supplementary accuracy studies see
+[docs/KAGGLE_RUNBOOK.md](docs/KAGGLE_RUNBOOK.md) and
+[notebooks/kaggle_runner.ipynb](notebooks/kaggle_runner.ipynb). The runner uses
+separate campaign/device identities, frozen CPU alpha, prepared arrays only,
+and resumable epoch checkpoints. CUDA has **NOT RUN locally**. The local smoke
+used a separate `gpu_v2_smoke` campaign and cannot populate the canonical
+[REPORT_stats_v2.md](REPORT_stats_v2.md), whose unexecuted studies stay PENDING.
+
+No benchmark is part of this follow-up. CPU timing, size and W8 evidence remain
+the canonical measured artifacts. Within `gpu_v2` only, CUDA-neural/CPU-tree
+accuracy comparisons have explicit device columns and a mixed-device label.
+Different campaigns are rejected by statistical aggregators. The CPU/GPU
+device comparison is separate, descriptive, and has no p-value or pass/fail.
 
 ## Install and verify
 
@@ -153,10 +190,11 @@ python scripts/package_deliverables.py
 ```
 
 [notebooks/ExLightNet_reproduction.ipynb](notebooks/ExLightNet_reproduction.ipynb)
-contains outputs. Restart-and-Run-All defaults to fast mode; cached test metrics
-are reused. Set `RUN_MODE="full"` in its first cell, or set
-`EXLIGHTNET_RUN_MODE=full`, to load previously generated full results. This mode
-does not train or require the dataset. Notebook execution needs local Jupyter
+contains outputs. Restart-and-Run-All defaults to full cached analysis and
+performs no training or test inference. Existing demonstration results appear
+in an explicitly separate historical section. Notebook execution does not
+require the dataset. Use a new `--evidence-dir` for each execution; old metadata
+cannot be replaced. Notebook execution needs local Jupyter
 kernel sockets. The execution script creates its temporary kernel specification
 using the active Python interpreter.
 
@@ -164,6 +202,11 @@ using the active Python interpreter.
 trained model artifacts, fitted preprocessing, report and requirements. It
 excludes every `*.pkl` file, the dataset, cached feature arrays and virtual environment. The archive
 has a SHA-256 file manifest; packaging verifies notebook outputs and CRCs.
+Separate source, tests, scripts and docs ZIPs, an offline hosted-source bundle,
+and `SHA256SUMS` are produced under `delivery/stats_gpu_v2/`. Prepared NPZ data,
+temporary recovery optimizer checkpoints, result ZIPs, credentials and process
+locks are excluded. `prepared/manifest.json` is included for provenance; the
+prepared arrays themselves are supplied separately by the user.
 Local tree checkpoints remain available for the final benchmark pass. They are
 excluded only from the archive; an extracted archive can display cached tree
 metrics but cannot re-benchmark or verify those absent checkpoints without

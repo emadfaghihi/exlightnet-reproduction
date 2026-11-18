@@ -1,0 +1,6 @@
+study,expected_new_runs,completed_new_runs,expected_b1_references,available_b1_references,status,device_label,campaign
+B1,330,2,0,0,PARTIAL: missing planned runs or B1 references,cpu,gpu_v2_smoke
+B3,120,0,60,2,PENDING: study not run,cpu,gpu_v2_smoke
+B2,90,0,0,0,PENDING: study not run,cpu,gpu_v2_smoke
+B4,30,0,30,0,PENDING: study not run,cpu,gpu_v2_smoke
+B5,30,0,0,0,PENDING: study not run,cpu,gpu_v2_smoke

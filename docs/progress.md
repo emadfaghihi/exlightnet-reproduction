@@ -137,3 +137,138 @@ All temporarily paused helpers were additionally checked in the host process
 table and are running again. Documentation closeout is included in the final
 archive refresh. The optional leakage proxy was not run; KD/true integer INT8
 remain unimplemented, and no Raspberry Pi hardware measurement was available.
+
+2026-11-17 — cached statistics and hosted supplementary studies started.
+Authoritative follow-up: docs/STATS_GPU_BRIEF.txt. Current source branch is
+feat/cached-statistics-and-hosted-studies, based on main6f76cb4; no commit,
+push, merge or publication is authorized. The user's newer AGENTS.md bytes
+were preserved exactly when creating the task branch. The old claim that Git
+is unavailable is historical; Git is currently usable.
+
+Before changing evidence/presentation, 916 existing files under results/ and
+artifacts/ plus the genuine CSV were SHA-256 recorded in
+artifacts/stats_cpu_v1/immutable_before.json. Previous report/notebook/delivery
+versions and hashes are in archive/cpu_v1_before_stats/20261117T115530Z/.
+The canonical stage lock was available. Actual audits confirm95 results,
+19 groups, five seeds,10 Q1 passes,95 complete isolated CPU measurements and
+the executed full notebook. No full campaign, benchmark, CUDA run or user
+process action has been started in this task.
+
+The supplied specification leaves three conflicts pending clarification:
+R1 immutable old JSON versus A1 deleting legacy flags everywhere; R8 sole
+smoke training versus the required legacy pytest suite's synthetic training;
+and R5 device separation versus B1's CUDA-neural/CPU-tree comparisons.
+Dependent destructive/budget/device-comparison operations are stopped; the
+proposed interpretations and alternatives were sent to the user. Independent
+cached statistics, prepared export and runner code can proceed. A5 is NOT RUN
+under the stricter no-benchmark rule. The historical MLP compatibility gate
+will validate the unchanged cache, not retrain it beyond the local budget.
+
+Design and plan are in docs/superpowers/specs/2026-11-17-statistics-and-hosted-studies-design.md
+and docs/superpowers/plans/2026-11-17-statistics-and-hosted-studies.md.
+The verbatim a-priori rules and pending study report were persisted before
+any Stage B data. Focused agents own statistics, prepared-data export and
+runner package modules; the controller alone owns any actual smoke execution.
+
+User clarifications accepted on2026-11-17: preserve all original summary,
+ablation, manifest, receipt and archive bytes. Old ablation JSON still contains
+obsolete SD-overlap flags; active reports/notebooks must never read/display
+that file. The removal check explicitly excludes historical evidence and
+authoritative instructions, and checks active source/presentation/new outputs.
+Tiny synthetic unit training is exempt from R8; tests still cannot train on
+the real corpus, execute a benchmark, or mutate raw evidence. Record synthetic
+test counts/timing separately from the sole real two-seed/two-epoch CPU smoke.
+Within gpu_v2 only, matched-seed CUDA-neural/CPU-tree comparisons are permitted
+with explicit mixed-device labels and per-family device columns. Mixed
+campaigns remain a hard error, with no override. The cpu_v1/gpu_v2 equivalence
+view is descriptive difference/CI only, with no p-value or pass/fail. AGENTS.md
+now carries these agreed ongoing rules.
+
+Stage A statistics: ten CSVs generated from95 rows/19 groups;17 paired-flow
+comparisons use2000 resamples. New pure statistical tests pass and all916
+original hashes were checked unchanged. Prepared exports for42--51 finished
+serially in266.409349 s; all ten files verify payload/recipe/file SHA and full
+class coverage. Split42's nine arrays and three index vectors match the old
+cache byte-for-byte, preserving fingerprint
+dfba90bd116f9288bc72a837160516984ba773b11904e98561c80cda7dedcf5c.
+No real training or inference was performed during either task.
+
+Runner integration review caught a CPU tensor alias in the last-epoch state:
+loading best weights could mutate the saved last-state view. A no-training
+regression reproduced it, then independent CPU clones fixed it. Safe archive
+restore and claimed-receipt guards were also tested before the sole smoke.
+CUDA execution remains NOT RUN.
+
+Publication tests initially exercised an old top-level notebook script before
+its isolated-output option existed, temporarily clearing the derived notebook.
+The archived notebook was restored byte-for-byte (SHA18b395f832d14cebc7de487a82b46326d19c685e21ab6214619088feaaec2ada).
+An attempted kernel startup failed at sandbox sockets before any cell ran;
+no training, inference, cache or old verification record was changed. Tests
+were isolated into temporary copied script roots before further execution.
+
+Stage B's sole real-data smoke finished under its detached controller: MLP,
+multiclass, seeds42/43, exactly2epochs each (4total). The first process stopped
+after epoch1's atomic checkpoint; its ZIP restored into a fresh directory.
+The first history row was preserved, not repeated. Both runs finished, four
+best/last evaluation receipts have one prediction pass each, and a cache-only
+restart reported zero new runs with unchanged receipts. End-to-end supervisor
+wall time10.875827762s, recorded in artifacts/stats_cpu_v1/smoke/control.json.
+No other real-data training, GPU execution or benchmark occurred in this task.
+The original smoke ZIP and records were not modified during subsequent fixes.
+
+Canonical CPU compatibility was checked by comparing the original CPU function
+ASTs and reading the validated multiclass MLP seed42 cache. Its macro-F1 and
+fingerprint exactly match the old row; no canonical model was retrained.
+This qualification is explicit in cpu_default_compatibility.json and Gate B.
+
+Independent review found four Important boundary problems: completing a tree
+after its evaluated ZIP loses the excluded pickle; stopping one branch blocked
+later independent plans; import accepted impossible terminal epoch histories;
+and a literal cuda label could pool different actual GPU/runtime identities.
+All received RED-to-GREEN regressions and fixes. The warning-resume finding
+was upgraded from Minor because the brief explicitly requires retaining every
+nondeterminism warning; checkpoint warning ledgers and effective precision/
+deterministic settings now survive recovery. Prepared-data/provenance failures
+stay fatal; run-local stopped branches preserve evidence and continue other
+plans. No new real-data run was used to test the fixes. The immutable smoke ZIP
+was successfully imported by the stricter final aggregator into a new output
+path artifacts/stats_gpu_v2_smoke_verified/. Review and regression evidence are
+under artifacts/stats_cpu_v1/review/.
+
+Final full-suite verification:199passed,923 retained upstream warnings,15.12s,
+exit0. Its four tiny synthetic-training test cases performed five fits/seven
+epochs on4or24synthetic training rows,1.323s combined pytest case wall time.
+These counts/time belong to that final suite, not the real smoke. Earlier
+full-suite attempts and focused checks remain separately recorded; the first
+attempt's failure was the new synthetic optimizer guard missing one existing
+four-row fixture, corrected without weakening the no-benchmark rule. An
+additional focused publication run's single four-row fit took0.00757395s,
+preserved in verification/publication_synthetic_training/. Tests cannot execute
+actual benchmark calls or undeclared optimizer steps. No raw evidence changed.
+
+The updated notebook executed16/16cells with zero errors in3.329371227s; a
+fresh-kernel Restart-and-Run-All repeated cached analysis in3.431854354s,
+16/16cells,zeroerrors. New metadata is under verification/notebook_first/ and
+verification/final/notebook_restart/, leaving original results metadata intact.
+The final raw-evidence audit verifies all916 hashes unchanged; all seven Gate A
+and seven Gate B checks pass in verification/final/GATES.md. B means code/CPU
+smoke verification, not executed CUDA. All real gpu_v2 studies remain PENDING.
+
+All approximate numerical claims in the supplied review were reproduced from
+the generated tables (reviewer_claims_rederived.json); no mismatching claim was
+found. The statement that eager latency is mostly dispatch is not established:
+dispatch is included, but its fraction is NOT MEASURED and no exported-model
+latency was run. This is documented rather than presented as a measured fact.
+An offline no-dependency source installation succeeded using system Python3.11
+pip into a temporary target (the task venv has no pip/build backend); import and
+prepared-file verification used the task interpreter. No dependencies were
+downloaded or added. Actual Kaggle/CUDA execution remains untested here.
+
+The hosted notebook is thin, unexecuted locally, and calls package code only.
+The beginner runbook specifies private prepared/code uploads, offline install,
+probe first, B1/B3/B2/B4/B5 priority, incremental ZIPs, fresh-session restore,
+and local verified aggregation. Canonical study rules were recorded before
+the smoke; the real-study report preserves them verbatim with PENDING sections.
+Component/delivery ZIP rebuilding and final checksum/CRC verification follow.
+
+Final refresh after the generated verification table was added to REPORT:199tests pass,923warnings,17.15s,exit0. Four synthetic-training cases/fivefits/sevenepochs took1.381s combined pytest case wall time in this invocation; prior verification and hashes were copied to final/previous_suite/. Both gate groups remain allPASS and all916 original file hashes remain unchanged. The task plan is complete; final ZIP/component checksums are generated after this documentation closeout.

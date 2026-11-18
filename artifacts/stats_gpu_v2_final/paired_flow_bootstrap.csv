@@ -1,0 +1,1 @@
+campaign,study,task,model,reference,reference_arm,comparison_arm,checkpoint,comparison_type,reference_device,comparison_device,device_label,mean_difference,ci_low,ci_high,pairing,replicates,n_seeds,sample_label,estimand

@@ -1,0 +1,22 @@
+campaign,device,device_label,task,model,n,spearman_rho,p_value,sample_label,interpretation,members
+cpu_v1,cpu,cpu,binary,bilstm,5,0.7071067811865475,0.18169011381620928,"n=5, indicative only","descriptive only, not causal",bilstm
+cpu_v1,cpu,cpu,binary,exlightnet,5,0.7071067811865475,0.18169011381620928,"n=5, indicative only","descriptive only, not causal",exlightnet
+cpu_v1,cpu,cpu,binary,exlightnet_w8,0,,,n=0,"descriptive only, not causal",exlightnet_w8
+cpu_v1,cpu,cpu,binary,mlp,5,0.4472135954999579,0.45018485575210093,"n=5, indicative only","descriptive only, not causal",mlp
+cpu_v1,cpu,cpu,binary,random_forest,0,,,n=0,"descriptive only, not causal",random_forest
+cpu_v1,cpu,cpu,binary,std_cnn,5,0.7,0.1881204043741873,"n=5, indicative only","descriptive only, not causal",std_cnn
+cpu_v1,cpu,cpu,binary,xgboost,0,,,n=0,"descriptive only, not causal",xgboost
+cpu_v1,cpu,cpu,multiclass,balanced,5,0.46169025843831935,0.43376615616902786,"n=5, indicative only","descriptive only, not causal",balanced
+cpu_v1,cpu,cpu,multiclass,bilstm,5,0.4472135954999579,0.45018485575210093,"n=5, indicative only","descriptive only, not causal",bilstm
+cpu_v1,cpu,cpu,multiclass,exlightnet,5,0.9746794344808963,0.004818230468198566,"n=5, indicative only","descriptive only, not causal",exlightnet
+cpu_v1,cpu,cpu,multiclass,exlightnet_w8,0,,,n=0,"descriptive only, not causal",exlightnet_w8
+cpu_v1,cpu,cpu,multiclass,mlp,5,0.46169025843831935,0.43376615616902786,"n=5, indicative only","descriptive only, not causal",mlp
+cpu_v1,cpu,cpu,multiclass,no_sampler,5,0.8999999999999998,0.03738607346849874,"n=5, indicative only","descriptive only, not causal",no_sampler
+cpu_v1,cpu,cpu,multiclass,no_se,5,0.8720815992723809,0.05385421772754211,"n=5, indicative only","descriptive only, not causal",no_se
+cpu_v1,cpu,cpu,multiclass,random_forest,0,,,n=0,"descriptive only, not causal",random_forest
+cpu_v1,cpu,cpu,multiclass,standard_conv,5,0.15389675281277312,0.8048288166080632,"n=5, indicative only","descriptive only, not causal",standard_conv
+cpu_v1,cpu,cpu,multiclass,std_cnn,5,0.8999999999999998,0.03738607346849874,"n=5, indicative only","descriptive only, not causal",std_cnn
+cpu_v1,cpu,cpu,multiclass,top20,5,0.7,0.1881204043741873,"n=5, indicative only","descriptive only, not causal",top20
+cpu_v1,cpu,cpu,multiclass,xgboost,0,,,n=0,"descriptive only, not causal",xgboost
+cpu_v1,cpu,cpu,binary,pooled_conv_family,10,0.6127992914911079,0.059610195864475725,"n=10, pooled descriptive only","descriptive only, not causal; within-model z scores","exlightnet,std_cnn"
+cpu_v1,cpu,cpu,multiclass,pooled_conv_family,20,0.7933764936748781,2.995195346176656e-05,"n=20, pooled descriptive only","descriptive only, not causal; within-model z scores","exlightnet,no_se,standard_conv,std_cnn"

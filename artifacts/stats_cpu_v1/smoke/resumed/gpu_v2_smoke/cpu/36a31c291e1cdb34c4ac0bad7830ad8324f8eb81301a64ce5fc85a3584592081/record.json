@@ -1,0 +1,582 @@
+{
+  "arm": "paper",
+  "best_epoch": 1,
+  "best_val_macro_f1": 0.6677992357319087,
+  "campaign": "gpu_v2_smoke",
+  "checkpoints": {
+    "best": {
+      "metrics": {
+        "accuracy": 0.9569525666016894,
+        "auc": 0.9988600390435016,
+        "auc_definition": "micro OvR",
+        "confusion_matrix": [
+          [
+            979,
+            2,
+            2,
+            4,
+            0,
+            0,
+            0,
+            0,
+            16,
+            7,
+            141,
+            11
+          ],
+          [
+            0,
+            66,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            14,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            14199,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            5,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            2,
+            0,
+            0,
+            0,
+            619,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0
+          ],
+          [
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            3,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            189,
+            36,
+            0,
+            75,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            85,
+            61,
+            0,
+            5,
+            0,
+            0
+          ],
+          [
+            29,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            358,
+            0,
+            1,
+            0
+          ],
+          [
+            2,
+            0,
+            0,
+            0,
+            0,
+            0,
+            174,
+            22,
+            3,
+            101,
+            0,
+            0
+          ],
+          [
+            135,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            1074,
+            5
+          ],
+          [
+            12,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            2,
+            1,
+            1,
+            22
+          ]
+        ],
+        "macro_f1": 0.6822813345291626,
+        "macro_precision": 0.6832579337671302,
+        "macro_recall": 0.7011316574667604,
+        "per_class": {
+          "arp_poisioning": {
+            "f1": 0.843238587424634,
+            "precision": 0.8439655172413794,
+            "recall": 0.842512908777969,
+            "support": 1162
+          },
+          "ddos_slowloris": {
+            "f1": 0.8918918918918919,
+            "precision": 0.9705882352941176,
+            "recall": 0.825,
+            "support": 80
+          },
+          "dos_syn_hping": {
+            "f1": 0.999859164847546,
+            "precision": 0.9997183693585863,
+            "recall": 1.0,
+            "support": 14199
+          },
+          "metasploit_brute_force_ssh": {
+            "f1": 0.7142857142857143,
+            "precision": 0.5555555555555556,
+            "recall": 1.0,
+            "support": 5
+          },
+          "mqtt_publish": {
+            "f1": 0.9975825946817083,
+            "precision": 1.0,
+            "recall": 0.9951768488745981,
+            "support": 622
+          },
+          "nmap_fin_scan": {
+            "f1": 0.0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 4
+          },
+          "nmap_os_detection": {
+            "f1": 0.5053475935828877,
+            "precision": 0.421875,
+            "recall": 0.63,
+            "support": 300
+          },
+          "nmap_tcp_scan": {
+            "f1": 0.45185185185185184,
+            "precision": 0.5126050420168067,
+            "recall": 0.40397350993377484,
+            "support": 151
+          },
+          "nmap_udp_scan": {
+            "f1": 0.910941475826972,
+            "precision": 0.9017632241813602,
+            "recall": 0.9203084832904884,
+            "support": 389
+          },
+          "nmap_xmas_tree_scan": {
+            "f1": 0.4105691056910569,
+            "precision": 0.531578947368421,
+            "recall": 0.3344370860927152,
+            "support": 302
+          },
+          "thing_speak": {
+            "f1": 0.8828606658446363,
+            "precision": 0.8824979457682827,
+            "recall": 0.8832236842105263,
+            "support": 1216
+          },
+          "wipro_bulb": {
+            "f1": 0.5789473684210527,
+            "precision": 0.5789473684210527,
+            "recall": 0.5789473684210527,
+            "support": 38
+          }
+        },
+        "weighted_f1": 0.9565737088726174
+      },
+      "metrics_path": "cpu/36a31c291e1cdb34c4ac0bad7830ad8324f8eb81301a64ce5fc85a3584592081/best/metrics.json",
+      "metrics_sha256": "eaa9b8bd2ddf9cd411439cf581b2c597cdc471842d7ceebf006825a2456e6477",
+      "prediction_path": "cpu/36a31c291e1cdb34c4ac0bad7830ad8324f8eb81301a64ce5fc85a3584592081/best/predictions.npz",
+      "prediction_sha256": "fa72c382d594f88e99a40b3b31ec4ed6b506707fde11ca94de1d4ef326828c4b",
+      "receipt_path": "cpu/36a31c291e1cdb34c4ac0bad7830ad8324f8eb81301a64ce5fc85a3584592081/best/receipt.json",
+      "receipt_sha256": "ad425f69e138510cd23d4edba36717ce4c2ab83bcfd44d9f4941127926c444f3"
+    },
+    "last": {
+      "metrics": {
+        "accuracy": 0.9571691574615552,
+        "auc": 0.9991371655923079,
+        "auc_definition": "micro OvR",
+        "confusion_matrix": [
+          [
+            958,
+            2,
+            1,
+            0,
+            1,
+            0,
+            0,
+            0,
+            16,
+            5,
+            168,
+            11
+          ],
+          [
+            0,
+            80,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            14199,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            5,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            1,
+            1,
+            0,
+            0,
+            619,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0
+          ],
+          [
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            3,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            9,
+            47,
+            0,
+            244,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            39,
+            80,
+            0,
+            32,
+            0,
+            0
+          ],
+          [
+            27,
+            20,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            341,
+            0,
+            0,
+            0
+          ],
+          [
+            2,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            29,
+            3,
+            267,
+            0,
+            0
+          ],
+          [
+            110,
+            0,
+            1,
+            1,
+            0,
+            0,
+            0,
+            0,
+            2,
+            0,
+            1095,
+            7
+          ],
+          [
+            9,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            3,
+            1,
+            1,
+            24
+          ]
+        ],
+        "macro_f1": 0.683931730521047,
+        "macro_precision": 0.6681256017504972,
+        "macro_recall": 0.7226836504574861,
+        "per_class": {
+          "arp_poisioning": {
+            "f1": 0.8440528634361234,
+            "precision": 0.8646209386281588,
+            "recall": 0.8244406196213425,
+            "support": 1162
+          },
+          "ddos_slowloris": {
+            "f1": 0.8743169398907104,
+            "precision": 0.7766990291262136,
+            "recall": 1.0,
+            "support": 80
+          },
+          "dos_syn_hping": {
+            "f1": 0.9998943699165522,
+            "precision": 0.9997887621461766,
+            "recall": 1.0,
+            "support": 14199
+          },
+          "metasploit_brute_force_ssh": {
+            "f1": 0.9090909090909091,
+            "precision": 0.8333333333333334,
+            "recall": 1.0,
+            "support": 5
+          },
+          "mqtt_publish": {
+            "f1": 0.9967793880837359,
+            "precision": 0.9983870967741936,
+            "recall": 0.9951768488745981,
+            "support": 622
+          },
+          "nmap_fin_scan": {
+            "f1": 0.0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 4
+          },
+          "nmap_os_detection": {
+            "f1": 0.05157593123209169,
+            "precision": 0.1836734693877551,
+            "recall": 0.03,
+            "support": 300
+          },
+          "nmap_tcp_scan": {
+            "f1": 0.5211726384364821,
+            "precision": 0.5128205128205128,
+            "recall": 0.5298013245033113,
+            "support": 151
+          },
+          "nmap_udp_scan": {
+            "f1": 0.899736147757256,
+            "precision": 0.924119241192412,
+            "recall": 0.8766066838046273,
+            "support": 389
+          },
+          "nmap_xmas_tree_scan": {
+            "f1": 0.627497062279671,
+            "precision": 0.48633879781420764,
+            "recall": 0.8841059602649006,
+            "support": 302
+          },
+          "thing_speak": {
+            "f1": 0.8830645161290323,
+            "precision": 0.8662974683544303,
+            "recall": 0.9004934210526315,
+            "support": 1216
+          },
+          "wipro_bulb": {
+            "f1": 0.6,
+            "precision": 0.5714285714285714,
+            "recall": 0.631578947368421,
+            "support": 38
+          }
+        },
+        "weighted_f1": 0.9531652018927422
+      },
+      "metrics_path": "cpu/36a31c291e1cdb34c4ac0bad7830ad8324f8eb81301a64ce5fc85a3584592081/last/metrics.json",
+      "metrics_sha256": "13dcc6afe7276acb8af1bd22af8f86f6f5c40ab96287324ece741099342390c0",
+      "prediction_path": "cpu/36a31c291e1cdb34c4ac0bad7830ad8324f8eb81301a64ce5fc85a3584592081/last/predictions.npz",
+      "prediction_sha256": "622fbbaabb4d40f6e6aafda12294a522c450f8e260162250efaa981f3e7d2b74",
+      "receipt_path": "cpu/36a31c291e1cdb34c4ac0bad7830ad8324f8eb81301a64ce5fc85a3584592081/last/receipt.json",
+      "receipt_sha256": "1464006304e454716c9224ccca4aa1971a51af2bcbc0c622db9b672b644b8ab3"
+    }
+  },
+  "config": {
+    "alpha_mode": "none",
+    "batch_size": 512,
+    "lr": 0.0015,
+    "max_epochs": 2,
+    "patience": 6,
+    "sampler": "tempered",
+    "seed": 43,
+    "threads": 1,
+    "weight_decay": 0.0001
+  },
+  "data_fingerprint": "dfba90bd116f9288bc72a837160516984ba773b11904e98561c80cda7dedcf5c",
+  "device": "cpu",
+  "epochs_run": 2,
+  "headline_checkpoint": "best",
+  "history": [
+    {
+      "epoch": 1,
+      "lr": 0.0015,
+      "seconds": 0.32638068699998257,
+      "train_loss": 0.4706631535825327,
+      "val_macro_f1": 0.6677992357319087
+    },
+    {
+      "epoch": 2,
+      "lr": 0.00075,
+      "seconds": 0.31472406499960925,
+      "train_loss": 0.16076472775509618,
+      "val_macro_f1": 0.6629282374970437
+    }
+  ],
+  "libraries": {
+    "cuda": null,
+    "cudnn": null,
+    "gpu_name": null,
+    "numpy": "1.26.4",
+    "scikit-learn": "1.6.1",
+    "torch": "2.6.0+cpu",
+    "xgboost": "2.1.4"
+  },
+  "model": "mlp",
+  "payload_sha256": "f7e919984eb63654d557a2757440a68af0b0da30f1f3b9d6f119d9d74a336b39",
+  "prepared_sha256": "359132d34457583794e8bddb1d5650f5a8f6e7f77e10fcd3d92573f57cab94a1",
+  "requested_device": "cpu",
+  "run_fingerprint": "36a31c291e1cdb34c4ac0bad7830ad8324f8eb81301a64ce5fc85a3584592081",
+  "schema_version": 1,
+  "seed": 43,
+  "split_seed": 42,
+  "status": "complete",
+  "study": "B1",
+  "task": "multiclass",
+  "warnings": []
+}

@@ -1,0 +1,15 @@
+{
+  "canonical_cpu_definitions_unchanged": {
+    "TrainConfig": true,
+    "seed_everything": true,
+    "make_loader": true,
+    "predict_proba": true,
+    "fit_model": true
+  },
+  "cache_hit_row_byte_equivalent": true,
+  "macro_f1": 0.8354536030948337,
+  "fingerprint": "b49fbe2ba153504e2811f7abf991a5d71f5c8e1d682c5af7ba660f3291bf567e",
+  "data_fingerprint": "dfba90bd116f9288bc72a837160516984ba773b11904e98561c80cda7dedcf5c",
+  "method": "read-only validated original CPU cache hit; no retraining or inference",
+  "retrained_seed42": "NOT RUN: prohibited by local experiment budget"
+}

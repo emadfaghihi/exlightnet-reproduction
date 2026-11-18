@@ -3,7 +3,6 @@ import json
 from pathlib import Path
 
 import numpy as np
-import pandas as pd
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, f1_score, precision_score, recall_score, roc_auc_score
 
 from .io import read_json, write_json
@@ -70,6 +69,7 @@ def evaluate_once(directory, y, predictor, class_names, metadata):
 
 
 def summarize(rows):
+    import pandas as pd
     groups = {}
     for row in rows:
         groups.setdefault((row["task"], row["model"]), []).append(row)

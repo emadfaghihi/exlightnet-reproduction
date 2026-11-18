@@ -101,3 +101,16 @@ Known paper issues (document them, do not silently "fix"): sampler formula ambig
 
 FINAL STEP
 Run pytest and the fast notebook, then create deliverables.zip (src, tests, executed notebook, results with plots, REPORT.md, requirements.txt, README.md; no dataset). In your final message list gate results and anything you could not do.
+
+AMENDMENT 2026-11-17 — CACHED STATISTICS AND SUPPLEMENTARY CAMPAIGNS
+The user's detailed follow-up is preserved verbatim in docs/STATS_GPU_BRIEF.txt.
+For this task it supersedes the old SD-overlap reporting rule: use paired
+t-tests, t-intervals, Cohen's dz and Holm-adjusted inference with explicit
+small-sample and rare-class limitations. Preserve cpu_v1 raw evidence.
+Amendment A1 in AGENTS.md permits separately tagged FP32 CUDA accuracy studies;
+it never applies to cpu_v1 or latency/size/INT8/memory measurements. No full
+campaign or benchmark rerun is authorized in this task. Local experimental
+training is limited to the requested two-seed, two-epoch CPU smoke. Preserve
+old derived versions before report/notebook regeneration and write fresh
+verification records to new paths. The supplied brief's hard rules and its
+a-priori interpretation rules govern the supplementary runner and aggregator.

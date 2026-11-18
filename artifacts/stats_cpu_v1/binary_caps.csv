@@ -1,0 +1,8 @@
+campaign,device,device_label,task,model,n_runs,n_epoch_observed,n_hit_cap,n_best_at_cap,sample_label
+cpu_v1,cpu,cpu,binary,bilstm,5,5,4.0,0.0,"n=5, indicative only"
+cpu_v1,cpu,cpu,binary,exlightnet,5,5,4.0,2.0,"n=5, indicative only"
+cpu_v1,cpu,cpu,binary,exlightnet_w8,5,0,,,"n=5, indicative only"
+cpu_v1,cpu,cpu,binary,mlp,5,5,1.0,0.0,"n=5, indicative only"
+cpu_v1,cpu,cpu,binary,random_forest,5,0,,,"n=5, indicative only"
+cpu_v1,cpu,cpu,binary,std_cnn,5,5,1.0,0.0,"n=5, indicative only"
+cpu_v1,cpu,cpu,binary,xgboost,5,0,,,"n=5, indicative only"
