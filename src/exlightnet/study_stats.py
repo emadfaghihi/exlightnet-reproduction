@@ -29,8 +29,11 @@ from .stats import (campaign_device_label, class_f1_from_confusion, flow_confusi
 
 
 STUDIES = ("B1", "B3", "B2", "B4", "B5")
+INFRASTRUCTURE_STUDIES = ("probe", "determinism")
+B4_ENVIRONMENT_LABEL = "cross-environment (Kaggle B1 references vs Colab uncapped60)"
 TREES = {"random_forest", "xgboost"}
-RUN_FIELDS = ("study", "arm", "task", "model", "seed", "split_seed")
+VECTOR_FIELDS = ("study", "arm", "task", "model")
+RUN_FIELDS = (*VECTOR_FIELDS, "seed", "split_seed")
 MAX_JSON = 16*1024*1024
 MAX_ARRAY = 256*1024*1024
 EMPTY_COLUMNS = {
@@ -148,11 +151,19 @@ class _ArchiveIndex:
 
 
 def _identity(record):
-    return (record["campaign"], *_run_identity(record))
+    identity = (record["campaign"], *_run_identity(record))
+    if record["study"] in INFRASTRUCTURE_STUDIES:
+        environment = environment_identity(record["device"], record["libraries"])
+        return (*identity, run_fingerprint(environment))
+    return identity
 
 
 def _run_identity(record):
     return tuple(record[key] for key in RUN_FIELDS)
+
+
+def _vector_identity(record):
+    return tuple(record[key] for key in VECTOR_FIELDS)
 
 
 def _plan(record):
@@ -225,10 +236,10 @@ def _validate_history(record):
 def read_study_archives(archives,prepared_dir):
     """Return verified unique records plus loaded class labels/predictions.
 
-    No archive member is extracted. Identical incremental completed records
-    deduplicate; conflicting completed identities fail, even with a new run
-    fingerprint. Incomplete records are counted but never scored. Model files
-    are hash-checked as opaque streams only; pickle and PyTorch are not loaded.
+    No archive member is extracted. Identical infrastructure records can
+    deduplicate within an environment. Inferential duplicates and conflicting
+    completed identities fail. Incomplete records are counted but never scored.
+    Model files are hash-checked as opaque streams only.
     """
     archives=list(archives)
     if not archives:
@@ -258,8 +269,11 @@ def read_study_archives(archives,prepared_dir):
                     key=_identity(record)
                 except KeyError as exc:
                     raise ValueError("Incomplete completed-run identity") from exc
-                if key in unique and unique[key][0]!=record:
-                    raise ValueError("Conflicting duplicate completed identity")
+                if key in unique:
+                    if unique[key][0]!=record:
+                        raise ValueError("Conflicting duplicate completed identity")
+                    if record["study"] not in INFRASTRUCTURE_STUDIES:
+                        raise ValueError("Duplicate completed inferential identity")
                 expected_path=f'{record["device"]}/{record["run_fingerprint"]}/record.json'
                 if name!=expected_path:
                     raise ValueError("Record path/run fingerprint mismatch")
@@ -363,17 +377,18 @@ def read_study_archives(archives,prepared_dir):
             record["_record_path"]=record_path
             record["_classes"]=names
             records.append(record)
-        # Each study/arm vector has a single device per model; global model
-        # devices also cannot change between arms or studies in one campaign.
+        # Device policy applies across studies. Environment policy applies to
+        # each inferential vector, with reuse checked after references expand.
         model_devices={}
-        model_environments={}
+        vector_environments={}
         for record in records:
             model_devices.setdefault((record["task"],record["model"]),set()).add(record["device"])
-            model_environments.setdefault((record["task"],record["model"]),set()).add(record["_environment_id"])
+            if record["study"] in STUDIES:
+                vector_environments.setdefault(_vector_identity(record),set()).add(record["_environment_id"])
         if any(len(v)>1 for v in model_devices.values()):
             raise ValueError("Multiple devices for the same model seed vector")
-        if any(len(v)>1 for v in model_environments.values()):
-            raise ValueError("Mixed actual execution environment for the same model seed vector")
+        if any(len(v)>1 for v in vector_environments.values()):
+            raise ValueError("Mixed actual execution environment for the same study/arm/task/model seed vector")
         device_rows=[];seen=set()
         for r in records:
             key=(r["task"],r["model"],r["seed"])
@@ -399,7 +414,7 @@ def _study_plans(study):
 
 def _expanded_records(records):
     result=list(records)
-    lookup={_run_identity(r):r for r in records}
+    lookup={_run_identity(r):r for r in records if r["study"]=="B1"}
     observed_studies={r["study"] for r in records}
     for study in ("B3","B4"):
         if study not in observed_studies:
@@ -411,6 +426,34 @@ def _expanded_records(records):
                 if record is not None:
                     result.append(dict(record,study=study,source_study=source_study))
     return result
+
+
+def _check_b3_reference_environments(vectors):
+    for (study,arm,task,model),record in vectors.items():
+        if study=="B3" and arm!="paper":
+            reference=vectors.get(("B3","paper",task,model))
+            if reference is not None and reference["_environment_id"]!=record["_environment_id"]:
+                raise ValueError(f"B3 requires the same B1 reference environment for {arm}/{task}/{model}")
+
+
+def _label_b4_environments(tables,vectors):
+    arm_environments={(arm,task,model): r["_environment_id"]
+                      for (study,arm,task,model),r in vectors.items() if study=="B4"}
+    paired_environments=[
+        (environment,arm_environments.get(("uncapped60",task,model)))
+        for (arm,task,model),environment in arm_environments.items() if arm=="paper"
+    ]
+    if not any(uncapped is not None and paper!=uncapped for paper,uncapped in paired_environments):
+        return
+
+    for name in ("summaries","paired_tests","paired_flow_bootstrap"):
+        frame=tables[name]
+        if frame.empty or not frame.study.eq("B4").any():
+            continue
+        frame["cross_environment"]=[True if row.study=="B4" else None for row in frame.itertuples()]
+        for arm,column in (("paper","paper_environment_id"),("uncapped60","uncapped60_environment_id")):
+            frame[column]=[arm_environments.get((arm,row.task,row.model)) if row.study=="B4" else None
+                           for row in frame.itertuples()]
 
 
 def _run_rows(records):
@@ -433,8 +476,8 @@ def _summary(rows,label,expected_seed_counts):
     frame=pd.DataFrame(rows)
     if frame.empty:
         return frame
-    for keys,g in frame.groupby(["study","arm","task","model","checkpoint"],sort=True):
-        study,arm,task,model,checkpoint=keys
+    for keys,g in frame.groupby([*VECTOR_FIELDS,"checkpoint","environment_id"],sort=True):
+        study,arm,task,model,checkpoint,environment_id=keys
         n=len(g);sd=g.macro_f1.std(ddof=1)
         n_eligible=int(g.inference_eligible.sum())
         observation_scope="descriptive"
@@ -445,7 +488,7 @@ def _summary(rows,label,expected_seed_counts):
         output.append(dict(campaign=g.iloc[0].campaign,study=study,arm=arm,task=task,model=model,checkpoint=checkpoint,
             device=g.iloc[0].device,device_label=label,n=n,sample_label="n=5, indicative only" if n==5 else f"n={n}",
             n_eligible=n_eligible,observation_scope=observation_scope,
-            environment_id=g.iloc[0].environment_id,execution_environment=g.iloc[0].execution_environment,
+            environment_id=environment_id,execution_environment=g.iloc[0].execution_environment,
             macro_f1_mean=g.macro_f1.mean(),macro_f1_sd=sd,
             macro_f1_seed42=g[g.seed==42].macro_f1.iloc[0] if (g.seed==42).any() else np.nan,
             zero_seed_variance=bool(n>1 and g.macro_f1.nunique()==1),
@@ -566,7 +609,7 @@ def _lr_selection(records,label):
 
 def _completeness(records):
     """Match verified records to whole predeclared study seed blocks."""
-    observed={_run_identity(r) for r in records}
+    observed={_run_identity(r) for r in records if r["study"] in STUDIES}
     rows=[]
     eligible={}
     for study in STUDIES:
@@ -721,15 +764,20 @@ def _hypothesis(records,correlations,amendment):
 
 
 def _probe_determinism(records):
-    probes=[];determinism=[]
+    probes=[];determinism=[];repeats_by_environment={}
     for record in records:
+        environment_id=record["_environment_id"]
         if record["study"]=="probe":
             seconds=float(np.mean([r["seconds"] for r in record["history"]]))
             for study in STUDIES:
                 probes.append(dict(campaign=record["campaign"],device=record["device"],study=study,seconds_per_epoch=seconds,
-                    projected_neural_hours=projected_neural_hours(study,seconds),assumptions="ExLightNet epoch speed for all neural models; ignores trees/model speed differences/early stopping"))
-    repeats={r["arm"]:r for r in records if r["study"]=="determinism"}
-    if {"repeat1","repeat2"}<=set(repeats):
+                    projected_neural_hours=projected_neural_hours(study,seconds),assumptions="ExLightNet epoch speed for all neural models; ignores trees/model speed differences/early stopping",
+                    environment_id=environment_id))
+        elif record["study"]=="determinism":
+            repeats_by_environment.setdefault(environment_id,{})[record["arm"]]=record
+    for environment_id,repeats in repeats_by_environment.items():
+        if not {"repeat1","repeat2"}<=repeats.keys():
+            continue
         a,b=repeats["repeat1"],repeats["repeat2"]
         for cp in ("best","last"):
             pa,pb=a["_predictions"][cp],b["_predictions"][cp]
@@ -739,8 +787,40 @@ def _probe_determinism(records):
                 raise ValueError("Determinism repeat data differs")
             determinism.append(dict(campaign=a["campaign"],device=a["device"],checkpoint=cp,
                 max_abs_logit_difference=float(np.max(np.abs(pa["logits"]-pb["logits"]))),
-                abs_macro_f1_difference=abs(a["checkpoints"][cp]["metrics"]["macro_f1"]-b["checkpoints"][cp]["metrics"]["macro_f1"])))
+                abs_macro_f1_difference=abs(a["checkpoints"][cp]["metrics"]["macro_f1"]-b["checkpoints"][cp]["metrics"]["macro_f1"]),
+                environment_id=environment_id))
     return pd.DataFrame(probes),pd.DataFrame(determinism)
+
+
+def _descriptive_environment_repeats(records):
+    references={_run_identity(r):r for r in records if r["study"]=="B1" and r["device"]=="cuda"}
+    reference_environments={r["_environment_id"] for r in references.values()}
+    rows=[]
+    for record in records:
+        b2_repeat=record["study"]=="B2" and record["split_seed"]==42
+        b5_repeat=record["study"]=="B5" and record["arm"]=="lr_0.0015"
+        if record["device"]!="cuda" or not (b2_repeat or b5_repeat):
+            continue
+        reference=references.get(_run_identity(dict(record,study="B1",arm="paper")))
+        if reference is None:
+            if reference_environments-{record["_environment_id"]}:
+                rows.append({key:record[key] for key in ("study","task","model","seed")}
+                            | dict(best="no B1 reference",last="no B1 reference"))
+            continue
+        if record["_environment_id"]==reference["_environment_id"]:
+            continue
+        row={key:record[key] for key in ("study","task","model","seed")}
+        if any(record[key]!=reference[key] for key in ("config","data_fingerprint","payload_sha256","prepared_sha256")):
+            row.update(best="config or data mismatch",last="config or data mismatch")
+        else:
+            for checkpoint in ("best","last"):
+                a,b=(r["_predictions"][checkpoint]["prediction"] for r in (reference,record))
+                f1_a,f1_b=(r["checkpoints"][checkpoint]["metrics"]["macro_f1"] for r in (reference,record))
+                predictions="exact" if np.array_equal(a,b) else "different"
+                macro_f1="exact" if f1_a==f1_b else "different"
+                row[checkpoint]=f"{predictions} / {macro_f1}"
+        rows.append(row)
+    return pd.DataFrame(rows).sort_values(["study","task","model","seed"]) if rows else pd.DataFrame()
 
 
 def _markdown(frame):
@@ -757,7 +837,7 @@ def _markdown(frame):
     return "\n".join(lines)
 
 
-def _report(protocol,campaign,tables,device_label,stopping,blocks):
+def _report(protocol,campaign,tables,device_label,stopping,blocks,environment_repeats,multiple_environments):
     lines=[f"# Supplementary accuracy studies: {campaign}","", "Source protocol: [`docs/statistics_protocol.json`](docs/statistics_protocol.json). Rules were recorded before Stage B data. General study summaries headline the best-validation checkpoint and list the last epoch second. The stopping hypothesis follows its designated primary and secondary checkpoints below. No test metric selects an epoch, checkpoint, learning rate or arm.","", "## A-priori interpretation rules",""]
     original=protocol["rules_verbatim"]
     superseded=stopping["supersedes_rule_index"]
@@ -783,7 +863,11 @@ def _report(protocol,campaign,tables,device_label,stopping,blocks):
         paired=tables["paired_tests"]
         if not paired.empty:
             display=["task","comparison_type","reference","model","reference_arm","comparison_arm","checkpoint","reference_device","comparison_device","n_pairs","mean_difference","ci_low","ci_high","p_value","p_holm","interpretation"]
-            lines.extend(["Paired reference differences (positive favors the reference); Holm family is task/study, including best and last comparisons:","",_markdown(paired[paired.study==study][display]),""])
+            study_pairs=paired[paired.study==study]
+            if study=="B4" and "cross_environment" in paired:
+                study_pairs=study_pairs.assign(interpretation=study_pairs.interpretation+f" ({B4_ENVIRONMENT_LABEL})")
+                display.extend(["cross_environment","paper_environment_id","uncapped60_environment_id"])
+            lines.extend(["Paired reference differences (positive favors the reference); Holm family is task/study, including best and last comparisons:","",_markdown(study_pairs[display]),""])
         flow=tables["paired_flow_bootstrap"]
         if not flow.empty:
             lines.extend(["Paired seed-then-flow bootstrap; single-random-run uncertainty:","",_markdown(flow[flow.study==study].drop(columns=["estimand"],errors="ignore")),""])
@@ -804,8 +888,14 @@ def _report(protocol,campaign,tables,device_label,stopping,blocks):
                 _markdown(endpoints[b1].drop_duplicates()),""])
         if study=="B4":
             lines.extend(["The paper-20 reference is reused from B1. Cap counts and best/last results appear above; no reference is regenerated.",""])
+            if "cross_environment" in tables["summaries"]:
+                lines.extend([f"**{B4_ENVIRONMENT_LABEL}**. The training recipe and execution environment changed together.",""])
         if study=="B5":
             lines.extend(["Learning-rate selection uses validation means only, requires every predeclared seed in all three arms, and breaks a validation tie toward lower LR:","",_markdown(tables["lr_selection"]),""])
+    if not environment_repeats.empty:
+        lines.extend(["## Descriptive cross-environment repeats","","B2 split 42 and B5 `lr_0.0015` are matched to B1 paper runs by task, model, seed, split, full configuration and data identifiers. Each checkpoint cell shows exact agreement for saved predictions / macro-F1. This comparison is descriptive.","",_markdown(environment_repeats),""])
+    if multiple_environments:
+        lines.extend(["## Optional B6 leakage PROXY","","NOT RUN",""])
     lines.extend(["## Device-equivalence view", "", "Descriptive side-by-side differences and confidence intervals for matched seeds 42–46 with complete gpu_v2 B1 blocks. Differences are gpu_v2 minus cpu_v1.","",_markdown(tables["device_equivalence"]),"", "## Probe and determinism studies", "",_markdown(tables["probe"]),"",_markdown(tables["determinism"]),"", "CUDA execution is NOT RUN locally. Cached hosted GPU observations, if imported, do not imply local CUDA validation.","", "## Supplementary frozen/exported-model latency", "", "NOT RUN: this task prohibits benchmark reruns. Canonical CPU latency/size/INT8/memory evidence stays separate.",""])
     return "\n".join(lines)
 
@@ -838,8 +928,11 @@ def aggregate_studies(archives,prepared_dir,output,report,reference_cpu=None,*,p
     if report.suffix.lower()!=".md" or report==repository/"REPORT.md":
         raise ValueError("Use a separate Markdown statistics report path")
     label=loaded.get("device_label","no observations")
+    expanded=_expanded_records(records)
+    vectors={_vector_identity(r):r for r in expanded if r["study"] in STUDIES}
+    _check_b3_reference_environments(vectors)
     completeness,eligible=_completeness(records)
-    expanded=_expanded_records(records);rows=_run_rows(expanded)
+    rows=_run_rows(expanded)
     for row in rows:
         row["device_label"]=label
         row["inference_eligible"]=row["seed"] in eligible.get(row["study"],set())
@@ -849,10 +942,17 @@ def aggregate_studies(archives,prepared_dir,output,report,reference_cpu=None,*,p
     paired,flow=_pair_tables(inferential,[row for row in rows if row["inference_eligible"]],replicates,random_seed,label)
     correlations=_correlations(inferential,replicates,random_seed,label)
     probe,determinism=_probe_determinism(records)
+    multiple_environments=len(loaded.get("execution_environments",{}))>1
+    if not multiple_environments:
+        # A single environment is identified by the manifest in legacy outputs.
+        probe=probe.drop(columns="environment_id",errors="ignore")
+        determinism=determinism.drop(columns="environment_id",errors="ignore")
     tables=dict(per_run=pd.DataFrame(rows),summaries=summaries,paired_tests=paired,paired_flow_bootstrap=flow,
         correlations=correlations,lr_selection=_lr_selection(records,label),completeness=completeness,
         device_equivalence=_device_equivalence(inferential,reference_cpu),early_stopping_hypothesis=_hypothesis(inferential,correlations,stopping),
         probe=probe,determinism=determinism)
+    _label_b4_environments(tables,vectors)
+    environments={key:(r["_environment_id"],json.dumps(r["_environment"],sort_keys=True)) for key,r in vectors.items()}
     for name,frame in tables.items():
         if name!="device_equivalence":
             if "device_label" not in frame:
@@ -860,13 +960,17 @@ def aggregate_studies(archives,prepared_dir,output,report,reference_cpu=None,*,p
             if "campaign" not in frame:
                 frame["campaign"]=campaign
             if not frame.empty and {"task","model"}<=set(frame.columns) and "environment_id" not in frame and "reference_environment_id" not in frame:
-                environments={(r["task"],r["model"]):(r["_environment_id"],json.dumps(r["_environment"],sort_keys=True)) for r in records}
-                frame["environment_id"]=[environments.get((r.task,r.model),(None,None))[0] for r in frame.itertuples()]
-                frame["execution_environment"]=[environments.get((r.task,r.model),(None,None))[1] for r in frame.itertuples()]
+                # B1 correlations and the B3 hypothesis use the paper reference.
+                sources=[environments.get((r.study,getattr(r,"arm","paper"),r.task,r.model),(None,None)) for r in frame.itertuples()]
+                frame["environment_id"]=[environment_id for environment_id,_ in sources]
+                frame["execution_environment"]=[metadata for _,metadata in sources]
     for name,columns in EMPTY_COLUMNS.items():
         if tables[name].empty:
+            if multiple_environments and name in INFRASTRUCTURE_STUDIES:
+                columns=[*columns,"environment_id"]
             tables[name]=tables[name].reindex(columns=list(dict.fromkeys(columns+["device_label","campaign"])))
-    report_text=_report(protocol,campaign,tables,label,stopping,blocks)
+    environment_repeats=_descriptive_environment_repeats(records)
+    report_text=_report(protocol,campaign,tables,label,stopping,blocks,environment_repeats,multiple_environments)
     output.mkdir(parents=True,exist_ok=True);report.parent.mkdir(parents=True,exist_ok=True)
     paths={}
     for name,frame in tables.items():

@@ -1,1 +1,3 @@
-campaign,device,checkpoint,max_abs_logit_difference,abs_macro_f1_difference,device_label
+campaign,device,checkpoint,max_abs_logit_difference,abs_macro_f1_difference,environment_id,device_label
+gpu_v2,cuda,best,0.0,0.0,eee67a19ae41b4c339313630ee0490d7907482c46e5e3eec8d152ad4c9d3a56c,cuda
+gpu_v2,cuda,last,0.0,0.0,eee67a19ae41b4c339313630ee0490d7907482c46e5e3eec8d152ad4c9d3a56c,cuda

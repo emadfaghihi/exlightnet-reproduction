@@ -411,3 +411,221 @@ No Python behavior changed after the253-test pass; documentation/manifest
 closeout and the authorized explicit-path local commit finish this task.
 No merge or push. Final archive hashes are external in delivery/stats_gpu_v2/
 SHA256SUMS and DELIVERY_AUDIT.json, avoiding a self-referential archive hash.
+
+## 2026-11-21 — Local aggregation of the first gpu_v2 bundle
+
+Copied the supplied `gpu_v2_part1.zip.zip` into `imports/gpu_v2/` byte for byte.
+Its SHA-256 is `6c346f558499ffbd1e5e8c9dce906dde36a44c35adad0cd3073bb5bc8467e482`.
+Archived the 13 previous statistics files under
+`archive/gpu_v2_before_aggregation/20261121T120139+0330/` with their checksums.
+
+```bash
+.venv/bin/python scripts/aggregate_gpu_v2.py imports/gpu_v2/*.zip \
+  --prepared-dir prepared --output artifacts/stats_gpu_v2 \
+  --report REPORT_stats_v2.md --reference-cpu results/full/results.json
+```
+
+The command exited 0. The aggregation manifest records 333 verified unique
+hosted CUDA runs and 2,188 artifact hashes. ZIP CRC and output SHA-256 checks
+passed. All 733 recorded input and CPU evidence checksums matched after the
+run. The structure of 11 CSVs and nine Markdown tables was checked. The local
+operation used saved predictions and performed no model training or inference.
+
+B3 has all 15 matched seed blocks. B1 has 210 of 330 planned runs and lacks
+120 Random Forest and XGBoost runs. All 30 B1 seed blocks are excluded from
+paired analyses. B2, B4 and B5 remain pending in the imported evidence.
+
+## 2026-11-23 — Proposed gpu_v2 amendment for two CUDA environments
+
+Preflight read the Colab attachment at `/home/mparsict/Downloads/gpu_v2.zip`
+directly. Its size is 12,837,923 bytes and its SHA-256 is
+`888fb932dd60c5bec22a681b73de91ffd04672ff6b5f3de4a4e167addc9891ec`.
+ZIP CRC and JSON inventory checks passed for both bundles. The Colab archive
+contains 111 entries marked complete (one probe, 50 B2 neural, 30 B4 and
+30 B5). The existing aggregation manifest records 333 verified Kaggle runs.
+Both archives declare `gpu_v2` and a Tesla T4. They differ in NumPy, PyTorch
+and cuDNN versions. [Existing manifest](../artifacts/stats_gpu_v2/aggregation_manifest.json)
+
+- The combined import would stop at `Conflicting duplicate completed identity`.
+  Both probes share the key `(gpu_v2, probe, probe, multiclass, exlightnet, 42,
+  42)` and have identical configs and data identifiers. Their fingerprints
+  and library metadata differ. The duplicate key omits both fields.
+  [Identity fields](../src/exlightnet/study_stats.py#L33) · [Duplicate check](../src/exlightnet/study_stats.py#L257)
+- Resolving the probe collision alone would still leave a hard stop at
+  `Mixed actual execution environment for the same model seed vector`. The
+  guard groups by task and model across every study and arm. The environment
+  identity includes library versions, CUDA, cuDNN and GPU name.
+  [Environment fields](../src/exlightnet/device.py#L28) · [Environment guard](../src/exlightnet/study_stats.py#L366)
+- B4 is blocked before completeness and pairing. All 30 Colab uncapped60
+  entries have Kaggle B1 paper references with matching task, model, seed,
+  split and data identifiers. The downstream B4 lookup and pairing code uses
+  those keys and checks split and data equality. Bypassing the import guard
+  would allow cross-environment pairs without the requested report label.
+  [B1 reference reuse](../src/exlightnet/study_stats.py#L392) · [Pairing](../src/exlightnet/study_stats.py#L470)
+
+### Proposed rules for review
+
+1. Keep the hard mixed-campaign error and the existing device policy. Require
+   one CUDA environment per study, arm, task and model seed vector. Scope probe
+   identities by recorded environment and report each timing probe with its
+   own source and environment. Preserve the original record fingerprints and
+   receipts. Keep conflicting same-environment duplicates and ambiguous
+   planned study slots as hard errors.
+2. Use Kaggle for the B1 and B3 neural runs, and Colab for B2 and B5. Resolve
+   provenance from the verified archive and recorded environment for each
+   output row. Apply complete-block eligibility within each study. Missing
+   B1 and B2 tree runs still exclude their incomplete seed blocks from inference.
+3. Explicitly authorize B4's Kaggle B1 paper references and Colab uncapped60
+   records as the sole cross-environment neural pairing. Require the existing
+   matched seed, split and prepared-data checks. Use
+   **cross-environment (Kaggle references vs Colab uncapped60)** in the B4
+   report and show both arm environments. The paired contrast measures the
+   joint change in training recipe and execution environment. It cannot
+   isolate the effect of the epoch cap.
+4. Add a descriptive comparison of Colab B2 split-42 and B5 `lr_0.0015`
+   against Kaggle B1. Match on task, model, seed, split, data identifiers and
+   full config. For each matched checkpoint, list exact agreement or divergence
+   in saved predictions and macro-F1 separately. Report unmatched entries
+   explicitly. Use no hypothesis tests for this comparison.
+
+Review is pending. The attachment was read from Downloads so it stays outside
+the existing aggregation command's ZIP glob. The target of 444 verified runs
+requires an approved amendment and a fresh aggregation after archiving the
+previous outputs. Combined aggregation, the descriptive comparison, training,
+benchmarking and B6 are **NOT RUN**.
+
+## 2026-11-23 — PA-20261123-1, gpu_v2 execution environments
+
+The user approved this outcome-independent amendment before inspection of
+Colab B2, B4 or B5 statistics. The preceding proposal records the rationale.
+
+1. Require one `environment_id` per inferential vector
+   `(study, arm, task, model)`. Stop when a vector contains more than one
+   environment. Studies and arms may use different environments. The
+   existing one-device rule still applies per `(task, model)`.
+2. B3 requires B1 references from the same environment. Stop on a mismatch.
+   B4 may reuse binary B1 paper references across environments. For such B4
+   results, the summaries, paired tests and paired flow bootstrap rows carry
+   `cross_environment=True` and both arm environment IDs. Put
+   **cross-environment (Kaggle B1 references vs Colab uncapped60)** next to
+   every B4 verdict in the report.
+3. Probe and determinism are infrastructure studies. Exclude them from
+   eligibility and inference. Scope their identities, tables and determinism
+   repeat pairs by recorded environment. Stop on a conflicting duplicate
+   within one environment or any duplicate in an inferential study.
+4. Resolve environment metadata by `(study, arm, task, model)`. Check the
+   grouping used in correlations, learning-rate selection and summaries.
+   Preserve the device-equivalence calculation and its B1 split-42,
+   seed-42–46 filter.
+5. Preserve existing statistical methods, thresholds, seeds and stopping
+   rules. Preserve raw records and keep campaigns separate.
+
+The gates run in order. Gate (a) verifies the amendment with synthetic
+records. Gate (b) compares every Kaggle-only statistical table and the
+report body against the previous outputs and checks the `cpu_v1` hashes.
+For byte-identical single-environment output, the infrastructure table
+schema uses the campaign manifest's single environment. Multi-environment
+outputs add explicit `environment_id` columns to those tables.
+Gate (c) records both results and the changed code hashes here before any
+real Colab analysis. After the gates, archive the previous outputs and use
+verified saved records and predictions for the combined aggregation and the
+descriptive B2 and B5 comparison. Training and B6 remain **NOT RUN**.
+
+### PA-20261123-1 verification before Colab aggregation
+
+- Gate (a) passed with exit code 0. The no-training pytest run on
+  `tests/test_study_stats.py`, `tests/test_stats.py` and
+  `tests/test_predata_protocol.py` reported 84 passed in 8.13 s.
+  The synthetic ZIPs cover cross-study environment labels, same-vector
+  rejection, probe and determinism isolation, duplicate rejection, B3 and
+  B4 reference reuse, and the descriptive comparison.
+- Gate (b) passed with exit code 0 for the Kaggle-only aggregator and the
+  comparison. The regenerated output verified 333 unique runs. All 11
+  CSVs and the entire Markdown report match the previous bytes. The
+  `cpu_v1` inventory covers 806 files. Its before and after SHA-256 is
+  `6369242b08ea89b9cfb83da8a7b6ddf9397539dca849a52c5b45a4916cea4610`.
+  Every individual file hash matches.
+
+| Compared file | SHA-256 of previous and regenerated bytes | Result |
+| --- | --- | --- |
+| `completeness.csv` | `bf7fa50ddd43daeb347e81e828791f0f840994b531e302305c968d36459fa2eb` | identical |
+| `correlations.csv` | `b8113a3dcdee55cd6e18ba373ff01ca207c909263d9d8621a3749dd4072f2815` | identical |
+| `determinism.csv` | `76f593e098100d16d3843df30e32a004ea71265533a10c60353dbdf8f286b90a` | identical |
+| `device_equivalence.csv` | `0ccb3c1a976f603c90ff98bad94d52c64bd827cc125b93c4c4acb55f0d4c66e8` | identical |
+| `early_stopping_hypothesis.csv` | `f6a4af36213e7aab518b01f94e7ecc4a3a3678643c7e667bf14e54d004ae5972` | identical |
+| `lr_selection.csv` | `8e9055164ca997186766a25617539874f83dfff575eaa195c651ea365bb616ee` | identical |
+| `paired_flow_bootstrap.csv` | `996b023290ff69cbc438842a01a1502a32ff5f1d52b1c357b30e0ff02a1586ed` | identical |
+| `paired_tests.csv` | `5e8fabdef0aae9735d96e66796eaf5f3be13922914e941b573f58a683fe275a8` | identical |
+| `per_run.csv` | `acf7f57d8320c89615f24320b9bc0790c643ce9ad793f33476e7ea917b951732` | identical |
+| `probe.csv` | `a3e1babc6c89b7de5362cd41bc3498d298c762f28f3e0ec595f8ea79973bb07d` | identical |
+| `REPORT_stats_v2.md` | `534b92d9b4598c6cf40c598cd570c35050c4846d5fd8de8e8cb6618faa033dc4` | identical |
+| `summaries.csv` | `89fb392c78a2e6a86dec4144dcfeaf0c0aec4b37b8ea62d75846ce4e2dadf420` | identical |
+
+The row provenance check covers B1-only correlations, B5 validation means
+grouped by arm, and summaries grouped by study, arm, task, model, checkpoint
+and environment. The B3 hypothesis takes provenance from its paper
+reference. Device-equivalence retains its existing B1 filter and calculation.
+
+Gate (c) records the changed code hashes below. The Colab bundle had yet to
+be staged or used for statistics when this verification was recorded.
+
+```text
+fefbdea47e52a9369ddb7923b9bbfe0f39516b6f0dc5f68d2629359fde607f3d  src/exlightnet/study_stats.py
+a7a91b46de24e19daa93eb9491eb9ce579a6e1148090f759e3f758859da68de6  tests/test_study_stats.py
+```
+
+### 2026-11-23 — Combined gpu_v2 aggregation under PA-20261123-1
+
+Archived 13 previous outputs under
+`archive/gpu_v2_before_aggregation/20261123_PA-20261123-1/` and verified their
+`PREVIOUS_SHA256SUMS`. Then copied the verified 12,837,923-byte Colab ZIP from
+Downloads to `imports/gpu_v2/gpu_v2_colab.zip`. The source and copy both have
+SHA-256 `888fb932dd60c5bec22a681b73de91ffd04672ff6b5f3de4a4e167addc9891ec`.
+
+```bash
+env OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1 \
+  .venv/bin/python -B scripts/aggregate_gpu_v2.py \
+  imports/gpu_v2/gpu_v2_part1.zip.zip imports/gpu_v2/gpu_v2_colab.zip \
+  --prepared-dir prepared --output artifacts/stats_gpu_v2 \
+  --report REPORT_stats_v2.md --reference-cpu results/full/results.json
+```
+
+The combined command exited 0. The manifest records 444 complete, unique runs
+from two CUDA environments, comprising 333 from Kaggle and 111 from Colab.
+It records 2,926 verified artifact hashes and zero incomplete input records.
+All 12 manifest output hashes and all 820 input and `cpu_v1` hashes matched.
+All 18 Markdown tables passed the column-count check.
+[Manifest](../artifacts/stats_gpu_v2/aggregation_manifest.json) ·
+[Run log](../archive/gpu_v2_before_aggregation/20261123_PA-20261123-1/aggregation.log)
+
+| Study | Completed new runs | Eligible seed blocks | Reused B1 references | Reason for exclusion |
+| --- | --- | --- | --- | --- |
+| B1 | 210/330 | 0/30 | — | All 30 seeds lack RF and XGBoost for both tasks (120 runs). |
+| B2 | 50/90 | 0/10 | — | All 10 Colab split blocks lack RF and XGBoost for both tasks (40 runs). |
+| B3 | 120/120 | 15/15 | 60/60 | None. Both arms and B1 references use the Kaggle environment. |
+| B4 | 30/30 | 15/15 | 30/30 | None. B4 requires its two binary B1 model references per seed. |
+| B5 | 30/30 | 10/10 | — | None. All three learning-rate arms use Colab. |
+
+Incomplete B1 and B2 blocks are excluded from paired tests and paired flow
+bootstrap. The B1 correlations and CPU/GPU device-equivalence tables have no
+eligible observations. Both timing probes and the two Kaggle determinism
+repeats are counted as verified records and appear outside eligibility and
+inference. Colab supplied a probe and no determinism repeats.
+[Completeness table](../artifacts/stats_gpu_v2/completeness.csv)
+
+The B4 summary, paired test and flow bootstrap tables each have eight rows
+marked `cross_environment=True` with the Kaggle paper and Colab uncapped60
+environment IDs. The report places **cross-environment (Kaggle B1 references
+vs Colab uncapped60)** next to all eight B4 verdicts. B1 tree gaps do not
+affect B4's complete blocks.
+[Statistics report](../REPORT_stats_v2.md#b4-binary-capped-versus-uncapped)
+
+The descriptive note was checked independently against the saved prediction
+arrays and metric values for all 15 identical-config pairs. In B2 at split
+and train seed 42, binary and multiclass ExLightNet and MLP agree exactly in
+predictions and macro-F1 at both checkpoints. Multiclass standard_conv
+differs in both measures at both checkpoints. In B5 `lr_0.0015`, each of the
+ten Std-CNN seeds 42–51 differs in both measures at both checkpoints. The note
+uses no hypothesis test. Training, new inference, benchmarking and B6 are
+**NOT RUN**.
+[Descriptive comparison](../REPORT_stats_v2.md#descriptive-cross-environment-repeats)

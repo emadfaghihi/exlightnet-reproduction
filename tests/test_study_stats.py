@@ -331,11 +331,12 @@ def test_fixed30_completed_record_cannot_claim_early_stop(tmp_path):
 
 
 def test_corrupt_incremental_duplicate_artifact_not_hidden_by_good_copy(tmp_path):
-    good,d=archive(tmp_path,[evidence()],"good.zip")
+    probe=evidence(study="probe",arm="probe")
+    good,d=archive(tmp_path,[probe],"good.zip")
     def corrupt(members):
         path=next(p for p in members if p.endswith("predictions.npz"))
         members[path]=b"changed"
-    bad,_=archive(tmp_path,[evidence()],"bad.zip",transform=corrupt)
+    bad,_=archive(tmp_path,[probe],"bad.zip",transform=corrupt)
     with pytest.raises(ValueError,match="artifact"):
         aggregate(tmp_path,[good,bad],d)
 
@@ -550,3 +551,120 @@ def test_cuda_record_requires_actual_gpu_identity(tmp_path):
     z,d=archive(tmp_path,[r])
     with pytest.raises(ValueError,match="environment"):
         aggregate(tmp_path,[z],d)
+
+
+def test_environment_labels_follow_study_and_arm_vectors(tmp_path):
+    b1=seed_block("B1",42)
+    b2=seed_block("B2",42)
+    for record in b2:
+        if record["device"]=="cuda":
+            record["libraries"]["torch"]="environment B"
+    b5=[evidence(study="B5",model="std_cnn",arm=f"lr_{lr:g}",lr=lr) for lr in (.0003,.001,.0015)]
+    for record in b5:
+        record["libraries"]["torch"]=record["arm"]
+    z,d=archive(tmp_path,b1+b2+b5)
+    paths=aggregate(tmp_path,[z],d)
+
+    runs=pd.read_csv(paths["per_run"]).query('device == "cuda"')
+    assert set(runs.query('study == "B1"').torch)=={"fixture"}
+    assert set(runs.query('study == "B2"').torch)=={"environment B"}
+    correlations=pd.read_csv(paths["correlations"]).query('device == "cuda"')
+    assert {json.loads(value)["torch"] for value in correlations.execution_environment}=={"fixture"}
+    selection=pd.read_csv(paths["lr_selection"])
+    assert {row.arm:json.loads(row.execution_environment)["torch"] for row in selection.itertuples()}=={
+        "lr_0.0003":"lr_0.0003","lr_0.001":"lr_0.001","lr_0.0015":"lr_0.0015"}
+    lookup=runs.set_index(["study","arm","task","model","checkpoint"]).environment_id
+    for row in pd.read_csv(paths["summaries"]).query('device == "cuda"').itertuples():
+        assert row.environment_id==lookup.loc[(row.study,row.arm,row.task,row.model,row.checkpoint)]
+
+
+def test_probe_and_determinism_are_separated_by_execution_environment(tmp_path):
+    records=[]
+    for environment,seconds,repeat_wrong in (("fixture",.125,1),("environment B",.25,2)):
+        rows=[evidence(study="probe",arm="probe"),evidence(study="determinism",arm="repeat1"),
+              evidence(study="determinism",arm="repeat2",wrong=repeat_wrong)]
+        for row in rows:
+            row["libraries"]["torch"]=environment
+        for epoch in rows[0]["history"]:
+            epoch["seconds"]=seconds
+        records.extend(rows)
+    z,d=archive(tmp_path,records)
+    paths=aggregate(tmp_path,[z],d)
+    manifest=json.loads(Path(paths["manifest"]).read_text())
+    assert manifest["n_unique_runs"]==6
+    environments={metadata["torch"]:key for key,metadata in manifest["execution_environments"].items()}
+    probe=pd.read_csv(paths["probe"])
+    assert probe.groupby("environment_id").size().to_dict()=={key:5 for key in environments.values()}
+    assert set(probe.query('study == "B1"').set_index("environment_id").seconds_per_epoch.items())=={
+        (environments["fixture"],.125),(environments["environment B"],.25)}
+    det=pd.read_csv(paths["determinism"])
+    assert det.groupby("environment_id").max_abs_logit_difference.unique().map(list).to_dict()=={
+        environments["fixture"]:[0],environments["environment B"]:[1]}
+    runs=pd.read_csv(paths["per_run"])
+    assert not runs.inference_eligible.any()
+    assert pd.read_csv(paths["completeness"]).n_eligible.sum()==0
+    assert pd.read_csv(paths["paired_tests"]).empty
+    assert pd.read_csv(paths["summaries"]).query('study == "probe"').n.eq(1).all()
+
+
+def test_conflicting_probe_in_same_execution_environment_stops(tmp_path):
+    first,d=archive(tmp_path,[evidence(study="probe",arm="probe")],"first.zip")
+    other,_=archive(tmp_path,[evidence(study="probe",arm="probe",wrong=3)],"other.zip")
+    with pytest.raises(ValueError,match="Conflicting duplicate"):
+        aggregate(tmp_path,[first,other],d)
+
+
+def test_even_identical_inferential_records_in_two_archives_stop(tmp_path):
+    first,d=archive(tmp_path,[evidence()],"first.zip")
+    other,_=archive(tmp_path,[evidence()],"other.zip")
+    with pytest.raises(ValueError,match="Duplicate completed inferential identity"):
+        aggregate(tmp_path,[first,other],d)
+
+
+def test_b3_reuse_requires_the_b1_reference_environment(tmp_path):
+    records=seed_block("B3",42)
+    fixed=next(r for r in records if r["arm"]=="fixed30" and r["model"]=="exlightnet")
+    fixed["libraries"]["torch"]="environment B"
+    z,d=archive(tmp_path,records)
+    with pytest.raises(ValueError,match="B3.*environment"):
+        aggregate(tmp_path,[z],d)
+
+
+def test_b4_cross_environment_reuses_b1_despite_incomplete_b1_blocks(tmp_path):
+    label="cross-environment (Kaggle B1 references vs Colab uncapped60)"
+    records=[evidence(seed,model,study=study,arm=arm) for seed in (42,43)
+             for model in ("exlightnet","mlp") for study,arm in (("B4","uncapped60"),("B1","paper"))]
+    for record in records:
+        if record["study"]=="B4":
+            record["libraries"]["torch"]="environment B"
+    z,d=archive(tmp_path,records)
+    paths=aggregate(tmp_path,[z],d)
+    completeness=pd.read_csv(paths["completeness"]).query('row_type == "study"').set_index("study")
+    assert completeness.loc["B1","n_eligible"]==0
+    assert completeness.loc["B4","n_eligible"]==2
+
+    manifest=json.loads(Path(paths["manifest"]).read_text())
+    environments={metadata["torch"]:key for key,metadata in manifest["execution_environments"].items()}
+    for name in ("paired_tests","paired_flow_bootstrap","summaries"):
+        rows=pd.read_csv(paths[name]).query('study == "B4"')
+        assert not rows.empty
+        assert rows.cross_environment.all()
+        assert set(rows.paper_environment_id)=={environments["fixture"]}
+        assert set(rows.uncapped60_environment_id)=={environments["environment B"]}
+    report=Path(paths["report"]).read_text()
+    paired=pd.read_csv(paths["paired_tests"]).query('study == "B4"')
+    for verdict in set(paired.interpretation):
+        assert report.count(f"{verdict} ({label})")==sum(paired.interpretation==verdict)
+
+
+def test_cross_environment_repeat_note_compares_saved_predictions_and_f1(tmp_path):
+    records=[evidence(),evidence(study="B2"),
+             evidence(model="std_cnn",task="multiclass"),evidence(model="std_cnn",study="B5",arm="lr_0.0015",last_wrong=2)]
+    for row in records:
+        if row["study"]!="B1":
+            row["libraries"]["torch"]="environment B"
+    z,d=archive(tmp_path,records)
+    report=Path(aggregate(tmp_path,[z],d)["report"]).read_text()
+    assert "## Descriptive cross-environment repeats" in report
+    assert "| B2 | binary | exlightnet | 42 | exact / exact | exact / exact |" in report
+    assert "| B5 | multiclass | std_cnn | 42 | exact / exact | different / different |" in report
