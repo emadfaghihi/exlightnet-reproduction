@@ -629,3 +629,118 @@ ten Std-CNN seeds 42–51 differs in both measures at both checkpoints. The note
 uses no hypothesis test. Training, new inference, benchmarking and B6 are
 **NOT RUN**.
 [Descriptive comparison](../REPORT_stats_v2.md#descriptive-cross-environment-repeats)
+
+## 2026-11-23 — PA-20261123-2, local CPU tree runs for gpu_v2
+
+The user authorized this location-only extension of PA-20261118-3 before
+execution. The exception to the local smoke budget covers exactly 120 B1
+and 40 B2 RandomForest/XGBoost runs in `gpu_v2` on this machine's CPU. It
+preserves the declared plans, recipes, statistical methods, thresholds and
+eligibility rules. Neural training, training tests, benchmarking and B6
+remain **NOT RUN** for this task. The preceding Colab work was committed
+locally as `34f2089`.
+
+All 160 runs and any resume use the existing `.venv/bin/python` (Python
+3.11.2) with NumPy 1.26.4, PyTorch 2.6.0+cpu, scikit-learn
+1.6.1 and XGBoost 2.1.4. No packages will be installed or changed
+during the campaign. The runner and six supporting source files matched
+`delivery/stats_gpu_v2/hosted_source.zip` byte for byte. The existing
+`prepared/manifest.json` SHA-256 is
+`95eb221ecbd74f172d978abd58d3f5c2863ac9708288446a331b6fce980b7b35`.
+
+Both workers use `scripts/kaggle_campaign.py --prepared-dir prepared` with
+`--device cpu --only trees --campaign gpu_v2 --time-budget-hours 6 --zip-every 5`.
+The environment sets `OMP_NUM_THREADS`, `OPENBLAS_NUM_THREADS`,
+`MKL_NUM_THREADS` and `NUMEXPR_NUM_THREADS` to 1 before import. The workers
+have separate output roots and archives. The supervisor runs one worker
+at a time because about 2 GiB of RAM is available and swap is nearly full.
+
+| Study | Output directory | Runner ZIP |
+| --- | --- | --- |
+| B1 | `archive/gpu_v2_local_trees/20261123_PA-20261123-2/B1` | `archive/gpu_v2_local_trees/20261123_PA-20261123-2/B1/gpu_v2.zip` |
+| B2 | `archive/gpu_v2_local_trees/20261123_PA-20261123-2/B2` | `archive/gpu_v2_local_trees/20261123_PA-20261123-2/B2/gpu_v2.zip` |
+
+The CLI plan check must complete without fitting any model. The detached
+supervisor records commands, processes, timestamps and exit codes. Recovery
+uses the same environment, verified local evidence and `--resume-zip` when
+restoring an archive. Completion requires both verified ZIPs before copying
+them to the import directory. Archive the previous aggregates before running
+the existing aggregator on all four bundles. Any aggregator failure requires
+a dated proposal for review.
+
+The CLI plan check exited 0 and printed 120 selected B1 trees and 40 selected
+B2 trees. In the dry process the budget gate blocked every iteration and
+both fitting functions had fail-fast guards. Both temporary ZIPs contained
+zero records. The actual output and ZIP paths are recorded with the CLI log.
+[Dry check](../archive/gpu_v2_local_trees/20261123_PA-20261123-2/dry_check.log)
+
+The isolated command namespace closed the initial detached launch before
+the supervisor created state, locks or study outputs. Inspection confirmed
+that neither worker had started. The same supervised plan is launched in
+the local user's process namespace for persistence across tool calls.
+
+### 2026-11-23 — PA-20261123-2 execution and verification
+
+The detached supervisor completed both studies sequentially on the local
+x86-64 Intel Core i5-8500. Each worker exited 0 with zero stopped runs. The
+runner recorded 2,575.12 s for B1 and 862.90 s for B2. Each ZIP passed CRC,
+plan identity, library version, prepared-data and artifact digest checks.
+All 160 records have status `complete` and device `cpu`. Each tree's best
+and last entries share its saved predictions and single complete evaluation
+receipt. The source ZIPs were retained and their import copies matched
+byte for byte.
+[Supervisor state](../archive/gpu_v2_local_trees/20261123_PA-20261123-2/state.json) ·
+[ZIP verification](../archive/gpu_v2_local_trees/20261123_PA-20261123-2/verified_imports.json)
+
+| Import ZIP | Records | SHA-256 |
+| --- | ---: | --- |
+| `gpu_v2_trees_b1.zip` | 120 | `3487c87246d43171cf74b398c4b9a3805df2a4734c1e9dbcab6b5c4b25e99259` |
+| `gpu_v2_trees_b2.zip` | 40 | `68fad246b067ce6d69af105d16d405eaf0a11caeb8589426c9277506d722bb8b` |
+
+Archived the 13 outputs from the 444-run aggregation with their SHA-256
+values. The four-bundle aggregator exited 0 and verified 604 unique runs,
+zero incomplete records and 3,406 artifact hashes. All 12 output hashes,
+824 input and `cpu_v1` hashes, and all 13 archived output hashes matched.
+All 24 report tables passed their Markdown column checks. Aggregation used
+the committed code from `34f2089` and the authorized device label
+`mixed-device within gpu_v2; trees are device-independent`.
+[Archive checksums](../archive/gpu_v2_before_aggregation/20261123_PA-20261123-2/PREVIOUS_SHA256SUMS) ·
+[Aggregation log](../archive/gpu_v2_before_aggregation/20261123_PA-20261123-2/aggregation.log) ·
+[Manifest](../artifacts/stats_gpu_v2/aggregation_manifest.json)
+
+| Study | Completed new runs | Eligible blocks | Reused B1 references |
+| --- | ---: | ---: | ---: |
+| B1 | 330/330 | 30/30 | — |
+| B2 | 90/90 | 10/10 | — |
+| B3 | 120/120 | 15/15 | 60/60 |
+| B4 | 30/30 | 15/15 | 30/30 |
+| B5 | 30/30 | 10/10 | — |
+
+Both B1 and B2 now compare ExLightNet with MLP, Random Forest and XGBoost
+for binary classification. The multiclass comparisons use MLP,
+standard_conv, Random Forest and XGBoost in both studies. B1 also includes
+no_se and Std-CNN. Both checkpoints are reported. B1 produced 18 paired
+tests and 18 paired flow bootstrap rows over 30 training seeds. B2 produced
+14 of each over 10 matched split seeds. XGBoost has zero seed variance in
+both B1 tasks.
+[Paired tests](../artifacts/stats_gpu_v2/paired_tests.csv) ·
+[Paired flow bootstrap](../artifacts/stats_gpu_v2/paired_flow_bootstrap.csv)
+
+Seven B1 epoch-versus-macro-F1 Spearman correlations are defined. They cover
+ExLightNet and MLP in both tasks, and multiclass no_se, standard_conv and
+Std-CNN. Random Forest and XGBoost have no epoch counts, leaving four
+correlation rows undefined. Six binary ExLightNet bootstrap draws had
+constant epoch counts and were omitted, leaving 1,994 of 2,000. B2 has no
+declared correlation analysis. No study seed blocks were excluded. The two
+probes and two determinism repeats are infrastructure and remain outside
+inference.
+[Correlations](../artifacts/stats_gpu_v2/correlations.csv)
+
+The descriptive `cpu_v1` versus `gpu_v2` view now has 11 rows on matched B1
+split-42 seeds 42–46, the five seeds available in `cpu_v1`. It shows seven
+CPU/CUDA neural rows and four CPU/CPU tree rows with differences and 95%
+confidence intervals. B4 retains its cross-environment label. The only
+training performed was the 160 authorized tree runs. Training tests,
+benchmarking and B6 are **NOT RUN**.
+[Device view](../artifacts/stats_gpu_v2/device_equivalence.csv) ·
+[Statistics report](../REPORT_stats_v2.md)
