@@ -1,0 +1,8 @@
+{
+  "fingerprint": "ca5364c9584721e42f13407f86027e260ecd4b91ed960a1b5c367c9c8469d17a:last",
+  "logits_sha256": null,
+  "metrics_sha256": "2090767fbb38b7939d051c5e3d0146d1f404718bf4ad89a4bfb916b3e75b394e",
+  "prediction_sha256": "e0a246e19a1ec3fa57138a33509dea6505868deba69d8e36a285b3e6a03fba8a",
+  "status": "complete",
+  "test_prediction_passes": 1
+}

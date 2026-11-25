@@ -9,6 +9,9 @@ import pandas as pd
 from .io import read_json
 from .metrics import summarize
 from .paper import PAPER_REPORTED
+from .publication import (execution_status, limitation_paragraphs, load_statistics,
+                          rare_class_warning, statistic_sections, stopping_hypothesis_declaration,
+                          validate_publication_text)
 
 
 def md_table(headers, rows):
@@ -21,6 +24,16 @@ def md_table(headers, rows):
             value = ", ".join(clean(v) for v in value)
         return str(value).replace("|", "\\|").replace("\n", " ")
     return "\n".join(["| " + " | ".join(headers) + " |", "| " + " | ".join(["---"] * len(headers)) + " |"] + ["| " + " | ".join(clean(v) for v in row) + " |" for row in rows])
+
+
+def _frame_rows(frame, columns):
+    def value(item):
+        if pd.isna(item):
+            return None
+        if isinstance(item, (float, np.floating)):
+            return f"{item:.8g}"
+        return item
+    return [[value(item) for item in row] for row in frame[columns].itertuples(index=False, name=None)]
 
 
 def key_values(mapping, prefix=""):
@@ -115,28 +128,62 @@ def make_result_plots(root, mode):
             plt.close(fig)
 
 
-def build_report(root=Path(".")):
+def build_report(root=Path("."), output=None, statistics_dir=None, evidence_dir=None):
     root = Path(root)
+    statistics = load_statistics(root, statistics_dir)
+    warning = rare_class_warning(root, tables=statistics)
+    verification = Path(evidence_dir) if evidence_dir is not None else root / "artifacts/stats_cpu_v1/verification"
     lines = ["# ExLightNet reproduction report", "", f"Generated from saved evidence: {datetime.now(ZoneInfo('Asia/Tehran')).isoformat()}", "",
              "The supplied 31-page PDF was fully extracted with `pdftotext -layout` and read before implementation. The supplied brief is authoritative where it conflicts with the paper. All measured results below come from code. Quoted reference metrics appear only in `src/exlightnet/paper.py::PAPER_REPORTED` and comparison tables.", "",
              "## Execution status", ""]
     if not (root / "results/full/manifest.json").exists():
         lines += ["Only the reduced fast experiment has been executed. Full five-seed training, multi-seed ablation evidence, the full-size SHAP analysis and the optional leakage PROXY remain unexecuted; no full-recipe performance is claimed.", ""]
-    if (root / "results/pytest.xml").exists():
+    pytest_path = verification / "pytest.xml"
+    historical_pytest = not pytest_path.exists()
+    if historical_pytest:
+        pytest_path = root / "results/pytest.xml"
+    if pytest_path.exists():
         import xml.etree.ElementTree as ET
-        suites = ET.parse(root / "results/pytest.xml").getroot().iter("testsuite")
+        suites = ET.parse(pytest_path).getroot().iter("testsuite")
         totals = {key: 0 for key in ("tests", "failures", "errors", "skipped")}
         for suite in suites:
             for key in totals:
                 totals[key] += int(suite.get(key, 0))
-        lines += ["Pytest verification from results/pytest.xml. Third-party SHAP/Matplotlib deprecation warnings are retained in results/pytest.log.", "",
+        lines += [f"{'Historical p' if historical_pytest else 'P'}ytest verification from {pytest_path.relative_to(root) if pytest_path.is_relative_to(root) else pytest_path}. Warning logs remain beside their original verification records.", "",
                   md_table(["Tests", "Failures", "Errors", "Skipped"], [[totals[k] for k in ("tests", "failures", "errors", "skipped")]]), ""]
     history = root / "results/notebook_execution_history.json"
     if history.exists():
-        lines += ["Notebook verification history (wall-clock time includes initial live training; later invocations may reuse caches):", "",
+        lines += ["Historical notebook verification (wall-clock time may include the original training; this is preserved history):", "",
                   md_table(["Mode", "Seconds", "Executed cells", "Error outputs", "Caches present at start"],
                            [[r["mode"], f"{r['seconds']:.3f}", r["executed_code_cells"], r["error_outputs"], r.get("cached_results_present_at_start", "initial live run")] for r in read_json(history)]), ""]
+    for record_path in sorted(verification.rglob("notebook_execution.json")) if verification.exists() else []:
+        record = read_json(record_path)
+        lines += ["Current notebook verification from a new evidence path:", "", md_table(["Source", "Mode", "Seconds", "Executed cells", "Error outputs"], [[str(record_path.relative_to(root)) if record_path.is_relative_to(root) else str(record_path), record.get("mode"), record.get("seconds"), record.get("executed_code_cells"), record.get("error_outputs")]]), ""]
+    if (root / "results/full/manifest.json").exists():
+        status = execution_status(root)
+        lines += ["Effective current status (raw historical status is preserved):", "", md_table(["Field", "Value"], key_values(status)), ""]
+    if (verification / "gates.json").exists():
+        checks = read_json(verification / "gates.json")
+        gate_path = verification / "gates.json"
+        gate_source = gate_path.relative_to(root) if gate_path.is_relative_to(root) else gate_path
+        lines += ["### Cached-statistics and hosted-runner verification", "",
+                  "Source: " + str(gate_source) + ". These gates verify cached analysis, code and the local CPU smoke; CUDA studies remain NOT RUN.", "",
+                  md_table(["Stage", "Gate", "Status", "Evidence"], [[r[k] for k in ("stage", "gate", "status", "evidence")] for r in checks["gates"]]), ""]
+        synthetic, smoke = checks["synthetic_unit_tests"], checks["real_smoke"]
+        lines += ["Synthetic unit verification is separate from the real-data smoke; earlier focused runs are preserved in their own records. Unit-test seconds are pytest case wall time; smoke seconds are supervisor end-to-end time.", "",
+                  md_table(["Scope", "Cases/runs", "Fits", "Epochs", "Seconds"],
+                           [["Synthetic tests in the final full suite", synthetic["cases"], synthetic["fits"], synthetic["epochs"], synthetic["pytest_seconds"]],
+                            ["Real-data CPU smoke with ZIP restore and cache restart", smoke["runs"], smoke["runs"], smoke["epochs"], smoke["seconds"]]]), ""]
+    declaration = stopping_hypothesis_declaration(root)
+    if declaration is not None:
+        lines += ['### Effective stopping-hypothesis declaration', '',
+                  declaration['id'] + ' (' + declaration['date'] + '). Original declaration: ' + declaration['original_source'] +
+                  '; effective dated amendment: ' + declaration['effective_source'] + '.', '',
+                  *[rule + '\n' for rule in declaration['rules']],
+                  'Stage B execution/completeness and both endpoints are reported separately in ' + declaration['results_source'] +
+                  '; a declared rule is not execution evidence.', '']
     for mode in ("fast", "full"):
+        lines += ["## Fast demonstration (historical)" if mode == "fast" else "## Full CPU reproduction", ""]
         directory = root / "results" / mode
         if not (directory / "manifest.json").exists() or read_json(directory / "manifest.json").get("status") == "blocked":
             lines += [f"**{mode}: not executed to completion.** No missing results or seed standard deviations are filled in.", ""]
@@ -166,7 +213,7 @@ def build_report(root=Path(".")):
         rows = read_json(directory / "results.json")
         table = paper_comparison(rows)
         lines += ["### Measured macro-F1 and quoted paper comparison", "",
-                  "Standard deviation is the sample SD (ddof=1); a single seed has no estimated SD. Fast mode is a demonstration with reduced training and SHAP, not a five-seed reproduction. Seed 42 is always shown separately; no best seed is selected.", "",
+                  ("Standard deviation is the sample SD (ddof=1); a single seed has no estimated SD. This cached demonstration uses reduced training and SHAP." if mode == "fast" else "n=5, indicative only. Standard deviation is the sample SD (ddof=1). Seed 42 is always shown separately; no best seed is selected."), "", warning, "",
                   md_table(["Task", "Model", "Seeds", "Our mean", "Our SD", "Our seed 42", "Paper (quoted)"],
                            [[r.task, r.model, r.n_seeds, f"{r.ours_mean_macro_f1:.6f}", None if pd.isna(r.ours_sample_std) else f"{r.ours_sample_std:.6f}",
                              None if pd.isna(r.ours_seed42_macro_f1) else f"{r.ours_seed42_macro_f1:.6f}", None if pd.isna(r.paper_quoted_macro_f1) else r.paper_quoted_macro_f1] for r in table.itertuples()]), "",
@@ -180,11 +227,15 @@ def build_report(root=Path(".")):
                   md_table(["Task", "Chosen", "Sweep epochs"], [[t, v["chosen"], v["sweep_max_epochs"]] for t, v in selections.items()]), "",
                   md_table(["Task", "Alpha mode", "Validation macro-F1", "Best epoch", "Selected"],
                            [[t, c["mode"], c["validation_macro_f1"], c["best_epoch"], c["mode"] == v["chosen"]] for t, v in selections.items() for c in v["candidates"]]), ""]
-        ablations = read_json(directory / "ablations.json")
-        lines += ["### Ablations", "",
-                  md_table(["Variant", "Paired seeds", "Delta macro-F1", "Paired delta SD", "Full-model SD", "Exceeds full SD", "Exceeds paired SD"],
-                           [[r[k] for k in ("variant", "paired_seeds", "delta_macro_f1", "paired_delta_std", "full_seed_std", "exceeds_full_seed_std", "exceeds_paired_seed_std")] for r in ablations]), "",
-                  "Differences are compared with both full-model seed SD and paired difference SD when multiple seeds exist. This is descriptive variation, not a statistical significance claim. Full mode uses five seeds; fast mode uses one and cannot establish whether a difference exceeds seed variation.", ""]
+        lines += ["### Paired ablations", "", warning, ""]
+        if mode == "full" and "paired_tests" in statistics:
+            from .baselines import ABLATIONS
+            paired = statistics["paired_tests"]
+            selected = paired[(paired.task == "multiclass") & paired.model.isin(ABLATIONS)]
+            columns = ["reference", "model", "n_pairs", "sample_label", "mean_difference", "difference_sd", "ci_low", "ci_high", "p_value", "cohens_dz", "p_holm", "interpretation"]
+            lines += ["n=5, indicative only. Source: artifacts/stats_cpu_v1/paired_tests.csv. Differences are ExLightNet minus the variant. Holm correction uses the full task family, including baselines and W8.", "", md_table(columns, _frame_rows(selected, columns)), ""]
+        else:
+            lines += ["NOT RUN: multi-seed paired ablation statistics are unavailable for this evidence scope.", ""]
         edir = directory / "explain/explanations.json"
         if edir.exists():
             explanation = read_json(edir)
@@ -201,7 +252,7 @@ def build_report(root=Path(".")):
                       md_table(["Example true class", "Rank", "Feature", "Signed logit contribution", "z-value"], [[r["true_class"], i + 1, c["feature"], c["signed_logit_phi"], c["z_value"]] for r in explanation["local_examples"] for i, c in enumerate(r["top5"])]), "",
                       "Attributions explain logits; deletion measures the probability of the original predicted class. Additivity residuals are measured without correction. Deletion curves need not be monotone; neither causality nor guaranteed faithfulness is assumed. W8 uses identical background/test examples and GradientExplainer randomness for a controlled ranking probe.", ""]
             if explanation["fp32"]["method"] == "GradientExplainer":
-                lines += ["DeepExplainer failed its additivity check and the prescribed GradientExplainer fallback was used. The residuals above show that these reduced-sample attributions do not establish exact additive efficiency; treat the fast explanation figures as approximate diagnostics.", ""]
+                lines += ["DeepExplainer failed its additivity check and the prescribed GradientExplainer fallback was used. The residuals above show that these reduced-sample attributions do not establish exact additive efficiency; treat these explanation figures as approximate diagnostics.", ""]
         environment = read_json(directory / "environment.json")
         lines += ["### Hardware and runtime", "", md_table(["Field", "Value"], key_values(environment)), "",
                   "Latency uses one library thread, batch one, 100 warmups and 1000 timed inferences on training examples. Mean, median, p95 and peak RSS are saved per run. Inline measurements include preceding training in their process-lifetime RSS; isolated benchmark-only measurements include preceding benchmarks, with no training in that process. Neither is incremental model memory. No multi-core throughput extrapolation is reported. Raspberry Pi measurements require running `scripts/bench_pi.py` on the device; this host is not a Pi.", ""]
@@ -237,6 +288,44 @@ def build_report(root=Path(".")):
                       "Seed workers overlap in wall time, so their elapsed times must not be summed as end-to-end runtime. Aggregate-only publication reuses final probabilities and test receipts.", ""]
         if manifest["failures"]:
             lines += ["### Stopped branches", "", md_table(["Branch", "Type", "Reason"], [[r["branch"], r["error_type"], r["reason"]] for r in manifest["failures"]]), ""]
+    lines += ["## Cached CPU statistics — n=5, indicative only", ""]
+    if statistics:
+        for section in statistic_sections(root, statistics):
+            columns = section["frame"].columns.tolist()
+            lines += ["### " + section["title"], "", section["description"], "", warning, "", "Source: " + section["source"], "", md_table(columns, _frame_rows(section["frame"], columns)), ""]
+    else:
+        lines += ["NOT RUN: generated cached CPU statistics are unavailable. No statistics are fabricated.", ""]
+    from .final_presentation import FINAL_ANALYSIS_PATH, load_final_analysis
+    final_analysis = load_final_analysis(root)
+    if final_analysis is not None:
+        final = final_analysis['manifest']
+        attribution = final['attribution']
+        lines += ["## Stratified SHAP — final analysis (2026-11-18)", "",
+                  final['label'] + '. No model, epoch, threshold or recipe was selected with this analysis. Original explanation files remain unchanged.', "",
+                  "Source: " + str(FINAL_ANALYSIS_PATH / 'analysis.json'), "",
+                  "Primary feature importance is mean absolute attribution to each true class’s own logit, conditional on that true class. The primary global ranking averages class vectors equally. The auxiliary all-output global ranking uses the earlier output-channel averaging definition with equal true-class weights; this separates output-target changes from class reweighting.", "",
+                  md_table(["Test sample size", "Training background size", "Method", "Gradient samples", "Max abs. additivity residual", "Mean abs. residual", "Fallback reason"],
+                           [[final['sample_size'], final['background_size'], attribution['method'], attribution.get('nsamples_gradient'), attribution.get('additivity_max_abs'), attribution.get('additivity_mean_abs'), attribution.get('fallback_reason')]]), "",
+                  f"Additivity residuals summarize {final['sample_size']} flows by {len(final['class_names'])} output logits. Separate output-logit summaries were not retained. These are approximate attributions, not exact SHAP.", '',
+                  'Recorded warnings: ' + '; '.join(attribution.get('warnings', [])), '',
+                  "Sampling and true-class support (all available flows are retained below the declared per-class cap):", "",
+                  md_table(list(final['class_summary'][0]), [[row[key] for key in final['class_summary'][0]] for row in final['class_summary']]), ""]
+        for name, title in (('earlier_random300_class_composition', 'Class composition of the earlier random sample, excluding its extra local examples'),
+                            ('per_class_top10', 'Per-class top-ten rankings for own-class logits'),
+                            ('balanced_global_ranking', 'Equal-class global ranking for own-class logits'),
+                            ('balanced_global_all_outputs_ranking', 'Equal-class auxiliary global ranking over all output logits'),
+                            ('early_deletion_k10', 'Per-class early deletion and random-order comparison')):
+            frame = final_analysis['tables'][name]
+            columns = frame.columns.tolist()
+            lines += ["### " + title, "", "Source: " + str(FINAL_ANALYSIS_PATH / (name + '.csv')), "", md_table(columns, _frame_rows(frame, columns)), ""]
+        lines += ["Deletion uses the SHAP order for each flow’s fixed original predicted-class logit and follows that class’s probability, grouped by true class. The zero-removal probability is reused from the final cache. Random-minus-SHAP at the declared early-removal point is a descriptive paired-flow contrast, not a significance test. Tiny supports, approximate additivity and distribution-shifting zero masks limit interpretation; curves need not be monotone and no causal or selection claim follows.", "",
+                  "Full curves and random-order replicates: " + str(FINAL_ANALYSIS_PATH / 'deletion_curves.csv') + ' and ' + str(FINAL_ANALYSIS_PATH / 'deletion_replicates.npz') + '.', "",
+                  f"![Balanced global final-analysis ranking]({FINAL_ANALYSIS_PATH / 'balanced_global_ranking.png'})", "",
+                  f"![Per-class final-analysis rankings]({FINAL_ANALYSIS_PATH / 'per_class_top10.png'})", "",
+                  f"![Per-class final-analysis deletion curves]({FINAL_ANALYSIS_PATH / 'deletion_panels.png'})", ""]
+    lines += ["## Limitations", ""]
+    for paragraph in limitation_paragraphs(root, tables=statistics):
+        lines += [paragraph, ""]
     lines += ["## Implementation and assumptions", "",
               "Implemented: real-data loading and hard gates; fixed class-stratified partition; train-fitted preprocessing/MI; exact ExLightNet; four alpha alternatives and validation-only sweep; shared deterministic training; five external baselines; metrics and evaluation receipts; five architectural/training/feature ablations; per-channel W8 exports and float evaluation; single-thread timing; standalone NumPy inference; SHAP with measured fallback/additivity/deletion/local/stability checks; notebook generation and evidence-based reporting. Full-mode code defaults to five seeds (42–46) for both tasks and all ablations. Optional class-clustering leakage proxy is implemented behind `--leakage-proxy`; it is never labelled campaign-disjoint.", "",
               "Not implemented: optional knowledge distillation, true INT8 arithmetic/ONNX Runtime, packet capture/Zeek extraction, or multi-process throughput measurement. Full-mode execution status above is separate from implementation status. No Pi hardware was available.", "",
@@ -248,8 +337,12 @@ def build_report(root=Path(".")):
               "## Paper inconsistencies and limits", "",
               "The literal per-class sampler formula conflicts with the per-flow repetition narrative; the brief's per-sample interpretation is used. The sampler-disabled paper ablation does not show an accuracy gain from sampling. Figure 3 stage counts do not sum to its stated total. The Std-CNN descriptions conflict on widths and parameter counts. The same-width standard-convolution ablation count is reported from our graph, not adjusted to match the paper. One-hot candidate accounting is consistent (94 - 1 constant = 93). The prominent SHAP rate/header features occur in the lower half of the MI ranking: marginal binary MI and model-specific multi-class attribution answer different questions, and the actual overlap/ranks are reported rather than forced.", "",
               f"The paper's multiclass headline is its best of three seeds; its quoted three-seed mean/SD is {PAPER_REPORTED['exlightnet_multiclass_three_seed']['mean_macro_f1']} +/- {PAPER_REPORTED['exlightnet_multiclass_three_seed']['std_macro_f1']}. Our summaries use all requested seeds and never select a best seed. Some paper precision/recall columns track weighted values/accuracy; our precision/recall are explicitly macro-averaged as requested. SHAP efficiency is classwise in logit space, not a sum across class outputs. Weight-only quantisation does not establish integer-compute acceleration. The paper's four-core Pi throughput is an extrapolation, and its cache explanation confuses instruction/data caches; neither assertion is reproduced as measured evidence here.", "",
-              "The flat corpus has no campaign/session IDs. Random flow splitting can put related flows in multiple partitions and optimistically bias metrics and relative rankings. A class-clustering PROXY cannot establish campaign independence. Rare-class supports (four FIN scans, five SSH brute-force examples in test) impose substantial uncertainty; five training seeds do not estimate dataset/campaign variability. No clinical, encrypted-traffic, adversarial or cross-dataset generalisation claim follows from these runs.", "",
-              "## Reproduction commands", "", "```bash", "python3 -m venv .venv", "source .venv/bin/activate", "python -m pip install -r requirements.txt", "python -m pip install --no-deps -e .", "pytest -q", "python -m exlightnet.run_all --mode fast", "python -m exlightnet.run_all --mode full --alpha-only --skip-benchmark", "python scripts/run_parallel.py --reuse-alpha", "# The pipeline runs five single-thread workers, then exactly these final stages:", "# python -m exlightnet.run_all --mode full --aggregate-only --skip-benchmark", "# python -m exlightnet.run_all --mode full --benchmark-only", "python scripts/make_notebook.py", "EXLIGHTNET_RUN_MODE=full python scripts/execute_notebook.py", "python scripts/package_deliverables.py", "# Optional, separately, after full results: python -m exlightnet.run_all --mode full --leakage-proxy --skip-benchmark", "# On a Raspberry Pi with NumPy only:", "python scripts/bench_pi.py results/full/multiclass/exlightnet/42/model_int8.npz", "```", "",
-              "This workspace contains an empty read-only .git mount rather than a usable Git repository. Per-phase commits were unavailable; phase evidence is recorded in docs/progress.md. Network setup initially required escalation and retries; the CPU PyTorch wheel was obtained from the official S3 origin when the CDN timed out. Source data came from UCI ucimlrepo id 942. The archive excludes the dataset, virtual environment, cached feature arrays and every *.pkl tree checkpoint. Tree checkpoints remain local for benchmarking; an extracted archive displays their cached metrics but cannot re-benchmark absent model files.", "",
+              "The flat corpus has no campaign/session IDs. Random flow splitting can put related flows in multiple partitions and optimistically bias metrics and relative rankings. A class-clustering PROXY cannot establish campaign independence. The generated test-support tables quantify rare-class uncertainty; initialization/sampler seeds do not estimate dataset/campaign variability. No clinical, encrypted-traffic, adversarial or cross-dataset generalisation claim follows from these runs.", "",
+              "## Reproduction commands", "", "```bash", "python3 -m venv .venv", "source .venv/bin/activate", "python -m pip install -r requirements.txt", "python -m pip install --no-deps -e .", "pytest -q", "python -m exlightnet.run_all --mode fast", "python -m exlightnet.run_all --mode full --alpha-only --skip-benchmark", "python scripts/run_parallel.py --reuse-alpha", "# The pipeline runs five single-thread workers, then exactly these final stages:", "# python -m exlightnet.run_all --mode full --aggregate-only --skip-benchmark", "# python -m exlightnet.run_all --mode full --benchmark-only", "python scripts/make_notebook.py", "EXLIGHTNET_RUN_MODE=full python scripts/execute_notebook.py --evidence-dir artifacts/stats_cpu_v1/verification/notebook_run", "python scripts/package_deliverables.py", "# Optional, separately, after full results: python -m exlightnet.run_all --mode full --leakage-proxy --skip-benchmark", "# On a Raspberry Pi with NumPy only:", "python scripts/bench_pi.py results/full/multiclass/exlightnet/42/model_int8.npz", "```", "",
+              "Git is available in the current workspace. Early reproduction entries describe a historical unavailable Git mount; phase evidence is recorded in docs/progress.md. Network setup initially required escalation and retries; the CPU PyTorch wheel was obtained from the official S3 origin when the CDN timed out. Source data came from UCI ucimlrepo id 942. The archive excludes the dataset, virtual environment, cached feature arrays and every *.pkl tree checkpoint. Tree checkpoints remain local for benchmarking; an extracted archive displays their cached metrics but cannot re-benchmark absent model files.", "",
               "Primary implementation references: [UCI RT-IoT2022](https://archive.ics.uci.edu/dataset/942/rt-iot2022), [SHAP DeepExplainer](https://shap.readthedocs.io/en/stable/generated/shap.DeepExplainer.html), [official XGBoost CPU package](https://pypi.org/project/xgboost-cpu/2.1.4/).", ""]
-    (root / "REPORT.md").write_text("\n".join(lines))
+    text = "\n".join(lines)
+    validate_publication_text(text)
+    destination = Path(output) if output is not None else root / "REPORT.md"
+    destination.write_text(text)
+    return destination

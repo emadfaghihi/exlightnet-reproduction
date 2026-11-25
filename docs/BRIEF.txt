@@ -101,3 +101,32 @@ Known paper issues (document them, do not silently "fix"): sampler formula ambig
 
 FINAL STEP
 Run pytest and the fast notebook, then create deliverables.zip (src, tests, executed notebook, results with plots, REPORT.md, requirements.txt, README.md; no dataset). In your final message list gate results and anything you could not do.
+
+AMENDMENT 2026-11-17 — CACHED STATISTICS AND SUPPLEMENTARY CAMPAIGNS
+The user's detailed follow-up is preserved verbatim in docs/STATS_GPU_BRIEF.txt.
+For this task it supersedes the old SD-overlap reporting rule: use paired
+t-tests, t-intervals, Cohen's dz and Holm-adjusted inference with explicit
+small-sample and rare-class limitations. Preserve cpu_v1 raw evidence.
+Amendment A1 in AGENTS.md permits separately tagged FP32 CUDA accuracy studies;
+it never applies to cpu_v1 or latency/size/INT8/memory measurements. No full
+campaign or benchmark rerun is authorized in this task. Local experimental
+training is limited to the requested two-seed, two-epoch CPU smoke. Preserve
+old derived versions before report/notebook regeneration and write fresh
+verification records to new paths. The supplied brief's hard rules and its
+a-priori interpretation rules govern the supplementary runner and aggregator.
+
+AMENDMENT 2026-11-18 — PRE-DATA RULES AND FINAL STRATIFIED ANALYSIS
+The dated PA-20261118-1 through PA-20261118-6 records appended to
+docs/statistics_protocol.json preserve and supersede the relevant original
+declaration. The stopping-hypothesis primary endpoint is fixed30 LAST versus
+paper BEST-validation, with quantified paired mean/SD-ratio uncertainty and a
+secondary fixed30 BEST endpoint; never make a causal claim. B1/B2/B3 use
+seed-major order with unchanged run identities; statistical inference excludes
+incomplete matched study blocks. Neural and tree sessions can be scheduled
+separately without skipping seeds or mixing campaigns. A separate cached-model
+CPU-only stratified SHAP final analysis is authorized (25 flows per class or all
+if rarer, exact old200 training background); old explanations remain immutable.
+The hosted notebook, prepared manifest and hosted-source ZIP must be handed
+off together with checksums and explicit tested/not-tested statements. Optional
+B6 is NOT RUN if skipped. No new training, Stage B run or benchmark is authorized
+by these mandatory changes.

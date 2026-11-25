@@ -1,0 +1,1679 @@
+{
+  "recorded_at": "2026-11-17T12:19:35.513521+00:00",
+  "status": "passed",
+  "source_campaign": "cpu_v1",
+  "splits": [
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+    50,
+    51
+  ],
+  "threads_per_library": 1,
+  "manifest_path": "/home/mparsict/projects/me/exlightnet/prepared/manifest.json",
+  "manifest_sha256": "95eb221ecbd74f172d978abd58d3f5c2863ac9708288446a331b6fce980b7b35",
+  "checks": {
+    "schema_version": 1,
+    "source_campaign": "cpu_v1",
+    "alpha_source": {
+      "path": "results/full/alpha_selection.json",
+      "sha256": "98fa32d52e1495ecaed23bcdcff9a2dd226e73b0ab866483804e0f670f197534",
+      "data_fingerprint": "dfba90bd116f9288bc72a837160516984ba773b11904e98561c80cda7dedcf5c"
+    },
+    "frozen_alpha": {
+      "binary": "effective_num",
+      "multiclass": "none"
+    },
+    "splits": {
+      "42": {
+        "path": "split_42.npz",
+        "sha256": "359132d34457583794e8bddb1d5650f5a8f6e7f77e10fcd3d92573f57cab94a1",
+        "size_bytes": 4032357,
+        "data_fingerprint": "dfba90bd116f9288bc72a837160516984ba773b11904e98561c80cda7dedcf5c",
+        "payload_sha256": "f7e919984eb63654d557a2757440a68af0b0da30f1f3b9d6f119d9d74a336b39",
+        "preprocessor_sha256": "0e4a07525e236195ac64c9a57bf5a7cad047b2e7257c5932ae6de12d840f421f",
+        "class_support": {
+          "train": [
+            5425,
+            374,
+            66261,
+            26,
+            2902,
+            20,
+            1400,
+            701,
+            1813,
+            1407,
+            5675,
+            177
+          ],
+          "val": [
+            1163,
+            80,
+            14199,
+            6,
+            622,
+            4,
+            300,
+            150,
+            388,
+            301,
+            1217,
+            38
+          ],
+          "test": [
+            1162,
+            80,
+            14199,
+            5,
+            622,
+            4,
+            300,
+            151,
+            389,
+            302,
+            1216,
+            38
+          ]
+        },
+        "partition_sizes": {
+          "train": 86181,
+          "val": 18468,
+          "test": 18468
+        },
+        "class_names": [
+          "arp_poisioning",
+          "ddos_slowloris",
+          "dos_syn_hping",
+          "metasploit_brute_force_ssh",
+          "mqtt_publish",
+          "nmap_fin_scan",
+          "nmap_os_detection",
+          "nmap_tcp_scan",
+          "nmap_udp_scan",
+          "nmap_xmas_tree_scan",
+          "thing_speak",
+          "wipro_bulb"
+        ],
+        "all_classes_present": true,
+        "canonical_arrays_identical": {
+          "x_test": true,
+          "y12_train": true,
+          "y2_test": true,
+          "y2_train": true,
+          "x_train": true,
+          "y2_val": true,
+          "y12_test": true,
+          "x_val": true,
+          "y12_val": true
+        },
+        "preprocessor_fitted": false,
+        "data_gates": [
+          {
+            "gate": "D1",
+            "pass": true,
+            "actual": {
+              "rows": 123117,
+              "counts": {
+                "mqtt_publish": 4146,
+                "thing_speak": 8108,
+                "wipro_bulb": 253,
+                "arp_poisioning": 7750,
+                "ddos_slowloris": 534,
+                "dos_syn_hping": 94659,
+                "metasploit_brute_force_ssh": 37,
+                "nmap_fin_scan": 28,
+                "nmap_os_detection": 2000,
+                "nmap_tcp_scan": 1002,
+                "nmap_udp_scan": 2590,
+                "nmap_xmas_tree_scan": 2010
+              },
+              "normal": 12507,
+              "attack": 110610
+            }
+          },
+          {
+            "gate": "D2",
+            "pass": true,
+            "actual": {
+              "sizes": {
+                "train": 86181,
+                "val": 18468,
+                "test": 18468
+              },
+              "supports": {
+                "train": {
+                  "dos_syn_hping": 66261,
+                  "arp_poisioning": 5425,
+                  "nmap_xmas_tree_scan": 1407,
+                  "nmap_udp_scan": 1813,
+                  "nmap_os_detection": 1400,
+                  "mqtt_publish": 2902,
+                  "nmap_fin_scan": 20,
+                  "nmap_tcp_scan": 701,
+                  "thing_speak": 5675,
+                  "ddos_slowloris": 374,
+                  "wipro_bulb": 177,
+                  "metasploit_brute_force_ssh": 26
+                },
+                "val": {
+                  "dos_syn_hping": 14199,
+                  "ddos_slowloris": 80,
+                  "nmap_os_detection": 300,
+                  "arp_poisioning": 1163,
+                  "nmap_udp_scan": 388,
+                  "thing_speak": 1217,
+                  "mqtt_publish": 622,
+                  "nmap_xmas_tree_scan": 301,
+                  "nmap_tcp_scan": 150,
+                  "wipro_bulb": 38,
+                  "nmap_fin_scan": 4,
+                  "metasploit_brute_force_ssh": 6
+                },
+                "test": {
+                  "dos_syn_hping": 14199,
+                  "arp_poisioning": 1162,
+                  "thing_speak": 1216,
+                  "ddos_slowloris": 80,
+                  "mqtt_publish": 622,
+                  "nmap_os_detection": 300,
+                  "nmap_tcp_scan": 151,
+                  "nmap_udp_scan": 389,
+                  "nmap_xmas_tree_scan": 302,
+                  "wipro_bulb": 38,
+                  "metasploit_brute_force_ssh": 5,
+                  "nmap_fin_scan": 4
+                }
+              }
+            }
+          }
+        ],
+        "seconds": 1.093028484000115
+      },
+      "43": {
+        "path": "split_43.npz",
+        "sha256": "7b30d29d52c5d7e5f11d0a626d5a01d535a1174fff768728f358f905f8067bb5",
+        "size_bytes": 4042338,
+        "data_fingerprint": "e7b0d4627ed0cd0de91ef114c2171a751191366ad4d2609c2edb9a35a0dd317e",
+        "payload_sha256": "06f9cf6e955802fdade47860f5d2d994df0cb64e6410c195c7555b2d44e56bd8",
+        "preprocessor_sha256": "4ecd78c5fe3aa30301fb4492010631851864a4775a66dd44c63ed65a72583185",
+        "class_support": {
+          "train": [
+            5425,
+            374,
+            66261,
+            26,
+            2902,
+            20,
+            1400,
+            701,
+            1813,
+            1407,
+            5675,
+            177
+          ],
+          "val": [
+            1162,
+            80,
+            14199,
+            6,
+            622,
+            4,
+            300,
+            151,
+            388,
+            301,
+            1217,
+            38
+          ],
+          "test": [
+            1163,
+            80,
+            14199,
+            5,
+            622,
+            4,
+            300,
+            150,
+            389,
+            302,
+            1216,
+            38
+          ]
+        },
+        "partition_sizes": {
+          "train": 86181,
+          "val": 18468,
+          "test": 18468
+        },
+        "class_names": [
+          "arp_poisioning",
+          "ddos_slowloris",
+          "dos_syn_hping",
+          "metasploit_brute_force_ssh",
+          "mqtt_publish",
+          "nmap_fin_scan",
+          "nmap_os_detection",
+          "nmap_tcp_scan",
+          "nmap_udp_scan",
+          "nmap_xmas_tree_scan",
+          "thing_speak",
+          "wipro_bulb"
+        ],
+        "all_classes_present": true,
+        "canonical_arrays_identical": null,
+        "preprocessor_fitted": true,
+        "data_gates": [
+          {
+            "gate": "D1",
+            "pass": true,
+            "actual": {
+              "rows": 123117,
+              "counts": {
+                "mqtt_publish": 4146,
+                "thing_speak": 8108,
+                "wipro_bulb": 253,
+                "arp_poisioning": 7750,
+                "ddos_slowloris": 534,
+                "dos_syn_hping": 94659,
+                "metasploit_brute_force_ssh": 37,
+                "nmap_fin_scan": 28,
+                "nmap_os_detection": 2000,
+                "nmap_tcp_scan": 1002,
+                "nmap_udp_scan": 2590,
+                "nmap_xmas_tree_scan": 2010
+              },
+              "normal": 12507,
+              "attack": 110610
+            }
+          },
+          {
+            "gate": "D2",
+            "pass": true,
+            "actual": {
+              "sizes": {
+                "train": 86181,
+                "val": 18468,
+                "test": 18468
+              },
+              "supports": {
+                "train": {
+                  "dos_syn_hping": 66261,
+                  "wipro_bulb": 177,
+                  "nmap_tcp_scan": 701,
+                  "nmap_os_detection": 1400,
+                  "nmap_xmas_tree_scan": 1407,
+                  "nmap_udp_scan": 1813,
+                  "arp_poisioning": 5425,
+                  "thing_speak": 5675,
+                  "mqtt_publish": 2902,
+                  "ddos_slowloris": 374,
+                  "metasploit_brute_force_ssh": 26,
+                  "nmap_fin_scan": 20
+                },
+                "val": {
+                  "dos_syn_hping": 14199,
+                  "arp_poisioning": 1162,
+                  "thing_speak": 1217,
+                  "mqtt_publish": 622,
+                  "nmap_tcp_scan": 151,
+                  "ddos_slowloris": 80,
+                  "nmap_os_detection": 300,
+                  "nmap_xmas_tree_scan": 301,
+                  "nmap_udp_scan": 388,
+                  "nmap_fin_scan": 4,
+                  "wipro_bulb": 38,
+                  "metasploit_brute_force_ssh": 6
+                },
+                "test": {
+                  "arp_poisioning": 1163,
+                  "dos_syn_hping": 14199,
+                  "thing_speak": 1216,
+                  "nmap_udp_scan": 389,
+                  "nmap_tcp_scan": 150,
+                  "mqtt_publish": 622,
+                  "ddos_slowloris": 80,
+                  "nmap_xmas_tree_scan": 302,
+                  "nmap_os_detection": 300,
+                  "wipro_bulb": 38,
+                  "metasploit_brute_force_ssh": 5,
+                  "nmap_fin_scan": 4
+                }
+              }
+            }
+          }
+        ],
+        "seconds": 30.497194591999687
+      },
+      "44": {
+        "path": "split_44.npz",
+        "sha256": "7d937923e0e19ddb4602c26a34bd506a56b6da1e30b826a4dbcd926613fd5a95",
+        "size_bytes": 4035277,
+        "data_fingerprint": "a06796db6be432944f3388441eae02f491ca872f802c49248198648f3ff3301a",
+        "payload_sha256": "f24856debb8cf56f26d43a4133b105f416a19f82eae4b52b62a7b6d1adc04dc6",
+        "preprocessor_sha256": "c21c51f846ad638295b93e14374860e2f3e8bb516516d03e4fad4e71214f6855",
+        "class_support": {
+          "train": [
+            5425,
+            374,
+            66261,
+            26,
+            2902,
+            20,
+            1400,
+            701,
+            1813,
+            1407,
+            5675,
+            177
+          ],
+          "val": [
+            1163,
+            80,
+            14199,
+            5,
+            622,
+            4,
+            300,
+            151,
+            388,
+            301,
+            1217,
+            38
+          ],
+          "test": [
+            1162,
+            80,
+            14199,
+            6,
+            622,
+            4,
+            300,
+            150,
+            389,
+            302,
+            1216,
+            38
+          ]
+        },
+        "partition_sizes": {
+          "train": 86181,
+          "val": 18468,
+          "test": 18468
+        },
+        "class_names": [
+          "arp_poisioning",
+          "ddos_slowloris",
+          "dos_syn_hping",
+          "metasploit_brute_force_ssh",
+          "mqtt_publish",
+          "nmap_fin_scan",
+          "nmap_os_detection",
+          "nmap_tcp_scan",
+          "nmap_udp_scan",
+          "nmap_xmas_tree_scan",
+          "thing_speak",
+          "wipro_bulb"
+        ],
+        "all_classes_present": true,
+        "canonical_arrays_identical": null,
+        "preprocessor_fitted": true,
+        "data_gates": [
+          {
+            "gate": "D1",
+            "pass": true,
+            "actual": {
+              "rows": 123117,
+              "counts": {
+                "mqtt_publish": 4146,
+                "thing_speak": 8108,
+                "wipro_bulb": 253,
+                "arp_poisioning": 7750,
+                "ddos_slowloris": 534,
+                "dos_syn_hping": 94659,
+                "metasploit_brute_force_ssh": 37,
+                "nmap_fin_scan": 28,
+                "nmap_os_detection": 2000,
+                "nmap_tcp_scan": 1002,
+                "nmap_udp_scan": 2590,
+                "nmap_xmas_tree_scan": 2010
+              },
+              "normal": 12507,
+              "attack": 110610
+            }
+          },
+          {
+            "gate": "D2",
+            "pass": true,
+            "actual": {
+              "sizes": {
+                "train": 86181,
+                "val": 18468,
+                "test": 18468
+              },
+              "supports": {
+                "train": {
+                  "dos_syn_hping": 66261,
+                  "arp_poisioning": 5425,
+                  "nmap_xmas_tree_scan": 1407,
+                  "nmap_os_detection": 1400,
+                  "thing_speak": 5675,
+                  "mqtt_publish": 2902,
+                  "nmap_udp_scan": 1813,
+                  "nmap_tcp_scan": 701,
+                  "ddos_slowloris": 374,
+                  "wipro_bulb": 177,
+                  "nmap_fin_scan": 20,
+                  "metasploit_brute_force_ssh": 26
+                },
+                "val": {
+                  "dos_syn_hping": 14199,
+                  "nmap_xmas_tree_scan": 301,
+                  "arp_poisioning": 1163,
+                  "mqtt_publish": 622,
+                  "metasploit_brute_force_ssh": 5,
+                  "thing_speak": 1217,
+                  "nmap_os_detection": 300,
+                  "nmap_udp_scan": 388,
+                  "nmap_tcp_scan": 151,
+                  "ddos_slowloris": 80,
+                  "wipro_bulb": 38,
+                  "nmap_fin_scan": 4
+                },
+                "test": {
+                  "dos_syn_hping": 14199,
+                  "arp_poisioning": 1162,
+                  "mqtt_publish": 622,
+                  "nmap_xmas_tree_scan": 302,
+                  "thing_speak": 1216,
+                  "nmap_os_detection": 300,
+                  "nmap_udp_scan": 389,
+                  "nmap_tcp_scan": 150,
+                  "ddos_slowloris": 80,
+                  "wipro_bulb": 38,
+                  "metasploit_brute_force_ssh": 6,
+                  "nmap_fin_scan": 4
+                }
+              }
+            }
+          }
+        ],
+        "seconds": 30.35442778000015
+      },
+      "45": {
+        "path": "split_45.npz",
+        "sha256": "4960664b2c83369b51fd9750df0806517638ff66b8b686da71517064364685d9",
+        "size_bytes": 4035250,
+        "data_fingerprint": "1a9447e5acb8b9c2a42d7da250629874062b7fa8a3633f16fc85e5be903f3f84",
+        "payload_sha256": "f708b99fa782e8a28f685d39d1567aeb357e6a86aae7a8689e9fdfb06debc5ee",
+        "preprocessor_sha256": "6f9f82ba8ebbb00822a9575b46b0bab9e0928a6371924f8f81659d09474baaab",
+        "class_support": {
+          "train": [
+            5425,
+            374,
+            66261,
+            26,
+            2902,
+            20,
+            1400,
+            701,
+            1813,
+            1407,
+            5675,
+            177
+          ],
+          "val": [
+            1162,
+            80,
+            14199,
+            6,
+            622,
+            4,
+            300,
+            151,
+            388,
+            302,
+            1216,
+            38
+          ],
+          "test": [
+            1163,
+            80,
+            14199,
+            5,
+            622,
+            4,
+            300,
+            150,
+            389,
+            301,
+            1217,
+            38
+          ]
+        },
+        "partition_sizes": {
+          "train": 86181,
+          "val": 18468,
+          "test": 18468
+        },
+        "class_names": [
+          "arp_poisioning",
+          "ddos_slowloris",
+          "dos_syn_hping",
+          "metasploit_brute_force_ssh",
+          "mqtt_publish",
+          "nmap_fin_scan",
+          "nmap_os_detection",
+          "nmap_tcp_scan",
+          "nmap_udp_scan",
+          "nmap_xmas_tree_scan",
+          "thing_speak",
+          "wipro_bulb"
+        ],
+        "all_classes_present": true,
+        "canonical_arrays_identical": null,
+        "preprocessor_fitted": true,
+        "data_gates": [
+          {
+            "gate": "D1",
+            "pass": true,
+            "actual": {
+              "rows": 123117,
+              "counts": {
+                "mqtt_publish": 4146,
+                "thing_speak": 8108,
+                "wipro_bulb": 253,
+                "arp_poisioning": 7750,
+                "ddos_slowloris": 534,
+                "dos_syn_hping": 94659,
+                "metasploit_brute_force_ssh": 37,
+                "nmap_fin_scan": 28,
+                "nmap_os_detection": 2000,
+                "nmap_tcp_scan": 1002,
+                "nmap_udp_scan": 2590,
+                "nmap_xmas_tree_scan": 2010
+              },
+              "normal": 12507,
+              "attack": 110610
+            }
+          },
+          {
+            "gate": "D2",
+            "pass": true,
+            "actual": {
+              "sizes": {
+                "train": 86181,
+                "val": 18468,
+                "test": 18468
+              },
+              "supports": {
+                "train": {
+                  "dos_syn_hping": 66261,
+                  "mqtt_publish": 2902,
+                  "thing_speak": 5675,
+                  "nmap_xmas_tree_scan": 1407,
+                  "arp_poisioning": 5425,
+                  "nmap_udp_scan": 1813,
+                  "nmap_os_detection": 1400,
+                  "nmap_tcp_scan": 701,
+                  "ddos_slowloris": 374,
+                  "wipro_bulb": 177,
+                  "metasploit_brute_force_ssh": 26,
+                  "nmap_fin_scan": 20
+                },
+                "val": {
+                  "dos_syn_hping": 14199,
+                  "nmap_xmas_tree_scan": 302,
+                  "mqtt_publish": 622,
+                  "arp_poisioning": 1162,
+                  "thing_speak": 1216,
+                  "nmap_udp_scan": 388,
+                  "nmap_tcp_scan": 151,
+                  "nmap_os_detection": 300,
+                  "ddos_slowloris": 80,
+                  "wipro_bulb": 38,
+                  "metasploit_brute_force_ssh": 6,
+                  "nmap_fin_scan": 4
+                },
+                "test": {
+                  "dos_syn_hping": 14199,
+                  "wipro_bulb": 38,
+                  "thing_speak": 1217,
+                  "nmap_os_detection": 300,
+                  "mqtt_publish": 622,
+                  "nmap_udp_scan": 389,
+                  "nmap_xmas_tree_scan": 301,
+                  "arp_poisioning": 1163,
+                  "nmap_tcp_scan": 150,
+                  "ddos_slowloris": 80,
+                  "metasploit_brute_force_ssh": 5,
+                  "nmap_fin_scan": 4
+                }
+              }
+            }
+          }
+        ],
+        "seconds": 28.74052066499962
+      },
+      "46": {
+        "path": "split_46.npz",
+        "sha256": "0a752c5ffdf3c5d6167e07b788b85e579347bcd304d11562f764a1b9f4a97055",
+        "size_bytes": 4038959,
+        "data_fingerprint": "d46b86226697b0d9b8f805b8b8c068b46a5a42316764b734aac447e6b2288301",
+        "payload_sha256": "ecb0b9d59a5368f43f2d412c33463acd19bb93d1d161283f824b931009758f2b",
+        "preprocessor_sha256": "b04397c464f82f8d5e978f6dfbfb073ded661a0ec058e3be77748bb73b711a6e",
+        "class_support": {
+          "train": [
+            5425,
+            374,
+            66261,
+            26,
+            2902,
+            20,
+            1400,
+            701,
+            1813,
+            1407,
+            5675,
+            177
+          ],
+          "val": [
+            1162,
+            80,
+            14199,
+            6,
+            622,
+            4,
+            300,
+            151,
+            389,
+            301,
+            1216,
+            38
+          ],
+          "test": [
+            1163,
+            80,
+            14199,
+            5,
+            622,
+            4,
+            300,
+            150,
+            388,
+            302,
+            1217,
+            38
+          ]
+        },
+        "partition_sizes": {
+          "train": 86181,
+          "val": 18468,
+          "test": 18468
+        },
+        "class_names": [
+          "arp_poisioning",
+          "ddos_slowloris",
+          "dos_syn_hping",
+          "metasploit_brute_force_ssh",
+          "mqtt_publish",
+          "nmap_fin_scan",
+          "nmap_os_detection",
+          "nmap_tcp_scan",
+          "nmap_udp_scan",
+          "nmap_xmas_tree_scan",
+          "thing_speak",
+          "wipro_bulb"
+        ],
+        "all_classes_present": true,
+        "canonical_arrays_identical": null,
+        "preprocessor_fitted": true,
+        "data_gates": [
+          {
+            "gate": "D1",
+            "pass": true,
+            "actual": {
+              "rows": 123117,
+              "counts": {
+                "mqtt_publish": 4146,
+                "thing_speak": 8108,
+                "wipro_bulb": 253,
+                "arp_poisioning": 7750,
+                "ddos_slowloris": 534,
+                "dos_syn_hping": 94659,
+                "metasploit_brute_force_ssh": 37,
+                "nmap_fin_scan": 28,
+                "nmap_os_detection": 2000,
+                "nmap_tcp_scan": 1002,
+                "nmap_udp_scan": 2590,
+                "nmap_xmas_tree_scan": 2010
+              },
+              "normal": 12507,
+              "attack": 110610
+            }
+          },
+          {
+            "gate": "D2",
+            "pass": true,
+            "actual": {
+              "sizes": {
+                "train": 86181,
+                "val": 18468,
+                "test": 18468
+              },
+              "supports": {
+                "train": {
+                  "dos_syn_hping": 66261,
+                  "thing_speak": 5675,
+                  "arp_poisioning": 5425,
+                  "nmap_os_detection": 1400,
+                  "mqtt_publish": 2902,
+                  "nmap_udp_scan": 1813,
+                  "nmap_xmas_tree_scan": 1407,
+                  "nmap_fin_scan": 20,
+                  "nmap_tcp_scan": 701,
+                  "wipro_bulb": 177,
+                  "ddos_slowloris": 374,
+                  "metasploit_brute_force_ssh": 26
+                },
+                "val": {
+                  "dos_syn_hping": 14199,
+                  "mqtt_publish": 622,
+                  "thing_speak": 1216,
+                  "arp_poisioning": 1162,
+                  "nmap_os_detection": 300,
+                  "nmap_udp_scan": 389,
+                  "nmap_xmas_tree_scan": 301,
+                  "wipro_bulb": 38,
+                  "nmap_tcp_scan": 151,
+                  "ddos_slowloris": 80,
+                  "metasploit_brute_force_ssh": 6,
+                  "nmap_fin_scan": 4
+                },
+                "test": {
+                  "dos_syn_hping": 14199,
+                  "thing_speak": 1217,
+                  "arp_poisioning": 1163,
+                  "nmap_os_detection": 300,
+                  "mqtt_publish": 622,
+                  "nmap_udp_scan": 388,
+                  "nmap_tcp_scan": 150,
+                  "nmap_xmas_tree_scan": 302,
+                  "wipro_bulb": 38,
+                  "ddos_slowloris": 80,
+                  "nmap_fin_scan": 4,
+                  "metasploit_brute_force_ssh": 5
+                }
+              }
+            }
+          }
+        ],
+        "seconds": 28.751842462999775
+      },
+      "47": {
+        "path": "split_47.npz",
+        "sha256": "0418319d34021a33d2590c306c704bce0561aa28b0f48cc47adb397170e80930",
+        "size_bytes": 4037616,
+        "data_fingerprint": "71ef61c4992ba4da066e1871abe29a86c07f802916c30a98d2c729558421cdc7",
+        "payload_sha256": "9ac76b105114b594bc0d5b521d0ec59ed713ab62e2e36ea2b821b6e5ebc716ac",
+        "preprocessor_sha256": "c18c5839d3714bd5383e6235614d204204bdc7d20381cbee4b1e9012e654d947",
+        "class_support": {
+          "train": [
+            5425,
+            374,
+            66261,
+            26,
+            2902,
+            20,
+            1400,
+            701,
+            1813,
+            1407,
+            5675,
+            177
+          ],
+          "val": [
+            1162,
+            80,
+            14199,
+            6,
+            622,
+            4,
+            300,
+            151,
+            388,
+            302,
+            1216,
+            38
+          ],
+          "test": [
+            1163,
+            80,
+            14199,
+            5,
+            622,
+            4,
+            300,
+            150,
+            389,
+            301,
+            1217,
+            38
+          ]
+        },
+        "partition_sizes": {
+          "train": 86181,
+          "val": 18468,
+          "test": 18468
+        },
+        "class_names": [
+          "arp_poisioning",
+          "ddos_slowloris",
+          "dos_syn_hping",
+          "metasploit_brute_force_ssh",
+          "mqtt_publish",
+          "nmap_fin_scan",
+          "nmap_os_detection",
+          "nmap_tcp_scan",
+          "nmap_udp_scan",
+          "nmap_xmas_tree_scan",
+          "thing_speak",
+          "wipro_bulb"
+        ],
+        "all_classes_present": true,
+        "canonical_arrays_identical": null,
+        "preprocessor_fitted": true,
+        "data_gates": [
+          {
+            "gate": "D1",
+            "pass": true,
+            "actual": {
+              "rows": 123117,
+              "counts": {
+                "mqtt_publish": 4146,
+                "thing_speak": 8108,
+                "wipro_bulb": 253,
+                "arp_poisioning": 7750,
+                "ddos_slowloris": 534,
+                "dos_syn_hping": 94659,
+                "metasploit_brute_force_ssh": 37,
+                "nmap_fin_scan": 28,
+                "nmap_os_detection": 2000,
+                "nmap_tcp_scan": 1002,
+                "nmap_udp_scan": 2590,
+                "nmap_xmas_tree_scan": 2010
+              },
+              "normal": 12507,
+              "attack": 110610
+            }
+          },
+          {
+            "gate": "D2",
+            "pass": true,
+            "actual": {
+              "sizes": {
+                "train": 86181,
+                "val": 18468,
+                "test": 18468
+              },
+              "supports": {
+                "train": {
+                  "thing_speak": 5675,
+                  "nmap_udp_scan": 1813,
+                  "dos_syn_hping": 66261,
+                  "arp_poisioning": 5425,
+                  "nmap_tcp_scan": 701,
+                  "mqtt_publish": 2902,
+                  "nmap_os_detection": 1400,
+                  "nmap_xmas_tree_scan": 1407,
+                  "ddos_slowloris": 374,
+                  "wipro_bulb": 177,
+                  "nmap_fin_scan": 20,
+                  "metasploit_brute_force_ssh": 26
+                },
+                "val": {
+                  "dos_syn_hping": 14199,
+                  "thing_speak": 1216,
+                  "mqtt_publish": 622,
+                  "arp_poisioning": 1162,
+                  "nmap_os_detection": 300,
+                  "nmap_tcp_scan": 151,
+                  "ddos_slowloris": 80,
+                  "nmap_xmas_tree_scan": 302,
+                  "nmap_udp_scan": 388,
+                  "wipro_bulb": 38,
+                  "nmap_fin_scan": 4,
+                  "metasploit_brute_force_ssh": 6
+                },
+                "test": {
+                  "dos_syn_hping": 14199,
+                  "nmap_udp_scan": 389,
+                  "mqtt_publish": 622,
+                  "arp_poisioning": 1163,
+                  "thing_speak": 1217,
+                  "nmap_xmas_tree_scan": 301,
+                  "nmap_os_detection": 300,
+                  "wipro_bulb": 38,
+                  "ddos_slowloris": 80,
+                  "nmap_tcp_scan": 150,
+                  "nmap_fin_scan": 4,
+                  "metasploit_brute_force_ssh": 5
+                }
+              }
+            }
+          }
+        ],
+        "seconds": 29.515393549000237
+      },
+      "48": {
+        "path": "split_48.npz",
+        "sha256": "a85298e8be3e15da23eed6f1c3aae596bd14c755a141130bd4cb94f3f3df2c24",
+        "size_bytes": 4039496,
+        "data_fingerprint": "38e3da0186d92e4f416dca812975ad2ca7e827da8636c505e7fbbd67b1b127fb",
+        "payload_sha256": "3bbce6f2e9d91f0eb2a9e72e58b616852c7cd17b1127fb922323e92c0db3a7c6",
+        "preprocessor_sha256": "f8eb4ec2d384300687a82aa9485f2c10f192406444a984aa8d42a9f7aa30cb96",
+        "class_support": {
+          "train": [
+            5425,
+            374,
+            66261,
+            26,
+            2902,
+            20,
+            1400,
+            701,
+            1813,
+            1407,
+            5675,
+            177
+          ],
+          "val": [
+            1162,
+            80,
+            14199,
+            5,
+            622,
+            4,
+            300,
+            151,
+            388,
+            302,
+            1217,
+            38
+          ],
+          "test": [
+            1163,
+            80,
+            14199,
+            6,
+            622,
+            4,
+            300,
+            150,
+            389,
+            301,
+            1216,
+            38
+          ]
+        },
+        "partition_sizes": {
+          "train": 86181,
+          "val": 18468,
+          "test": 18468
+        },
+        "class_names": [
+          "arp_poisioning",
+          "ddos_slowloris",
+          "dos_syn_hping",
+          "metasploit_brute_force_ssh",
+          "mqtt_publish",
+          "nmap_fin_scan",
+          "nmap_os_detection",
+          "nmap_tcp_scan",
+          "nmap_udp_scan",
+          "nmap_xmas_tree_scan",
+          "thing_speak",
+          "wipro_bulb"
+        ],
+        "all_classes_present": true,
+        "canonical_arrays_identical": null,
+        "preprocessor_fitted": true,
+        "data_gates": [
+          {
+            "gate": "D1",
+            "pass": true,
+            "actual": {
+              "rows": 123117,
+              "counts": {
+                "mqtt_publish": 4146,
+                "thing_speak": 8108,
+                "wipro_bulb": 253,
+                "arp_poisioning": 7750,
+                "ddos_slowloris": 534,
+                "dos_syn_hping": 94659,
+                "metasploit_brute_force_ssh": 37,
+                "nmap_fin_scan": 28,
+                "nmap_os_detection": 2000,
+                "nmap_tcp_scan": 1002,
+                "nmap_udp_scan": 2590,
+                "nmap_xmas_tree_scan": 2010
+              },
+              "normal": 12507,
+              "attack": 110610
+            }
+          },
+          {
+            "gate": "D2",
+            "pass": true,
+            "actual": {
+              "sizes": {
+                "train": 86181,
+                "val": 18468,
+                "test": 18468
+              },
+              "supports": {
+                "train": {
+                  "dos_syn_hping": 66261,
+                  "arp_poisioning": 5425,
+                  "thing_speak": 5675,
+                  "nmap_tcp_scan": 701,
+                  "nmap_udp_scan": 1813,
+                  "nmap_xmas_tree_scan": 1407,
+                  "nmap_os_detection": 1400,
+                  "mqtt_publish": 2902,
+                  "wipro_bulb": 177,
+                  "ddos_slowloris": 374,
+                  "metasploit_brute_force_ssh": 26,
+                  "nmap_fin_scan": 20
+                },
+                "val": {
+                  "dos_syn_hping": 14199,
+                  "arp_poisioning": 1162,
+                  "nmap_udp_scan": 388,
+                  "nmap_xmas_tree_scan": 302,
+                  "thing_speak": 1217,
+                  "mqtt_publish": 622,
+                  "nmap_tcp_scan": 151,
+                  "nmap_os_detection": 300,
+                  "ddos_slowloris": 80,
+                  "wipro_bulb": 38,
+                  "nmap_fin_scan": 4,
+                  "metasploit_brute_force_ssh": 5
+                },
+                "test": {
+                  "arp_poisioning": 1163,
+                  "dos_syn_hping": 14199,
+                  "nmap_udp_scan": 389,
+                  "nmap_xmas_tree_scan": 301,
+                  "thing_speak": 1216,
+                  "mqtt_publish": 622,
+                  "wipro_bulb": 38,
+                  "ddos_slowloris": 80,
+                  "nmap_os_detection": 300,
+                  "nmap_tcp_scan": 150,
+                  "metasploit_brute_force_ssh": 6,
+                  "nmap_fin_scan": 4
+                }
+              }
+            }
+          }
+        ],
+        "seconds": 28.856739347999792
+      },
+      "49": {
+        "path": "split_49.npz",
+        "sha256": "4d8cc263647bcb3eddd12daeded3b98fabe6a563e0662e13f2d65bf70400ac1b",
+        "size_bytes": 4034431,
+        "data_fingerprint": "f95f5c2d1651cd0155389f07633dc69ed860699f807b4c33d0ad4b3c84970e37",
+        "payload_sha256": "583605cd2283a2f4093c572ea8da985c2b3df5b5dd241fccbe16045d3091c1c0",
+        "preprocessor_sha256": "19b0cb8e2f56991cb750793b980dd8825d73be5cba05323311e10bf90b58dfa3",
+        "class_support": {
+          "train": [
+            5425,
+            374,
+            66261,
+            26,
+            2902,
+            20,
+            1400,
+            701,
+            1813,
+            1407,
+            5675,
+            177
+          ],
+          "val": [
+            1162,
+            80,
+            14199,
+            5,
+            622,
+            4,
+            300,
+            150,
+            389,
+            302,
+            1217,
+            38
+          ],
+          "test": [
+            1163,
+            80,
+            14199,
+            6,
+            622,
+            4,
+            300,
+            151,
+            388,
+            301,
+            1216,
+            38
+          ]
+        },
+        "partition_sizes": {
+          "train": 86181,
+          "val": 18468,
+          "test": 18468
+        },
+        "class_names": [
+          "arp_poisioning",
+          "ddos_slowloris",
+          "dos_syn_hping",
+          "metasploit_brute_force_ssh",
+          "mqtt_publish",
+          "nmap_fin_scan",
+          "nmap_os_detection",
+          "nmap_tcp_scan",
+          "nmap_udp_scan",
+          "nmap_xmas_tree_scan",
+          "thing_speak",
+          "wipro_bulb"
+        ],
+        "all_classes_present": true,
+        "canonical_arrays_identical": null,
+        "preprocessor_fitted": true,
+        "data_gates": [
+          {
+            "gate": "D1",
+            "pass": true,
+            "actual": {
+              "rows": 123117,
+              "counts": {
+                "mqtt_publish": 4146,
+                "thing_speak": 8108,
+                "wipro_bulb": 253,
+                "arp_poisioning": 7750,
+                "ddos_slowloris": 534,
+                "dos_syn_hping": 94659,
+                "metasploit_brute_force_ssh": 37,
+                "nmap_fin_scan": 28,
+                "nmap_os_detection": 2000,
+                "nmap_tcp_scan": 1002,
+                "nmap_udp_scan": 2590,
+                "nmap_xmas_tree_scan": 2010
+              },
+              "normal": 12507,
+              "attack": 110610
+            }
+          },
+          {
+            "gate": "D2",
+            "pass": true,
+            "actual": {
+              "sizes": {
+                "train": 86181,
+                "val": 18468,
+                "test": 18468
+              },
+              "supports": {
+                "train": {
+                  "dos_syn_hping": 66261,
+                  "nmap_udp_scan": 1813,
+                  "thing_speak": 5675,
+                  "nmap_xmas_tree_scan": 1407,
+                  "nmap_os_detection": 1400,
+                  "mqtt_publish": 2902,
+                  "arp_poisioning": 5425,
+                  "nmap_tcp_scan": 701,
+                  "ddos_slowloris": 374,
+                  "wipro_bulb": 177,
+                  "metasploit_brute_force_ssh": 26,
+                  "nmap_fin_scan": 20
+                },
+                "val": {
+                  "nmap_xmas_tree_scan": 302,
+                  "nmap_udp_scan": 389,
+                  "dos_syn_hping": 14199,
+                  "arp_poisioning": 1162,
+                  "mqtt_publish": 622,
+                  "thing_speak": 1217,
+                  "ddos_slowloris": 80,
+                  "nmap_fin_scan": 4,
+                  "nmap_os_detection": 300,
+                  "nmap_tcp_scan": 150,
+                  "wipro_bulb": 38,
+                  "metasploit_brute_force_ssh": 5
+                },
+                "test": {
+                  "dos_syn_hping": 14199,
+                  "arp_poisioning": 1163,
+                  "nmap_os_detection": 300,
+                  "thing_speak": 1216,
+                  "mqtt_publish": 622,
+                  "nmap_xmas_tree_scan": 301,
+                  "nmap_udp_scan": 388,
+                  "nmap_tcp_scan": 151,
+                  "nmap_fin_scan": 4,
+                  "ddos_slowloris": 80,
+                  "wipro_bulb": 38,
+                  "metasploit_brute_force_ssh": 6
+                }
+              }
+            }
+          }
+        ],
+        "seconds": 28.866957053999613
+      },
+      "50": {
+        "path": "split_50.npz",
+        "sha256": "a56e25a701bca5a2b10f51ce126a9397c3a3b5aaeadefd04d447668b92d339b2",
+        "size_bytes": 4038242,
+        "data_fingerprint": "51fb910823ab6521c6cae5b50b54b86686ec9e0a0183b5e14915b3937ae446ec",
+        "payload_sha256": "3c05654cfac5772c047e6627ccf30332616e9ec4e662c5804f870f9f604b22a4",
+        "preprocessor_sha256": "f96c615e53db259fa169c50fa30be0d2067f2928feaba7d9f11bad9584dcf9a1",
+        "class_support": {
+          "train": [
+            5425,
+            374,
+            66261,
+            26,
+            2902,
+            20,
+            1400,
+            701,
+            1813,
+            1407,
+            5675,
+            177
+          ],
+          "val": [
+            1162,
+            80,
+            14199,
+            6,
+            622,
+            4,
+            300,
+            151,
+            388,
+            302,
+            1216,
+            38
+          ],
+          "test": [
+            1163,
+            80,
+            14199,
+            5,
+            622,
+            4,
+            300,
+            150,
+            389,
+            301,
+            1217,
+            38
+          ]
+        },
+        "partition_sizes": {
+          "train": 86181,
+          "val": 18468,
+          "test": 18468
+        },
+        "class_names": [
+          "arp_poisioning",
+          "ddos_slowloris",
+          "dos_syn_hping",
+          "metasploit_brute_force_ssh",
+          "mqtt_publish",
+          "nmap_fin_scan",
+          "nmap_os_detection",
+          "nmap_tcp_scan",
+          "nmap_udp_scan",
+          "nmap_xmas_tree_scan",
+          "thing_speak",
+          "wipro_bulb"
+        ],
+        "all_classes_present": true,
+        "canonical_arrays_identical": null,
+        "preprocessor_fitted": true,
+        "data_gates": [
+          {
+            "gate": "D1",
+            "pass": true,
+            "actual": {
+              "rows": 123117,
+              "counts": {
+                "mqtt_publish": 4146,
+                "thing_speak": 8108,
+                "wipro_bulb": 253,
+                "arp_poisioning": 7750,
+                "ddos_slowloris": 534,
+                "dos_syn_hping": 94659,
+                "metasploit_brute_force_ssh": 37,
+                "nmap_fin_scan": 28,
+                "nmap_os_detection": 2000,
+                "nmap_tcp_scan": 1002,
+                "nmap_udp_scan": 2590,
+                "nmap_xmas_tree_scan": 2010
+              },
+              "normal": 12507,
+              "attack": 110610
+            }
+          },
+          {
+            "gate": "D2",
+            "pass": true,
+            "actual": {
+              "sizes": {
+                "train": 86181,
+                "val": 18468,
+                "test": 18468
+              },
+              "supports": {
+                "train": {
+                  "dos_syn_hping": 66261,
+                  "wipro_bulb": 177,
+                  "arp_poisioning": 5425,
+                  "nmap_udp_scan": 1813,
+                  "thing_speak": 5675,
+                  "mqtt_publish": 2902,
+                  "nmap_os_detection": 1400,
+                  "nmap_tcp_scan": 701,
+                  "nmap_xmas_tree_scan": 1407,
+                  "ddos_slowloris": 374,
+                  "nmap_fin_scan": 20,
+                  "metasploit_brute_force_ssh": 26
+                },
+                "val": {
+                  "dos_syn_hping": 14199,
+                  "mqtt_publish": 622,
+                  "thing_speak": 1216,
+                  "arp_poisioning": 1162,
+                  "nmap_udp_scan": 388,
+                  "nmap_xmas_tree_scan": 302,
+                  "nmap_tcp_scan": 151,
+                  "nmap_os_detection": 300,
+                  "metasploit_brute_force_ssh": 6,
+                  "wipro_bulb": 38,
+                  "ddos_slowloris": 80,
+                  "nmap_fin_scan": 4
+                },
+                "test": {
+                  "arp_poisioning": 1163,
+                  "dos_syn_hping": 14199,
+                  "thing_speak": 1217,
+                  "nmap_xmas_tree_scan": 301,
+                  "nmap_os_detection": 300,
+                  "nmap_udp_scan": 389,
+                  "ddos_slowloris": 80,
+                  "mqtt_publish": 622,
+                  "wipro_bulb": 38,
+                  "nmap_tcp_scan": 150,
+                  "nmap_fin_scan": 4,
+                  "metasploit_brute_force_ssh": 5
+                }
+              }
+            }
+          }
+        ],
+        "seconds": 28.697882169999957
+      },
+      "51": {
+        "path": "split_51.npz",
+        "sha256": "3471a83dbcb73c184a3cb07d1eac7b1d5a1882b8e16c6a4637cdcedbe1c125b8",
+        "size_bytes": 4032895,
+        "data_fingerprint": "a8981602cfce15c6aaf9ad72fab07860bcdd77f942d501b86596083e54399893",
+        "payload_sha256": "97ef8ec82e9339c75eadfef9a50d40c23c3c2d2d512b97867ff2d093c505d4f7",
+        "preprocessor_sha256": "7d19d0d453e3437bbd2dd6b64b2328d3b4770c2f6acb019dfcec5fbd45b406ee",
+        "class_support": {
+          "train": [
+            5425,
+            374,
+            66261,
+            26,
+            2902,
+            20,
+            1400,
+            701,
+            1813,
+            1407,
+            5675,
+            177
+          ],
+          "val": [
+            1162,
+            80,
+            14199,
+            5,
+            622,
+            4,
+            300,
+            151,
+            389,
+            302,
+            1216,
+            38
+          ],
+          "test": [
+            1163,
+            80,
+            14199,
+            6,
+            622,
+            4,
+            300,
+            150,
+            388,
+            301,
+            1217,
+            38
+          ]
+        },
+        "partition_sizes": {
+          "train": 86181,
+          "val": 18468,
+          "test": 18468
+        },
+        "class_names": [
+          "arp_poisioning",
+          "ddos_slowloris",
+          "dos_syn_hping",
+          "metasploit_brute_force_ssh",
+          "mqtt_publish",
+          "nmap_fin_scan",
+          "nmap_os_detection",
+          "nmap_tcp_scan",
+          "nmap_udp_scan",
+          "nmap_xmas_tree_scan",
+          "thing_speak",
+          "wipro_bulb"
+        ],
+        "all_classes_present": true,
+        "canonical_arrays_identical": null,
+        "preprocessor_fitted": true,
+        "data_gates": [
+          {
+            "gate": "D1",
+            "pass": true,
+            "actual": {
+              "rows": 123117,
+              "counts": {
+                "mqtt_publish": 4146,
+                "thing_speak": 8108,
+                "wipro_bulb": 253,
+                "arp_poisioning": 7750,
+                "ddos_slowloris": 534,
+                "dos_syn_hping": 94659,
+                "metasploit_brute_force_ssh": 37,
+                "nmap_fin_scan": 28,
+                "nmap_os_detection": 2000,
+                "nmap_tcp_scan": 1002,
+                "nmap_udp_scan": 2590,
+                "nmap_xmas_tree_scan": 2010
+              },
+              "normal": 12507,
+              "attack": 110610
+            }
+          },
+          {
+            "gate": "D2",
+            "pass": true,
+            "actual": {
+              "sizes": {
+                "train": 86181,
+                "val": 18468,
+                "test": 18468
+              },
+              "supports": {
+                "train": {
+                  "dos_syn_hping": 66261,
+                  "nmap_os_detection": 1400,
+                  "arp_poisioning": 5425,
+                  "nmap_xmas_tree_scan": 1407,
+                  "thing_speak": 5675,
+                  "nmap_udp_scan": 1813,
+                  "mqtt_publish": 2902,
+                  "nmap_tcp_scan": 701,
+                  "ddos_slowloris": 374,
+                  "wipro_bulb": 177,
+                  "nmap_fin_scan": 20,
+                  "metasploit_brute_force_ssh": 26
+                },
+                "val": {
+                  "dos_syn_hping": 14199,
+                  "thing_speak": 1216,
+                  "nmap_udp_scan": 389,
+                  "arp_poisioning": 1162,
+                  "mqtt_publish": 622,
+                  "nmap_tcp_scan": 151,
+                  "nmap_os_detection": 300,
+                  "ddos_slowloris": 80,
+                  "nmap_xmas_tree_scan": 302,
+                  "wipro_bulb": 38,
+                  "metasploit_brute_force_ssh": 5,
+                  "nmap_fin_scan": 4
+                },
+                "test": {
+                  "dos_syn_hping": 14199,
+                  "arp_poisioning": 1163,
+                  "thing_speak": 1217,
+                  "nmap_xmas_tree_scan": 301,
+                  "mqtt_publish": 622,
+                  "nmap_tcp_scan": 150,
+                  "nmap_os_detection": 300,
+                  "nmap_udp_scan": 388,
+                  "wipro_bulb": 38,
+                  "ddos_slowloris": 80,
+                  "metasploit_brute_force_ssh": 6,
+                  "nmap_fin_scan": 4
+                }
+              }
+            }
+          }
+        ],
+        "seconds": 29.078960252999877
+      }
+    },
+    "seconds": 266.4093491389999
+  },
+  "training": "NOT RUN",
+  "inference": "NOT RUN",
+  "benchmarks": "NOT RUN",
+  "independent_validation": {
+    "recorded_at": "2026-11-17T12:20:54.619488+00:00",
+    "all_exports_verified": {
+      "42": true,
+      "43": true,
+      "44": true,
+      "45": true,
+      "46": true,
+      "47": true,
+      "48": true,
+      "49": true,
+      "50": true,
+      "51": true
+    },
+    "split42_recipe_fingerprint_matches": true,
+    "split42_arrays_byte_identical": {
+      "x_train": {
+        "identical": true,
+        "old_sha256": "fa534628511bb764884734a3c1113ce64ffc0ccb720a6ca9caf2277b00708431",
+        "export_sha256": "fa534628511bb764884734a3c1113ce64ffc0ccb720a6ca9caf2277b00708431"
+      },
+      "y12_train": {
+        "identical": true,
+        "old_sha256": "05d64017a5c6b76061f6da49a14981ec07a80304947f46dfb0c5af938175f9a7",
+        "export_sha256": "05d64017a5c6b76061f6da49a14981ec07a80304947f46dfb0c5af938175f9a7"
+      },
+      "y2_train": {
+        "identical": true,
+        "old_sha256": "df28663fef5d18947c325140ffefa30b731e6f23cfdee2f4075f4b4890bd5fa4",
+        "export_sha256": "df28663fef5d18947c325140ffefa30b731e6f23cfdee2f4075f4b4890bd5fa4"
+      },
+      "x_val": {
+        "identical": true,
+        "old_sha256": "ab7082a08a8d8f107714540e83b1fff50221b458eb5205baf0c8c375c58f4ff0",
+        "export_sha256": "ab7082a08a8d8f107714540e83b1fff50221b458eb5205baf0c8c375c58f4ff0"
+      },
+      "y12_val": {
+        "identical": true,
+        "old_sha256": "ce42d7ae924404102971706c8dccc52a9fb77564a1032ab6e0b74b566fdc0582",
+        "export_sha256": "ce42d7ae924404102971706c8dccc52a9fb77564a1032ab6e0b74b566fdc0582"
+      },
+      "y2_val": {
+        "identical": true,
+        "old_sha256": "f6190e130d552218d57b6f0b5c26a8064cacca8fb206b242ba29a3a22953a886",
+        "export_sha256": "f6190e130d552218d57b6f0b5c26a8064cacca8fb206b242ba29a3a22953a886"
+      },
+      "x_test": {
+        "identical": true,
+        "old_sha256": "8360f1b58e543dd83d5348ad37d1ded8a05864099041e57687f1314ec9db4d9f",
+        "export_sha256": "8360f1b58e543dd83d5348ad37d1ded8a05864099041e57687f1314ec9db4d9f"
+      },
+      "y12_test": {
+        "identical": true,
+        "old_sha256": "018980f7a378586e11b24703172b11d26b7b3f7842990a6e6c7d900e0f42d417",
+        "export_sha256": "018980f7a378586e11b24703172b11d26b7b3f7842990a6e6c7d900e0f42d417"
+      },
+      "y2_test": {
+        "identical": true,
+        "old_sha256": "b10288715f5b1de8ed7872a5bc27b410218326d6729226e4d2438622f37d3239",
+        "export_sha256": "b10288715f5b1de8ed7872a5bc27b410218326d6729226e4d2438622f37d3239"
+      }
+    },
+    "split42_indices_byte_identical": {
+      "train": true,
+      "val": true,
+      "test": true
+    },
+    "all_splits_full_class_coverage": true,
+    "immutable_files_verified": 916,
+    "immutable_files_changed": [],
+    "total_npz_size_bytes": 40366861,
+    "source_manifest_sha256": "02aa05ad468047d40a039b2ae40c04072de778468987469cdc6f2bd034f664cc"
+  },
+  "focused_tests": {
+    "command": "rtk proxy env OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1 .venv/bin/python -m pytest -q tests/test_prepared.py tests/test_data.py tests/test_preprocess.py",
+    "exit_code": 0,
+    "passed": 27,
+    "seconds_reported_by_pytest": 7.36,
+    "full_suite_run_by_this_agent": false
+  }
+}

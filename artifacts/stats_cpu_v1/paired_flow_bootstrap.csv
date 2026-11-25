@@ -1,0 +1,18 @@
+campaign,task,reference,model,mean_difference,ci_low,ci_high,pairing,replicates,n_seeds,sample_label,estimand
+cpu_v1,binary,exlightnet,bilstm,0.023750903000491725,0.007942178204988123,0.03406821532180985,PAIRED,2000,5,"n=5, indicative only",single-random-run plus flow uncertainty; not CI for the seed mean
+cpu_v1,binary,exlightnet,exlightnet_w8,3.6941886851811603e-05,-0.0005870255343787434,0.0007304632368217321,PAIRED,2000,5,"n=5, indicative only",single-random-run plus flow uncertainty; not CI for the seed mean
+cpu_v1,binary,exlightnet,mlp,0.00019525131229820397,-0.0023360339414761734,0.0028782232359886055,PAIRED,2000,5,"n=5, indicative only",single-random-run plus flow uncertainty; not CI for the seed mean
+cpu_v1,binary,exlightnet,random_forest,-0.006646361598102146,-0.010039149065282485,-0.003438801232821115,PAIRED,2000,5,"n=5, indicative only",single-random-run plus flow uncertainty; not CI for the seed mean
+cpu_v1,binary,exlightnet,std_cnn,0.007426114774738508,0.0006812338756232051,0.01864645646820075,PAIRED,2000,5,"n=5, indicative only",single-random-run plus flow uncertainty; not CI for the seed mean
+cpu_v1,binary,exlightnet,xgboost,-0.006291513317769612,-0.009786819053438551,-0.0028878030147213326,PAIRED,2000,5,"n=5, indicative only",single-random-run plus flow uncertainty; not CI for the seed mean
+cpu_v1,multiclass,exlightnet,balanced,0.040727099328577744,-0.02095760842672752,0.11290989520084546,PAIRED,2000,5,"n=5, indicative only",single-random-run plus flow uncertainty; not CI for the seed mean
+cpu_v1,multiclass,exlightnet,bilstm,0.1154117900037819,0.03129203889683121,0.1734836488451307,PAIRED,2000,5,"n=5, indicative only",single-random-run plus flow uncertainty; not CI for the seed mean
+cpu_v1,multiclass,exlightnet,exlightnet_w8,-0.00020864734194104268,-0.010618357614030946,0.007262255804781975,PAIRED,2000,5,"n=5, indicative only",single-random-run plus flow uncertainty; not CI for the seed mean
+cpu_v1,multiclass,exlightnet,mlp,0.009303122659538704,-0.03346633515973985,0.047186386119852014,PAIRED,2000,5,"n=5, indicative only",single-random-run plus flow uncertainty; not CI for the seed mean
+cpu_v1,multiclass,exlightnet,no_sampler,0.0017069514753152795,-0.06206031430583968,0.1034741065510465,PAIRED,2000,5,"n=5, indicative only",single-random-run plus flow uncertainty; not CI for the seed mean
+cpu_v1,multiclass,exlightnet,no_se,0.017266000843396242,-0.023618598892827858,0.07808182669098306,PAIRED,2000,5,"n=5, indicative only",single-random-run plus flow uncertainty; not CI for the seed mean
+cpu_v1,multiclass,exlightnet,random_forest,-0.01318060667596938,-0.059232294853538724,0.02594033705567668,PAIRED,2000,5,"n=5, indicative only",single-random-run plus flow uncertainty; not CI for the seed mean
+cpu_v1,multiclass,exlightnet,standard_conv,-0.015110663502911905,-0.05873314615071648,0.008003169911514596,PAIRED,2000,5,"n=5, indicative only",single-random-run plus flow uncertainty; not CI for the seed mean
+cpu_v1,multiclass,exlightnet,std_cnn,0.1335553661976063,-0.023781399156836303,0.24476996838397355,PAIRED,2000,5,"n=5, indicative only",single-random-run plus flow uncertainty; not CI for the seed mean
+cpu_v1,multiclass,exlightnet,top20,0.265695827578822,0.20215019288885552,0.3204101739496475,PAIRED,2000,5,"n=5, indicative only",single-random-run plus flow uncertainty; not CI for the seed mean
+cpu_v1,multiclass,exlightnet,xgboost,0.012881206902447321,-0.03434633029360815,0.05584192871794296,PAIRED,2000,5,"n=5, indicative only",single-random-run plus flow uncertainty; not CI for the seed mean

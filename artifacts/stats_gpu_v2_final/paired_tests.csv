@@ -1,0 +1,1 @@
+campaign,study,arm,task,comparison_type,reference,model,reference_arm,comparison_arm,checkpoint,reference_device,comparison_device,device_label,seeds,n_pairs,mean_difference,difference_sd,t_statistic,p_value,ci_low,ci_high,cohens_dz,p_holm,interpretation

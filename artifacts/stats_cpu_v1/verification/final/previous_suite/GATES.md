@@ -1,0 +1,31 @@
+# Cached statistics and hosted-runner verification
+
+| Stage | Gate | Status | Evidence |
+| --- | --- | --- | --- |
+| A | Immutable evidence | PASS | {"files_checked": 916, "changed": []} |
+| A | Paired t/CI agrees with SciPy | PASS | "artifacts/stats_cpu_v1/verification/final/pytest.xml" |
+| A | No active legacy SD flags | PASS | {"violations": [], "excluded": ["results/", "archive/", "authoritative brief/instruction docs"]} |
+| A | Mode captions and status recovery | PASS | "artifacts/stats_cpu_v1/verification/final/pytest.xml" |
+| A | Generated statistical values trace to checksummed files | PASS | {"tables_checked": ["model_summary", "paired_tests", "flow_bootstrap", "paired_flow_bootstrap", "per_class_f1", "sensitivity", "training_dynamics", "correlations", "binary_caps", "per_seed_macro_f1"], "manifest": "artifacts/stats_cpu_v1/statistics_manifest.json", "method": "source/table SHA and rendering tests; no freehand new metric values"} |
+| A | Executed cached notebook | PASS | "artifacts/stats_cpu_v1/verification/final/notebook_restart/notebook_execution.json" |
+| A | Full pytest suite | PASS | {"tests": 199, "xml": "artifacts/stats_cpu_v1/verification/final/pytest.xml"} |
+| B | Canonical CPU default compatibility | PASS | {"method": "read-only validated original CPU cache hit; no retraining or inference", "fingerprint": "b49fbe2ba153504e2811f7abf991a5d71f5c8e1d682c5af7ba660f3291bf567e", "macro_f1": 0.8354536030948337, "retrained": "NOT RUN: prohibited by local experiment budget"} |
+| B | Sampler-frequency equivalence | PASS | "artifacts/stats_cpu_v1/verification/final/pytest.xml" |
+| B | Prepared split42 matches canonical fingerprint | PASS | {"fingerprint": "dfba90bd116f9288bc72a837160516984ba773b11904e98561c80cda7dedcf5c", "evidence": "artifacts/stats_cpu_v1/prepared_export_checks.json"} |
+| B | CPU smoke, ZIP restore, idempotent resume and aggregation | PASS | {"seconds": 10.875827761999972, "evidence": "artifacts/stats_cpu_v1/smoke/control.json", "aggregate": "artifacts/stats_gpu_v2_smoke_verified/aggregation_manifest.json"} |
+| B | Mixed campaigns rejected; within-campaign device exception explicit | PASS | "artifacts/stats_cpu_v1/verification/final/pytest.xml" |
+| B | Real studies remain PENDING; protocol verbatim | PASS | "REPORT_stats_v2.md" |
+| B | Full pytest suite | PASS | {"tests": 199, "xml": "artifacts/stats_cpu_v1/verification/final/pytest.xml"} |
+
+Synthetic unit training and real-data smoke are separate:
+
+| Type | Test cases/runs | Fits | Epochs | Seconds |
+| --- | --- | --- | --- | --- |
+| Synthetic unit tests, current full suite | 4 | 5 | 7 | 1.323 |
+| Real-data CPU smoke, including interruption/ZIP recovery/cache restart | 2 | 2 | 4 | 10.875827761999972 |
+
+Synthetic time is pytest case wall time, including fixture/setup overhead. Smoke time is supervisor end-to-end wall time. They are not comparable per-epoch throughput estimates.
+
+NOT RUN: CUDA execution; real gpu_v2 studies B1-B5; GPU probe/determinism; all benchmark reruns; supplementary frozen-model latency.
+
+Canonical CPU compatibility is an unchanged source-definition check and validated cache hit. The historical trained MLP was not retrained beyond the local smoke budget.

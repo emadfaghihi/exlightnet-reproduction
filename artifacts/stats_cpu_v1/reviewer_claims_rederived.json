@@ -1,0 +1,276 @@
+{
+  "claims": [
+    {
+      "claim": "paired_multiclass_mlp",
+      "value": {
+        "mean_difference": "0.010999315612985904",
+        "p_value": "0.15838637907876732",
+        "p_holm": "0.950318274472604",
+        "ci_low": "-0.006636998409048817",
+        "ci_high": "0.028635629635020626",
+        "interpretation": "inconclusive"
+      },
+      "source": "paired_tests.csv",
+      "assessment": "reproduces supplied rounded claim"
+    },
+    {
+      "claim": "paired_multiclass_random_forest",
+      "value": {
+        "mean_difference": "-0.013002072659391396",
+        "p_value": "0.17462223944311128",
+        "p_holm": "0.950318274472604",
+        "ci_low": "-0.0349022331158903",
+        "ci_high": "0.008898087797107514",
+        "interpretation": "inconclusive"
+      },
+      "source": "paired_tests.csv",
+      "assessment": "reproduces supplied rounded claim"
+    },
+    {
+      "claim": "paired_multiclass_standard_conv",
+      "value": {
+        "mean_difference": "-0.015280744934418111",
+        "p_value": "0.06140529809099099",
+        "p_holm": "0.4912423847279279",
+        "ci_low": "-0.031732652949111546",
+        "ci_high": "0.001171163080275324",
+        "interpretation": "inconclusive"
+      },
+      "source": "paired_tests.csv",
+      "assessment": "reproduces supplied rounded claim"
+    },
+    {
+      "claim": "paired_multiclass_no_se",
+      "value": {
+        "mean_difference": "0.01958398847665439",
+        "p_value": "0.2566786778503132",
+        "p_holm": "0.950318274472604",
+        "ci_low": "-0.021543810993200744",
+        "ci_high": "0.06071178794650953",
+        "interpretation": "inconclusive"
+      },
+      "source": "paired_tests.csv",
+      "assessment": "reproduces supplied rounded claim"
+    },
+    {
+      "claim": "paired_binary_random_forest",
+      "value": {
+        "mean_difference": "-0.006663487727419914",
+        "p_value": "6.899560726970529e-05",
+        "p_holm": "0.0004139736436182317",
+        "ci_low": "-0.007746977043106908",
+        "ci_high": "-0.00557999841173292",
+        "interpretation": "difference supported"
+      },
+      "source": "paired_tests.csv",
+      "assessment": "reproduces supplied rounded claim"
+    },
+    {
+      "claim": "paired_binary_xgboost",
+      "value": {
+        "mean_difference": "-0.006301300436743773",
+        "p_value": "7.761104676469345e-05",
+        "p_holm": "0.0004139736436182317",
+        "ci_low": "-0.007356850824566743",
+        "ci_high": "-0.005245750048920804",
+        "interpretation": "difference supported"
+      },
+      "source": "paired_tests.csv",
+      "assessment": "reproduces supplied rounded claim"
+    },
+    {
+      "claim": "paired_binary_mlp",
+      "value": {
+        "mean_difference": "0.0001692504243880899",
+        "p_value": "0.4634390774338583",
+        "p_holm": "0.9268781548677166",
+        "ci_low": "-0.0004109812857943124",
+        "ci_high": "0.0007494821345704922",
+        "interpretation": "practically equivalent"
+      },
+      "source": "paired_tests.csv",
+      "assessment": "reproduces supplied rounded claim"
+    },
+    {
+      "claim": "epoch_correlation_exlightnet",
+      "value": {
+        "campaign": "cpu_v1",
+        "device": "cpu",
+        "device_label": "cpu",
+        "task": "multiclass",
+        "model": "exlightnet",
+        "n": "5",
+        "spearman_rho": "0.9746794344808963",
+        "p_value": "0.004818230468198566",
+        "sample_label": "n=5, indicative only",
+        "interpretation": "descriptive only, not causal",
+        "members": "exlightnet"
+      },
+      "source": "correlations.csv",
+      "assessment": "reproduces supplied rounded claim"
+    },
+    {
+      "claim": "epoch_correlation_no_se",
+      "value": {
+        "campaign": "cpu_v1",
+        "device": "cpu",
+        "device_label": "cpu",
+        "task": "multiclass",
+        "model": "no_se",
+        "n": "5",
+        "spearman_rho": "0.8720815992723809",
+        "p_value": "0.05385421772754211",
+        "sample_label": "n=5, indicative only",
+        "interpretation": "descriptive only, not causal",
+        "members": "no_se"
+      },
+      "source": "correlations.csv",
+      "assessment": "reproduces supplied rounded claim"
+    },
+    {
+      "claim": "epoch_correlation_std_cnn",
+      "value": {
+        "campaign": "cpu_v1",
+        "device": "cpu",
+        "device_label": "cpu",
+        "task": "multiclass",
+        "model": "std_cnn",
+        "n": "5",
+        "spearman_rho": "0.8999999999999998",
+        "p_value": "0.03738607346849874",
+        "sample_label": "n=5, indicative only",
+        "interpretation": "descriptive only, not causal",
+        "members": "std_cnn"
+      },
+      "source": "correlations.csv",
+      "assessment": "reproduces supplied rounded claim"
+    },
+    {
+      "claim": "std_cnn early best-validation epochs",
+      "value": [
+        {
+          "campaign": "cpu_v1",
+          "device": "cpu",
+          "device_label": "cpu",
+          "task": "multiclass",
+          "model": "std_cnn",
+          "seed": "43",
+          "macro_f1": "0.6385524028459749",
+          "model_macro_f1_sd": "0.10092912428268536",
+          "epochs_run": "8.0",
+          "best_epoch": "2.0",
+          "max_epochs": "30.0",
+          "hit_cap": "False",
+          "stopped_early": "True",
+          "cosine_lr_factor": "0.8345653031794291",
+          "unstable": "True",
+          "early_best_epoch": "True",
+          "high_seed_sd": "True",
+          "n_seeds": "5",
+          "sample_label": "n=5, indicative only"
+        },
+        {
+          "campaign": "cpu_v1",
+          "device": "cpu",
+          "device_label": "cpu",
+          "task": "multiclass",
+          "model": "std_cnn",
+          "seed": "45",
+          "macro_f1": "0.6227003013111079",
+          "model_macro_f1_sd": "0.10092912428268536",
+          "epochs_run": "7.0",
+          "best_epoch": "1.0",
+          "max_epochs": "30.0",
+          "hit_cap": "False",
+          "stopped_early": "True",
+          "cosine_lr_factor": "0.8715724127386971",
+          "unstable": "True",
+          "early_best_epoch": "True",
+          "high_seed_sd": "True",
+          "n_seeds": "5",
+          "sample_label": "n=5, indicative only"
+        },
+        {
+          "campaign": "cpu_v1",
+          "device": "cpu",
+          "device_label": "cpu",
+          "task": "multiclass",
+          "model": "std_cnn",
+          "seed": "46",
+          "macro_f1": "0.6383930986415665",
+          "model_macro_f1_sd": "0.10092912428268536",
+          "epochs_run": "9.0",
+          "best_epoch": "3.0",
+          "max_epochs": "30.0",
+          "hit_cap": "False",
+          "stopped_early": "True",
+          "cosine_lr_factor": "0.7938926261462366",
+          "unstable": "True",
+          "early_best_epoch": "True",
+          "high_seed_sd": "True",
+          "n_seeds": "5",
+          "sample_label": "n=5, indicative only"
+        }
+      ],
+      "count": 3,
+      "source": "training_dynamics.csv",
+      "assessment": "reproduces supplied claim"
+    },
+    {
+      "claim": "binary_exlightnet_caps",
+      "value": {
+        "campaign": "cpu_v1",
+        "device": "cpu",
+        "device_label": "cpu",
+        "task": "binary",
+        "model": "exlightnet",
+        "n_runs": "5",
+        "n_epoch_observed": "5",
+        "n_hit_cap": "4.0",
+        "n_best_at_cap": "2.0",
+        "sample_label": "n=5, indicative only"
+      },
+      "source": "binary_caps.csv",
+      "assessment": "reproduces supplied claim"
+    },
+    {
+      "claim": "fin_scan_f1_sd",
+      "value": {
+        "campaign": "cpu_v1",
+        "device": "cpu",
+        "device_label": "cpu",
+        "task": "multiclass",
+        "model": "exlightnet",
+        "class_name": "nmap_fin_scan",
+        "test_support": "4",
+        "f1_mean": "0.7233766233766235",
+        "f1_sd": "0.18387060502651034",
+        "f1_seed42": "0.5",
+        "n_seeds": "5",
+        "sample_label": "n=5, indicative only"
+      },
+      "source": "per_class_f1.csv",
+      "assessment": "reproduces supplied rounded claim"
+    },
+    {
+      "claim": "pooled_within_model_zscore_conv_correlation",
+      "value": {
+        "campaign": "cpu_v1",
+        "device": "cpu",
+        "device_label": "cpu",
+        "task": "multiclass",
+        "model": "pooled_conv_family",
+        "n": "20",
+        "spearman_rho": "0.7933764936748781",
+        "p_value": "2.995195346176656e-05",
+        "sample_label": "n=20, pooled descriptive only",
+        "interpretation": "descriptive only, not causal; within-model z scores",
+        "members": "exlightnet,no_se,standard_conv,std_cnn"
+      },
+      "source": "correlations.csv",
+      "assessment": "reproduces supplied rounded claim"
+    }
+  ],
+  "unreproduced_claims": [],
+  "causal_claim": "NOT ESTABLISHED: correlations descriptive only"
+}

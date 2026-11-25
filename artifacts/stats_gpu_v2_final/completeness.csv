@@ -1,0 +1,6 @@
+study,expected_new_runs,completed_new_runs,expected_b1_references,available_b1_references,status,device_label,campaign
+B1,330,0,0,0,PENDING: study not run,no observations,gpu_v2
+B3,120,0,60,0,PENDING: study not run,no observations,gpu_v2
+B2,90,0,0,0,PENDING: study not run,no observations,gpu_v2
+B4,30,0,30,0,PENDING: study not run,no observations,gpu_v2
+B5,30,0,0,0,PENDING: study not run,no observations,gpu_v2

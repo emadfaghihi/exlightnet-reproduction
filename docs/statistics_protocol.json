@@ -1,0 +1,100 @@
+{
+  "protocol": "cpu_v1 cached analysis and gpu_v2 supplementary accuracy studies",
+  "declared_before_stage_b_data": true,
+  "declared_date": "2026-11-17",
+  "canonical_campaign": "cpu_v1",
+  "supplementary_campaign": "gpu_v2",
+  "headline_checkpoint": "best",
+  "secondary_checkpoint": "last",
+  "confidence_level": 0.95,
+  "bootstrap_replicates": 2000,
+  "bootstrap_random_seed": 42,
+  "holm_family": "all predeclared reference comparisons within task and study",
+  "practical_equivalence_margin": {"multiclass": 0.01, "binary": 0.002},
+  "small_sample_label": "n=5, indicative only",
+  "tiny_class_support_cutoff": 10,
+  "rules_verbatim": [
+    "\"Difference supported\": the 95% CI of the paired difference excludes 0 AND Holm-adjusted p < 0.05.",
+    "\"Practically equivalent\": the whole 95% CI lies within +/-0.01 macro-F1 (multiclass) or +/-0.002 macro-F1 (binary). These margins are conventions chosen in advance.",
+    "Anything else: \"inconclusive\".",
+    "For the early-stopping hypothesis, report the B1 correlation and the B3 variance/mean comparison side by side; do not declare causality unless fixed-budget (arm b) shows both a visibly smaller macro-F1 SD and a higher mean for ExLightNet; otherwise say \"not supported\"."
+  ],
+  "bootstrap_interpretation": "Each replicate uniformly selects a training seed, then resamples test flows. This describes a randomly selected run plus finite-flow uncertainty, not the CI of the five-seed mean.",
+  "post_hoc_sensitivity": "Exclude labels whose original test support is below 10 from macro averaging; retain all flows and their false-positive contributions. Not a replacement for macro-F1.",
+  "conv_family": ["exlightnet", "no_se", "standard_conv", "std_cnn"],
+  "training_budget_local": {"experimental_seeds": 2, "max_epochs_each": 2, "device": "cpu", "purpose": "smoke only"},
+  "cuda_execution_here": "NOT RUN",
+  "supplementary_latency": "NOT RUN: current task forbids any benchmark rerun",
+  "studies": {
+    "B1": {"title": "Training-seed study", "seeds": "42-71", "split_seeds": [42], "status": "PENDING: study not run"},
+    "B3": {"title": "Stopping-rule sensitivity", "seeds": "42-56", "split_seeds": [42], "status": "PENDING: study not run"},
+    "B2": {"title": "Split-seed study", "seeds": "train seed equals split seed", "split_seeds": "42-51", "status": "PENDING: study not run"},
+    "B4": {"title": "Binary capped versus uncapped", "seeds": "42-56", "split_seeds": [42], "status": "PENDING: study not run"},
+    "B5": {"title": "Std-CNN validation-selected learning rate", "seeds": "42-51", "split_seeds": [42], "status": "PENDING: study not run"}
+  },
+  "amendments": [
+    {
+      "id": "PA-20261118-1",
+      "date": "2026-11-18",
+      "status": "Dated pre-data amendment; no real Stage B data exists",
+      "scope": "Stopping/annealing hypothesis only; the original declaration above remains preserved",
+      "supersedes_rule_index": 3,
+      "primary_endpoint": {"experimental_arm": "fixed30", "experimental_checkpoint": "last", "reference_arm": "paper", "reference_checkpoint": "best"},
+      "secondary_endpoint": {"experimental_arm": "fixed30", "experimental_checkpoint": "best", "reference_arm": "paper", "reference_checkpoint": "best"},
+      "matched_seeds": [42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56],
+      "sd_ratio_maximum": 0.75,
+      "sd_ratio_bootstrap": {"replicates": 2000, "random_seed": 42, "unit": "matched seed pairs", "confidence_level": 0.95, "upper_bound_strictly_below": 1},
+      "rules_verbatim": [
+        "PRIMARY stopping-hypothesis endpoint: fixed30 LAST-epoch macro-F1 versus the paper arm's best-validation checkpoint. The fixed30 best-validation checkpoint is SECONDARY; report both.",
+        "Visibly smaller SD requires fixed30 sample SD <= 0.75 x paper sample SD AND the upper end of the 95% bootstrap CI of the SD ratio is < 1, using 2000 resamples over matched seeds 42-56 and fixed random seed 42.",
+        "Higher mean requires the paired 95% CI of (fixed30 - paper) macro-F1 to exclude 0 in the positive direction.",
+        "If primary and secondary disagree, report inconclusive. Undefined SD ratios or insufficient matched observations cannot support the hypothesis. Never claim causality."
+      ]
+    },
+    {
+      "id": "PA-20261118-2",
+      "date": "2026-11-18",
+      "scope": "B1/B2/B3 plan order and complete-block inference",
+      "rule": "Seed-major order: seed, task, model, arm. For every possible prefix all seeds except at most its last seed have complete matched task/model/arm blocks. Run identities and fingerprints remain unchanged.",
+      "clarification": "User confirmed every-prefix testing. Statistical inference excludes seeds incomplete for the predeclared comparison block; completeness.csv explicitly records incomplete; excluded. Never interpolate or substitute missing observations."
+    },
+    {
+      "id": "PA-20261118-3",
+      "date": "2026-11-18",
+      "scope": "Independent neural/tree sessions within gpu_v2",
+      "only_choices": ["all", "neural", "trees"],
+      "default": "all",
+      "rule": "Trees-only needs neither a GPU nor a neural timing probe. Run all declared RandomForest and XGBoost seeds with unchanged recipes. Merge neural-CUDA and tree-CPU records within gpu_v2 with explicit per-record devices and the existing mixed-device label. Never pool campaigns."
+    },
+    {
+      "id": "PA-20261118-4",
+      "date": "2026-11-18",
+      "scope": "Three-file hosted handoff",
+      "files": ["notebooks/kaggle_runner.ipynb", "prepared/manifest.json", "delivery/stats_gpu_v2/hosted_source.zip"],
+      "rule": "Deliver together with SHA-256 and a separate explicit tested/not-tested line for each. Hosted notebook/CUDA execution is NOT RUN locally; distinguish installation, import, validation and syntax checks from execution."
+    },
+    {
+      "id": "PA-20261118-5",
+      "date": "2026-11-18",
+      "scope": "Authorized CPU-only final analysis, never selection",
+      "model": "cached cpu_v1 multiclass ExLightNet FP32 seed42",
+      "test_sampling": "25 per true class; all flows if support is below25; random seed42",
+      "background": "exact saved200 training-background indices from the prior full explanation",
+      "method": "existing DeepExplainer with additivity preflight and prescribed GradientExplainer fallback, nsamples200; report measured classwise-logit residuals and warnings",
+      "primary_class_ranking": "mean absolute attribution to the true class's own logit, conditional on that true class",
+      "auxiliary_ranking": "also save per-true-class averages over all output logits for comparability with the old global definition",
+      "global_ranking": "equal-weight arithmetic mean of the per-true-class primary importance vectors",
+      "deletion": "group by true class; remove features in descending absolute SHAP for each flow's original predicted-class logit; track that original predicted-class probability, mask0 in z-space,20 random-order permutations",
+      "early_deletion": "report SHAP versus random probability after k10 removals and their paired mean contrast; descriptive final analysis only",
+      "old_sample": "report class composition of the saved300-random-test-flow sample; exclude its extra local examples",
+      "evidence": "new separate directory; preserve every old explanation, checkpoint and evaluation receipt"
+    },
+    {
+      "id": "PA-20261118-6",
+      "date": "2026-11-18",
+      "scope": "Optional B6 leakage PROXY",
+      "status": "NOT RUN",
+      "rule": "Deferred optional extension. No B6 runner, proxy export or training is claimed here; any future implementation must be separately tagged and must use locally exported group-aware prepared arrays, never campaign-disjoint validation claims."
+    }
+  ]
+}

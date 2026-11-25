@@ -1,0 +1,127 @@
+You are continuing work on the existing ExLightNet reproduction repo (package `exlightnet`, full 5-seed CPU run already completed, 10/10 Q1 gates passed, 95 benchmarked models). Do NOT start over and do NOT re-run `--mode full`. Read this whole brief before touching anything.
+
+========================================================
+0. CONTEXT: WHAT THE EXISTING RESULTS SHOW (VERIFY, DON'T TRUST)
+========================================================
+A reviewer analysed results.json (95 rows, per-seed) and found the following. Re-derive each number yourself from results.json. If your number differs, say so explicitly in the report instead of silently adopting mine.
+
+ a) Multiclass paired tests (ExLightNet vs X, n=5 seeds, paired t): MLP diff +0.011 p~0.16; RF -0.013 p~0.18; standard_conv -0.015 p~0.06; no_se +0.020 p~0.26. None significant. Binary: RF and XGBoost are clearly better than ExLightNet (diff ~ -0.0065, p<0.001); ExLightNet ~ MLP.
+ b) Early stopping appears to drive seed variance. Multiclass ExLightNet: Spearman(epochs_run, test macro-F1) ~ +0.97 (n=5); no_se ~ +0.87; std_cnn ~ +0.90; pooled z-scored conv family (n=20) ~ +0.79. Cosine uses T_max=max_epochs, so a run stopped at epoch 11/30 is still at ~70% of peak LR (never annealed). This is a HYPOTHESIS until Stage B tests it.
+ c) std_cnn is unstable: in 3 of 5 multiclass seeds best_epoch was 1-3 and macro-F1 was 0.62-0.64. It is not a valid reference baseline in its current state.
+ d) Binary ExLightNet: 4 of 5 runs hit the 20-epoch cap (2 of 5 had best_epoch at the cap).
+ e) Test support for two classes is tiny: nmap_fin_scan = 4, metasploit_brute_force_ssh = 5 flows. Per-class F1 SD for fin_scan ~0.18. The split is fixed (split seed 42); the five "seeds" vary init/sampler only, so split variance is not measured. XGBoost is deterministic here (SD=0).
+ f) Cosmetic issues: stale "fast" wording inside full-mode sections of REPORT.md and notebook captions; flags named `exceeds_*_std` are misleading versus paired tests; parallel_execution.json says status "complete_with_stopped_branches" while failures.json is [].
+
+========================================================
+1. HARD RULES
+========================================================
+ R1. Existing cache, results.json, summary.csv, ablations.json, benchmark files and checkpoints are IMMUTABLE. Record their sha256 before you start and verify they are unchanged at the end. All new output goes to new paths. The existing run is labelled campaign "cpu_v1" by the aggregator (derive it from the manifest; do not edit old files).
+ R2. No tuning to hit paper numbers. Do not change model, loss, optimiser, sampler or hyper-parameters except in the explicitly listed sensitivity arms of Stage B.
+ R3. The test set is never used for any selection (epoch, checkpoint, learning rate, anything). Selection uses validation only.
+ R4. Never stop, pause, renice or kill any user application or process. No benchmark is re-run in this task. If you believe a benchmark re-run is needed, stop and ask.
+ R5. Results from different campaigns/devices are never pooled into one statistical comparison. The aggregator must refuse to mix campaigns inside a single table (hard error, no override flag).
+ R6. Every claim in REPORT/notebook must trace to a file or computed table. No numbers typed by hand. Where something was not run, write "NOT RUN" and do not fill in a number.
+ R7. Be explicit about what you could not test. You have no GPU: the CUDA code path is untested here and must be reported as such.
+ R8. No contradictory budgets: Stage A has no training at all; the only local training allowed anywhere is the Stage B smoke test (max 2 seeds x 2 epochs, CPU).
+
+========================================================
+2. STAGE A: LOCAL, CPU, NO TRAINING (use cached results only)
+========================================================
+Use `python -m exlightnet.run_all --mode full --aggregate-only --skip-benchmark` or new standalone scripts. Do not retrain.
+
+A1. Statistics module `exlightnet/stats.py` + CLI `scripts/make_stats.py`
+  - Inputs: per-seed results.json. Outputs (new dir `artifacts/stats_cpu_v1/`):
+    * per_seed_macro_f1.csv (task, model, seed, macro_f1, accuracy, epochs_run, best_epoch)
+    * paired_tests.csv: for every task and every pair (exlightnet vs each other model/ablation): mean diff, paired two-sided t p-value, 95% t-interval (df=n-1), Cohen's dz, Holm-adjusted p within each task family.
+    * Handle zero-variance columns (XGBoost) correctly; document that the paired test then reduces to a one-sample test against a constant.
+    * Do NOT use Wilcoxon at n=5 (minimum possible p is 0.0625); say so in the docs.
+  - Remove the `exceeds_full_seed_std` / `exceeds_*_std` flags everywhere (code, JSON, REPORT, notebook). Replace by the paired-test columns. Label every n=5 table "n=5, indicative only".
+  - Add a test comparing your t-test/CI numbers with scipy on known inputs.
+
+A2. Training-dynamics table `training_dynamics.csv`
+  - Per run: epochs_run, best_epoch, max_epochs, hit_cap (epochs_run>=max_epochs), stopped_early, cosine LR factor at the last epoch (0.5*(1+cos(pi*epochs_run/T_max))), and a `unstable` flag (best_epoch<=3 OR per-model macro-F1 SD>0.05).
+  - Spearman(epochs_run, macro_f1) per model (n=5, descriptive only) and pooled z-scored for the conv family. Label as descriptive, not causal.
+  - Binary: list how many runs hit the cap per model.
+
+A3. Uncertainty from the test set itself
+  - Bootstrap over test flows. If per-flow predictions are cached, use them (and add a paired bootstrap for ExLightNet vs each model on identical flows). Otherwise resample from the confusion-matrix cells (multinomial draw of N flows over (true,pred) cells = exact flow bootstrap) and state clearly that this version is UNPAIRED.
+  - 2000 replicates; each replicate picks a seed uniformly then resamples flows. Report mean and 95% percentile CI of macro-F1 per (task, model).
+  - Add a post-hoc sensitivity metric: macro-F1 excluding classes with test support < 10 (fin_scan=4, metasploit=5). Label it "post-hoc sensitivity, not a replacement for macro-F1".
+  - Per-class F1 table (mean ± SD over seeds) WITH a test-support column, in REPORT.
+
+A4. Documentation fixes
+  - Remove stale "fast" wording from full-mode sections of REPORT.md and the notebook captions (locate by searching, not by cell number). Add a test that fails if full-mode report/notebook text contains "fast mode"/"fast-mode" outside sections explicitly labelled as fast.
+  - Investigate what "stopped_branches" in parallel_execution.json refers to. Either document it precisely or fix the status derivation so it matches failures.json. Add a test.
+  - Add a "Limitations" section to REPORT: fixed split; n=5; test support 4/5 for two classes; early-stopping/cosine confound (stated as hypothesis, link to Stage B); std_cnn instability (not a valid baseline); XGBoost deterministic; PyTorch eager batch-1 latency mostly measures framework dispatch overhead (MLP 0.046 ms vs ExLightNet 0.618 ms), so it must not be read as pure compute cost.
+
+A5. OPTIONAL, lowest priority, only if A1-A4 and tests are green and nothing else is pending: report frozen/exported-model CPU latency (TorchScript-frozen or ONNX Runtime) for ExLightNet vs MLP using existing checkpoints, local machine only, single thread, separate table clearly labelled "supplementary". If skipped, write "NOT RUN".
+
+GATE A (all must pass, print a table):
+  - sha256 of every immutable file unchanged
+  - paired_tests.csv matches scipy on the unit test
+  - no `exceeds_*_std` remains (grep)
+  - stale-"fast" test passes; status/failures test passes
+  - all new numbers in REPORT are generated from files (no hand-typed numbers)
+  - full pytest suite passes
+
+========================================================
+3. STAGE B: CODE + RUNBOOK ONLY (user will run it on Kaggle/Colab GPU)
+========================================================
+Why: training took ~18.5 CPU-hours for a 38k-parameter model; that limits statistical power. Training/statistics move to GPU; latency/size/INT8 benchmarks stay on the local CPU (architecture determines latency, not weights, so existing benchmark numbers remain valid for unchanged architectures).
+
+B0. Device support (default must remain CPU so old behaviour is unchanged)
+  - `--device {cpu,cuda,auto}`, default cpu. Single GPU only, no DataParallel.
+  - FP32 only: no AMP, TF32 disabled (torch.backends.cuda.matmul.allow_tf32=False, cudnn.allow_tf32=False). cudnn.deterministic=True, cudnn.benchmark=False, torch.use_deterministic_algorithms(True, warn_only=True), CUBLAS_WORKSPACE_CONFIG=:4096:8. Log every nondeterminism warning into the run record.
+  - Run records carry: campaign, study, arm, device, GPU name, torch/cuda/cudnn versions, data_fingerprint, config, seed, split_seed. Cache keys include device and campaign so CPU and GPU results can never collide.
+B1. Fast training loop for GPU
+  - Keep the whole prepared train tensor on the device; no DataLoader/workers. Sample with torch.multinomial using exactly the existing per-sample weights (n_c^-0.5, with replacement) and the same epoch size, batch size 512 and drop_last behaviour as the current `make_loader`. Add a test showing the empirical class-sampling frequencies match the existing WeightedRandomSampler within a stated tolerance.
+  - Log seconds per epoch.
+B2. Prepared-data export (removes preprocessing differences between machines)
+  - `scripts/export_prepared.py --splits 42-51` runs the existing train-only FlowPreprocessor locally for each split seed and writes `prepared/split_{seed}.npz` (X_train/val/test float32, y_binary and y_multiclass per partition, feature names, class names, sha256 fingerprint). Verify split_42 is identical to the data the CPU run used (compare via the existing fingerprint function). Guard: every class must appear in train, val and test for every split; otherwise fail loudly.
+  - The Kaggle runner consumes ONLY these npz files (no raw CSV, no sklearn preprocessing on Kaggle).
+B3. Resumable Kaggle runner
+  - `scripts/kaggle_campaign.py --study {B1,B2,B3,B4,B5,probe,determinism} --device cuda --time-budget-hours 8`
+  - Writes one JSON per run under `/kaggle/working/gpu_v2/`, skips finished runs by fingerprint, stops launching new runs when the time budget is reached, and zips results after every N runs and at exit. Assume the session can be killed at any moment.
+  - Per run, store: per-epoch train loss and per-epoch val macro-F1 lists, epochs_run, best_epoch, test metrics (macro_f1, per_class, confusion_matrix) for BOTH the best-val checkpoint and the last epoch, per-flow test predictions (int8, compressed npz), seconds/epoch. Save ExLightNet state_dicts only (small).
+  - No shap, no benchmark code on the runner. Make it installable offline from an uploaded dataset (assume Kaggle internet may be disabled; use only torch, numpy, scikit-learn, xgboost, which are normally preinstalled; state what you assumed).
+  - `probe` study: 3 epochs of ExLightNet multiclass, print seconds/epoch, project total hours for each study and print the projection BEFORE anything long starts.
+  - `determinism` study: ExLightNet seed 42 trained twice on GPU; report max abs difference in macro-F1 and in logits.
+  - `notebooks/kaggle_runner.ipynb`: thin notebook that installs the package from the uploaded dataset and calls the script.
+  - `docs/KAGGLE_RUNBOOK.md`: step-by-step for the user (what to upload as datasets, settings, run order, expected cost per the probe, how to download and where to put the zip). Write for someone who has never used Kaggle.
+B4. Studies (each gets its own `study` tag; priority order B1, B3, B2, B4, B5)
+  - B1 seed study: split seed 42, train seeds 42-71 (30). binary: exlightnet, mlp, random_forest, xgboost. multiclass: exlightnet, mlp, standard_conv, no_se, std_cnn, random_forest, xgboost. Seeds 42-46 intentionally repeat the CPU campaign for a device-equivalence check (report diff and 95% CI, no pass/fail). RF random_state=seed; XGBoost seed=seed; state that XGBoost is deterministic under the paper config. Trees run on the runner's CPU with unchanged hyper-parameters.
+  - B3 stopping-rule study (multiclass, split 42, seeds 42-56): arms (a) paper rule (reuse B1 runs, do not rerun), (b) fixed 30 epochs, cosine T_max=30, NO early stopping, report last-epoch AND best-val checkpoint, (c) patience=10 with min_epochs=15 and T_max=30. Models: exlightnet, standard_conv, mlp, std_cnn.
+  - B2 split study: split seeds 42-51 (10), train seed = split seed. multiclass: exlightnet, mlp, standard_conv, random_forest, xgboost. binary: exlightnet, mlp, random_forest, xgboost.
+  - B4 binary uncapped: exlightnet and mlp, max_epochs=60 with T_max=60, patience 6, seeds 42-56, versus the paper's 20-epoch rule.
+  - B5 std_cnn learning rate: lr in {3e-4, 1e-3, 1.5e-3}, multiclass, seeds 42-51. Choose any "best lr" by VALIDATION only; report val and test.
+B5. Aggregator `scripts/aggregate_gpu_v2.py` (runs locally on CPU, no training)
+  - Reads the downloaded zip(s), verifies data_fingerprint equals the exported prepared data, rejects mixed campaigns (R5).
+  - Produces per-study tables: paired tests with 95% CI and Holm p (B1: n=30; B2: n=10, paired by split), epochs-vs-F1 Spearman with bootstrap CI (n=30), stopping-rule table (SD of macro-F1 across seeds per arm, mean macro-F1 per arm, last-epoch vs best-val), binary capped-vs-uncapped table, std_cnn lr table, device-equivalence table (cpu_v1 vs gpu_v2 on seeds 42-46, shown side by side, NOT pooled), paired flow-level bootstrap from saved predictions.
+  - Writes `REPORT_stats_v2.md` with an A-priori-rules section (below). Sections whose studies have no data yet must say "PENDING: study not run", with no numbers.
+
+A-PRIORI INTERPRETATION RULES (write them into REPORT_stats_v2.md verbatim BEFORE any Stage B data exists, and apply them mechanically afterwards)
+  - "Difference supported": the 95% CI of the paired difference excludes 0 AND Holm-adjusted p < 0.05.
+  - "Practically equivalent": the whole 95% CI lies within +/-0.01 macro-F1 (multiclass) or +/-0.002 macro-F1 (binary). These margins are conventions chosen in advance.
+  - Anything else: "inconclusive".
+  - For the early-stopping hypothesis, report the B1 correlation and the B3 variance/mean comparison side by side; do not declare causality unless fixed-budget (arm b) shows both a visibly smaller macro-F1 SD and a higher mean for ExLightNet; otherwise say "not supported".
+
+B6. Local smoke test only (R8)
+  - Run `kaggle_campaign.py --device cpu` for 2 seeds x 2 epochs on one study to prove the pipeline (npz in, JSON out, resume, zip, aggregator) works end to end. Say plainly that the CUDA path is untested.
+
+GATE B (print a table):
+  - default behaviour with `--device cpu` byte-for-byte unchanged on an existing seed (compare the macro-F1 and fingerprint with the cached cpu_v1 row for seed 42, task multiclass, mlp; expected exact match)
+  - sampler-frequency test passes
+  - export_prepared split_42 fingerprint equals the cached CPU fingerprint
+  - smoke test passes incl. resume (kill mid-run, restart, no duplicated runs)
+  - aggregator rejects mixed campaigns (unit test)
+  - REPORT_stats_v2.md shows PENDING for every study without data
+  - full pytest suite passes
+
+========================================================
+4. DELIVERABLES
+========================================================
+  - Updated src/, tests/, scripts/, docs/ (zip each as before, plus the new `prepared/` export script but NOT the large npz data itself)
+  - artifacts/stats_cpu_v1/* (Stage A outputs), updated REPORT.md, updated notebook (executed, Restart-and-Run-All succeeds)
+  - REPORT_stats_v2.md (skeleton with pending sections), docs/KAGGLE_RUNBOOK.md, notebooks/kaggle_runner.ipynb
+  - A checksum file for everything delivered
+  - Final message (short): Gate A table, Gate B table, a list of what was RUN vs NOT RUN, what is untested (CUDA), any number of mine you could not reproduce, any deviation you made and why.

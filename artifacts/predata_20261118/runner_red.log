@@ -1,0 +1,313 @@
+.FFFFFF.FFFFFFFF                                                         [100%]
+=================================== FAILURES ===================================
+_____ test_every_plan_prefix_has_complete_seed_blocks_except_the_last[B1] ______
+
+study = 'B1'
+
+    @pytest.mark.parametrize("study", ("B1", "B2", "B3"))
+    def test_every_plan_prefix_has_complete_seed_blocks_except_the_last(study):
+        key = lambda row: (row["task"], row["model"], row["arm"])
+        seed_key = lambda row: row["seed"]
+        plans = campaign.study_runs(study)
+        reference = baseline_plans(study)
+        block = [key(row) for row in reference if row["seed"] == 42]
+        for end in range(len(plans) + 1):
+            complete, partial = divmod(end, len(block))
+            expected = [(seed, block) for seed in range(42, 42 + complete)]
+            if partial:
+                expected.append((42 + complete, block[:partial]))
+            actual = [(seed, list(map(key, rows))) for seed, rows in groupby(plans[:end], seed_key)]
+>           assert actual == expected, (study, end)
+E           AssertionError: ('B1', 2)
+E           assert [(42, [('bina...', 'paper')])] == [(42, [('bina...', 'paper')])]
+E             
+E             At index 0 diff: (42, [('binary', 'exlightnet', 'paper')]) != (42, [('binary', 'exlightnet', 'paper'), ('binary', 'mlp', 'paper')])
+E             Left contains one more item: (43, [('binary', 'exlightnet', 'paper')])
+E             Use -v to get more diff
+
+tests/test_plan_amendment.py:92: AssertionError
+_____ test_every_plan_prefix_has_complete_seed_blocks_except_the_last[B2] ______
+
+study = 'B2'
+
+    @pytest.mark.parametrize("study", ("B1", "B2", "B3"))
+    def test_every_plan_prefix_has_complete_seed_blocks_except_the_last(study):
+        key = lambda row: (row["task"], row["model"], row["arm"])
+        seed_key = lambda row: row["seed"]
+        plans = campaign.study_runs(study)
+        reference = baseline_plans(study)
+        block = [key(row) for row in reference if row["seed"] == 42]
+        for end in range(len(plans) + 1):
+            complete, partial = divmod(end, len(block))
+            expected = [(seed, block) for seed in range(42, 42 + complete)]
+            if partial:
+                expected.append((42 + complete, block[:partial]))
+            actual = [(seed, list(map(key, rows))) for seed, rows in groupby(plans[:end], seed_key)]
+>           assert actual == expected, (study, end)
+E           AssertionError: ('B2', 2)
+E           assert [(42, [('bina...', 'paper')])] == [(42, [('bina...', 'paper')])]
+E             
+E             At index 0 diff: (42, [('binary', 'exlightnet', 'paper')]) != (42, [('binary', 'exlightnet', 'paper'), ('binary', 'mlp', 'paper')])
+E             Left contains one more item: (43, [('binary', 'exlightnet', 'paper')])
+E             Use -v to get more diff
+
+tests/test_plan_amendment.py:92: AssertionError
+_____ test_every_plan_prefix_has_complete_seed_blocks_except_the_last[B3] ______
+
+study = 'B3'
+
+    @pytest.mark.parametrize("study", ("B1", "B2", "B3"))
+    def test_every_plan_prefix_has_complete_seed_blocks_except_the_last(study):
+        key = lambda row: (row["task"], row["model"], row["arm"])
+        seed_key = lambda row: row["seed"]
+        plans = campaign.study_runs(study)
+        reference = baseline_plans(study)
+        block = [key(row) for row in reference if row["seed"] == 42]
+        for end in range(len(plans) + 1):
+            complete, partial = divmod(end, len(block))
+            expected = [(seed, block) for seed in range(42, 42 + complete)]
+            if partial:
+                expected.append((42 + complete, block[:partial]))
+            actual = [(seed, list(map(key, rows))) for seed, rows in groupby(plans[:end], seed_key)]
+>           assert actual == expected, (study, end)
+E           AssertionError: ('B3', 4)
+E           assert [(42, [('mult...', 'paper')])] == [(42, [('mult...', 'paper')])]
+E             
+E             At index 0 diff: (42, [('multiclass', 'exlightnet', 'paper'), ('multiclass', 'exlightnet', 'fixed30'), ('multiclass', 'exlightnet', 'patience10_min15')]) != (42, [('multiclass', 'exlightnet', 'paper'), ('multiclass', 'exlightnet', 'fixed30'), ('multiclass', 'exlightnet', 'patience10_min15'), ('multiclass', 'standard_conv', 'paper')])
+E             Left contains one more item: (43, [('multiclass', 'exlightnet', 'paper')])
+E             Use -v to get more diff
+
+tests/test_plan_amendment.py:92: AssertionError
+__________ test_tree_selection_keeps_every_seed_of_both_models[B1-72] __________
+
+study = 'B1', stop = 72
+
+    @pytest.mark.parametrize("study,stop", [("B1", 72), ("B2", 52)])
+    def test_tree_selection_keeps_every_seed_of_both_models(study, stop):
+>       rows = campaign.select_study_runs(study, "trees")
+E       AttributeError: module 'exlightnet.campaign' has no attribute 'select_study_runs'
+
+tests/test_plan_amendment.py:97: AttributeError
+__________ test_tree_selection_keeps_every_seed_of_both_models[B2-52] __________
+
+study = 'B2', stop = 52
+
+    @pytest.mark.parametrize("study,stop", [("B1", 72), ("B2", 52)])
+    def test_tree_selection_keeps_every_seed_of_both_models(study, stop):
+>       rows = campaign.select_study_runs(study, "trees")
+E       AttributeError: module 'exlightnet.campaign' has no attribute 'select_study_runs'
+
+tests/test_plan_amendment.py:97: AttributeError
+________ test_trees_only_uses_cpu_without_probe_and_resumes_cached_runs ________
+
+prepared_b1 = (PosixPath('/tmp/pytest-of-mparsict/pytest-2/test_trees_only_uses_cpu_witho0/prepared'), {'data_fingerprint': '1d3a56a...ae7443f6241b021a51cbee', 'schema_version': 1, ...}, '469354848398982432775f3f8dba45496e5d0d5e52ec13711058df7346fabcbf')
+tmp_path = PosixPath('/tmp/pytest-of-mparsict/pytest-2/test_trees_only_uses_cpu_witho0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f9bc7506510>
+capsys = <_pytest.capture.CaptureFixture object at 0x7f9bc7506750>
+
+    def test_trees_only_uses_cpu_without_probe_and_resumes_cached_runs(prepared_b1, tmp_path, monkeypatch, capsys):
+        prepared, metadata, sha256 = prepared_b1
+        output = tmp_path / "out"
+        root = output / "gpu_v2"
+        rows = [p for p in baseline_plans("B1") if p["model"] in TREE_MODELS]
+        versions = _cpu_versions()
+        _write_completed(root, rows[:-1], metadata, sha256, versions)
+        _forbid_cuda(monkeypatch)
+    
+        def stop_before_fit(name, classes, seed):
+            assert (name, classes, seed) == ("xgboost", 12, 71)
+            raise campaign.RunStopped("Synthetic stop before fitting")
+    
+        monkeypatch.setattr(baselines, "build_model", stop_before_fit)
+        monkeypatch.setattr(baselines, "fit_tree", lambda *args: pytest.fail("Tree fitting reached"))
+>       result = campaign.run_campaign(prepared, output, "B1", device="cuda", only="trees")
+E       TypeError: run_campaign() got an unexpected keyword argument 'only'
+
+tests/test_plan_amendment.py:160: TypeError
+_ test_all_and_neural_reuse_baseline_fingerprints_with_matching_probe[neural-210] _
+
+only = 'neural', expected_count = 210
+prepared_b1 = (PosixPath('/tmp/pytest-of-mparsict/pytest-2/test_all_and_neural_reuse_base1/prepared'), {'data_fingerprint': '1d3a56a...ae7443f6241b021a51cbee', 'schema_version': 1, ...}, '469354848398982432775f3f8dba45496e5d0d5e52ec13711058df7346fabcbf')
+tmp_path = PosixPath('/tmp/pytest-of-mparsict/pytest-2/test_all_and_neural_reuse_base1')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f9bc75074d0>
+capsys = <_pytest.capture.CaptureFixture object at 0x7f9bc751e5d0>
+
+    @pytest.mark.parametrize("only,expected_count", [("all", 330), ("neural", 210)])
+    def test_all_and_neural_reuse_baseline_fingerprints_with_matching_probe(
+        only, expected_count, prepared_b1, tmp_path, monkeypatch, capsys
+    ):
+        prepared, metadata, sha256 = prepared_b1
+        output = tmp_path / "out"
+        root = output / "gpu_v2"
+        versions = _cpu_versions()
+        rows = [p for p in baseline_plans("B1") if only == "all" or p["model"] not in TREE_MODELS]
+        _write_completed(root, rows, metadata, sha256, versions)
+        monkeypatch.setattr(baselines, "build_model", lambda *args: pytest.fail("Model creation reached"))
+        kwargs = {"only": only} if only != "all" else {}
+        with pytest.raises(RuntimeError, match="three-epoch probe"):
+>           campaign.run_campaign(prepared, output, "B1", **kwargs)
+E           TypeError: run_campaign() got an unexpected keyword argument 'only'
+
+tests/test_plan_amendment.py:183: TypeError
+_________ test_empty_tree_selection_skips_inputs_cuda_and_outputs[B3] __________
+
+study = 'B3'
+tmp_path = PosixPath('/tmp/pytest-of-mparsict/pytest-2/test_empty_tree_selection_skip0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f9bc74d7a10>
+capsys = <_pytest.capture.CaptureFixture object at 0x7f9bc74d7c10>
+
+    @pytest.mark.parametrize("study", ("B3", "B4", "B5", "probe", "determinism"))
+    def test_empty_tree_selection_skips_inputs_cuda_and_outputs(study, tmp_path, monkeypatch, capsys):
+        _forbid_cuda(monkeypatch)
+        output = tmp_path / "out"
+>       result = campaign.run_campaign(tmp_path / "missing", output, study, device="auto", only="trees")
+E       TypeError: run_campaign() got an unexpected keyword argument 'only'
+
+tests/test_plan_amendment.py:200: TypeError
+_________ test_empty_tree_selection_skips_inputs_cuda_and_outputs[B4] __________
+
+study = 'B4'
+tmp_path = PosixPath('/tmp/pytest-of-mparsict/pytest-2/test_empty_tree_selection_skip1')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f9bc75114d0>
+capsys = <_pytest.capture.CaptureFixture object at 0x7f9bc7511f10>
+
+    @pytest.mark.parametrize("study", ("B3", "B4", "B5", "probe", "determinism"))
+    def test_empty_tree_selection_skips_inputs_cuda_and_outputs(study, tmp_path, monkeypatch, capsys):
+        _forbid_cuda(monkeypatch)
+        output = tmp_path / "out"
+>       result = campaign.run_campaign(tmp_path / "missing", output, study, device="auto", only="trees")
+E       TypeError: run_campaign() got an unexpected keyword argument 'only'
+
+tests/test_plan_amendment.py:200: TypeError
+_________ test_empty_tree_selection_skips_inputs_cuda_and_outputs[B5] __________
+
+study = 'B5'
+tmp_path = PosixPath('/tmp/pytest-of-mparsict/pytest-2/test_empty_tree_selection_skip2')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f9bc751cd90>
+capsys = <_pytest.capture.CaptureFixture object at 0x7f9bc751ec90>
+
+    @pytest.mark.parametrize("study", ("B3", "B4", "B5", "probe", "determinism"))
+    def test_empty_tree_selection_skips_inputs_cuda_and_outputs(study, tmp_path, monkeypatch, capsys):
+        _forbid_cuda(monkeypatch)
+        output = tmp_path / "out"
+>       result = campaign.run_campaign(tmp_path / "missing", output, study, device="auto", only="trees")
+E       TypeError: run_campaign() got an unexpected keyword argument 'only'
+
+tests/test_plan_amendment.py:200: TypeError
+________ test_empty_tree_selection_skips_inputs_cuda_and_outputs[probe] ________
+
+study = 'probe'
+tmp_path = PosixPath('/tmp/pytest-of-mparsict/pytest-2/test_empty_tree_selection_skip3')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f9bc7374a90>
+capsys = <_pytest.capture.CaptureFixture object at 0x7f9bc7374990>
+
+    @pytest.mark.parametrize("study", ("B3", "B4", "B5", "probe", "determinism"))
+    def test_empty_tree_selection_skips_inputs_cuda_and_outputs(study, tmp_path, monkeypatch, capsys):
+        _forbid_cuda(monkeypatch)
+        output = tmp_path / "out"
+>       result = campaign.run_campaign(tmp_path / "missing", output, study, device="auto", only="trees")
+E       TypeError: run_campaign() got an unexpected keyword argument 'only'
+
+tests/test_plan_amendment.py:200: TypeError
+_____ test_empty_tree_selection_skips_inputs_cuda_and_outputs[determinism] _____
+
+study = 'determinism'
+tmp_path = PosixPath('/tmp/pytest-of-mparsict/pytest-2/test_empty_tree_selection_skip4')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f9bc7385990>
+capsys = <_pytest.capture.CaptureFixture object at 0x7f9bc7385550>
+
+    @pytest.mark.parametrize("study", ("B3", "B4", "B5", "probe", "determinism"))
+    def test_empty_tree_selection_skips_inputs_cuda_and_outputs(study, tmp_path, monkeypatch, capsys):
+        _forbid_cuda(monkeypatch)
+        output = tmp_path / "out"
+>       result = campaign.run_campaign(tmp_path / "missing", output, study, device="auto", only="trees")
+E       TypeError: run_campaign() got an unexpected keyword argument 'only'
+
+tests/test_plan_amendment.py:200: TypeError
+______________ test_runner_help_reports_only_choices_and_default _______________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f9bc7524ad0>
+capsys = <_pytest.capture.CaptureFixture object at 0x7f9bc7524f50>
+
+    def test_runner_help_reports_only_choices_and_default(monkeypatch, capsys):
+        script = Path(__file__).resolve().parents[1] / "scripts" / "kaggle_campaign.py"
+        monkeypatch.setattr(sys, "argv", [str(script), "--help"])
+        with pytest.raises(SystemExit) as exc:
+            runpy.run_path(str(script), run_name="__main__")
+        assert exc.value.code == 0
+        help_text = capsys.readouterr().out
+>       assert "--only {all,neural,trees}" in help_text
+E       AssertionError: assert '--only {all,neural,trees}' in 'usage: kaggle_campaign.py [-h] --prepared-dir PREPARED_DIR [--output OUTPUT]\n                          --study {B1,B... SMOKE_SEEDS SMOKE_SEEDS\n  --smoke-epochs SMOKE_EPOCHS\n  --pause-after-first-checkpoint\n  --resume-zip RESUME_ZIP\n'
+
+tests/test_plan_amendment.py:213: AssertionError
+___________________ test_runner_cli_forwards_trees_selection ___________________
+
+tmp_path = PosixPath('/tmp/pytest-of-mparsict/pytest-2/test_runner_cli_forwards_trees0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f9bc7527f50>
+capsys = <_pytest.capture.CaptureFixture object at 0x7f9bc7526f90>
+
+    def test_runner_cli_forwards_trees_selection(tmp_path, monkeypatch, capsys):
+        script = Path(__file__).resolve().parents[1] / "scripts" / "kaggle_campaign.py"
+        output = tmp_path / "out"
+        monkeypatch.setattr(sys, "argv", [str(script), "--study", "probe", "--device", "cuda", "--only", "trees",
+                                          "--prepared-dir", str(tmp_path / "missing"), "--output", str(output)])
+        _forbid_cuda(monkeypatch)
+>       runpy.run_path(str(script), run_name="__main__")
+
+tests/test_plan_amendment.py:223: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+<frozen runpy>:291: in run_path
+    ???
+<frozen runpy>:98: in _run_module_code
+    ???
+<frozen runpy>:88: in _run_code
+    ???
+scripts/kaggle_campaign.py:49: in <module>
+    main()
+scripts/kaggle_campaign.py:32: in main
+    args = parser.parse_args()
+/usr/lib/python3.11/argparse.py:1877: in parse_args
+    self.error(msg % ' '.join(argv))
+/usr/lib/python3.11/argparse.py:2633: in error
+    self.exit(2, _('%(prog)s: error: %(message)s\n') % args)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = ArgumentParser(prog='kaggle_campaign.py', usage=None, description=None, formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True)
+status = 2
+message = 'kaggle_campaign.py: error: unrecognized arguments: --only trees\n'
+
+    def exit(self, status=0, message=None):
+        if message:
+            self._print_message(message, _sys.stderr)
+>       _sys.exit(status)
+E       SystemExit: 2
+
+/usr/lib/python3.11/argparse.py:2620: SystemExit
+----------------------------- Captured stderr call -----------------------------
+usage: kaggle_campaign.py [-h] --prepared-dir PREPARED_DIR [--output OUTPUT]
+                          --study {B1,B2,B3,B4,B5,probe,determinism}
+                          [--device {cpu,cuda,auto}] [--campaign CAMPAIGN]
+                          [--time-budget-hours TIME_BUDGET_HOURS]
+                          [--zip-every ZIP_EVERY] [--smoke-model SMOKE_MODEL]
+                          [--smoke-task {binary,multiclass}]
+                          [--smoke-seeds SMOKE_SEEDS SMOKE_SEEDS]
+                          [--smoke-epochs SMOKE_EPOCHS]
+                          [--pause-after-first-checkpoint]
+                          [--resume-zip RESUME_ZIP]
+kaggle_campaign.py: error: unrecognized arguments: --only trees
+=========================== short test summary info ============================
+FAILED tests/test_plan_amendment.py::test_every_plan_prefix_has_complete_seed_blocks_except_the_last[B1]
+FAILED tests/test_plan_amendment.py::test_every_plan_prefix_has_complete_seed_blocks_except_the_last[B2]
+FAILED tests/test_plan_amendment.py::test_every_plan_prefix_has_complete_seed_blocks_except_the_last[B3]
+FAILED tests/test_plan_amendment.py::test_tree_selection_keeps_every_seed_of_both_models[B1-72]
+FAILED tests/test_plan_amendment.py::test_tree_selection_keeps_every_seed_of_both_models[B2-52]
+FAILED tests/test_plan_amendment.py::test_trees_only_uses_cpu_without_probe_and_resumes_cached_runs
+FAILED tests/test_plan_amendment.py::test_all_and_neural_reuse_baseline_fingerprints_with_matching_probe[neural-210]
+FAILED tests/test_plan_amendment.py::test_empty_tree_selection_skips_inputs_cuda_and_outputs[B3]
+FAILED tests/test_plan_amendment.py::test_empty_tree_selection_skips_inputs_cuda_and_outputs[B4]
+FAILED tests/test_plan_amendment.py::test_empty_tree_selection_skips_inputs_cuda_and_outputs[B5]
+FAILED tests/test_plan_amendment.py::test_empty_tree_selection_skips_inputs_cuda_and_outputs[probe]
+FAILED tests/test_plan_amendment.py::test_empty_tree_selection_skips_inputs_cuda_and_outputs[determinism]
+FAILED tests/test_plan_amendment.py::test_runner_help_reports_only_choices_and_default
+FAILED tests/test_plan_amendment.py::test_runner_cli_forwards_trees_selection
+14 failed, 2 passed in 2.33s

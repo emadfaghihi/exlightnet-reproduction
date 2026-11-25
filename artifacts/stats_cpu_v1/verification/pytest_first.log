@@ -1,0 +1,104 @@
+...........F............................................................ [ 42%]
+........................................................................ [ 84%]
+...........................                                              [100%]
+=================================== FAILURES ===================================
+__________ test_benchmark_pass_only_updates_timing_from_cached_models __________
+
+tmp_path = PosixPath('/tmp/pytest-of-mparsict/pytest-51/test_benchmark_pass_only_updat0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7ffa43e4bc50>
+
+    def test_benchmark_pass_only_updates_timing_from_cached_models(tmp_path, monkeypatch):
+        import exlightnet.execution as execution
+        import exlightnet.run_all as runner
+        from exlightnet.io import read_json, write_json
+        from exlightnet.metrics import evaluate_once
+        from exlightnet.train import seed_everything
+        seed_everything(42)
+        x = np.zeros((4, 40), dtype="float32")
+        y = np.array([0, 1, 0, 1])
+        arrays = {"x_" + p: x for p in ("train", "val", "test")}
+        arrays.update({"y2_" + p: y for p in ("train", "val", "test")})
+        directory = tmp_path / "results/full"
+>       row = runner._run_one("binary", "mlp", 42, arrays, [], {"chosen": "none"}, {"fingerprint": "fixture"}, directory / "binary/mlp/42", 1)
+
+tests/test_benchmark_pass.py:40: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/exlightnet/run_all.py:136: in _run_one
+    info = fit_model(model, xtrain, ytrain, xval, yval, config, directory)
+src/exlightnet/train.py:87: in fit_model
+    optimizer.step()
+.venv/lib/python3.11/site-packages/torch/optim/lr_scheduler.py:140: in wrapper
+    return func.__get__(opt, opt.__class__)(*args, **kwargs)
+.venv/lib/python3.11/site-packages/torch/optim/optimizer.py:493: in wrapper
+    out = func(*args, **kwargs)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = (Adam (
+Parameter Group 0
+    amsgrad: False
+    betas: (0.9, 0.999)
+    capturable: False
+    differentiable: False
+ ...   foreach: None
+    fused: None
+    initial_lr: 0.0015
+    lr: 0.0015
+    maximize: False
+    weight_decay: 0.0001
+),)
+kwargs = {}
+
+    def forbidden_step(*args, **kwargs):
+>       raise AssertionError('Optimizer updates require a declared tiny synthetic-training test')
+E       AssertionError: Optimizer updates require a declared tiny synthetic-training test
+
+tests/conftest.py:22: AssertionError
+=============================== warnings summary ===============================
+tests/test_execution_modes.py::test_skip_benchmark_suppresses_all_timing_calls
+  /home/mparsict/projects/me/exlightnet/.venv/lib/python3.11/site-packages/matplotlib/_fontconfig_pattern.py:64: PyparsingDeprecationWarning: 'oneOf' deprecated - use 'one_of'
+    prop = Group((name + Suppress("=") + comma_separated(value)) | oneOf(_CONSTANTS))
+
+tests/test_execution_modes.py::test_skip_benchmark_suppresses_all_timing_calls
+tests/test_execution_modes.py::test_skip_benchmark_suppresses_all_timing_calls
+tests/test_execution_modes.py::test_skip_benchmark_suppresses_all_timing_calls
+tests/test_execution_modes.py::test_skip_benchmark_suppresses_all_timing_calls
+tests/test_execution_modes.py::test_skip_benchmark_suppresses_all_timing_calls
+tests/test_execution_modes.py::test_skip_benchmark_suppresses_all_timing_calls
+  /home/mparsict/projects/me/exlightnet/.venv/lib/python3.11/site-packages/matplotlib/_fontconfig_pattern.py:85: PyparsingDeprecationWarning: 'parseString' deprecated - use 'parse_string'
+    parse = parser.parseString(pattern)
+
+tests/test_execution_modes.py::test_skip_benchmark_suppresses_all_timing_calls
+tests/test_execution_modes.py::test_skip_benchmark_suppresses_all_timing_calls
+tests/test_execution_modes.py::test_skip_benchmark_suppresses_all_timing_calls
+tests/test_execution_modes.py::test_skip_benchmark_suppresses_all_timing_calls
+tests/test_execution_modes.py::test_skip_benchmark_suppresses_all_timing_calls
+tests/test_execution_modes.py::test_skip_benchmark_suppresses_all_timing_calls
+  /home/mparsict/projects/me/exlightnet/.venv/lib/python3.11/site-packages/matplotlib/_fontconfig_pattern.py:89: PyparsingDeprecationWarning: 'resetCache' deprecated - use 'reset_cache'
+    parser.resetCache()
+
+tests/test_execution_modes.py::test_skip_benchmark_suppresses_all_timing_calls
+  /home/mparsict/projects/me/exlightnet/.venv/lib/python3.11/site-packages/matplotlib/_mathtext.py:45: PyparsingDeprecationWarning: 'enablePackrat' deprecated - use 'enable_packrat'
+    ParserElement.enablePackrat()
+
+tests/test_explain.py: 909 warnings
+  /home/mparsict/projects/me/exlightnet/.venv/lib/python3.11/site-packages/shap/plots/colors/_colorconv.py:819: DeprecationWarning: Converting `np.inexact` or `np.floating` to a dtype is deprecated. The current result is `float64` which is not strictly correct.
+    if np.issubdtype(dtype_in, np.dtype(dtype).type):
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+- generated xml file: /home/mparsict/projects/me/exlightnet/artifacts/stats_cpu_v1/verification/pytest_first.xml -
+============================= slowest 12 durations =============================
+3.09s call     tests/test_recovery.py::test_extracted_archive_can_rebuild_missing_array_cache
+2.90s call     tests/test_prepared.py::test_real_split42_export_preserves_frozen_cache_without_fitting
+1.50s call     tests/test_data.py::test_real_split_if_present
+0.77s call     tests/test_benchmark_pass.py::test_benchmark_pass_only_updates_timing_from_cached_models
+0.58s call     tests/test_explain.py::test_quantization_stability_uses_paired_gradient_samples
+0.57s call     tests/test_explain.py::test_shap_additivity_tiny_linear_model
+0.46s call     tests/test_prepared.py::test_default_split_preserves_original_indices_and_general_seeds
+0.44s call     tests/test_publication.py::test_notebook_generator_defaults_to_full_without_publishing
+0.36s call     tests/test_execution_modes.py::test_skip_benchmark_suppresses_all_timing_calls
+0.22s call     tests/test_prepared.py::test_export_uses_only_training_rows_and_refuses_overwrite
+0.18s call     tests/test_parallel_pipeline.py::test_real_worker_processes_overlap_and_finish_before_aggregation[3072]
+0.17s call     tests/test_study_stats.py::test_complete_b5_selects_by_validation_even_when_test_prefers_other_lr
+=========================== short test summary info ============================
+FAILED tests/test_benchmark_pass.py::test_benchmark_pass_only_updates_timing_from_cached_models
+1 failed, 170 passed, 923 warnings in 16.57s

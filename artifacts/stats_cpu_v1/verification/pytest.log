@@ -1,0 +1,50 @@
+........................................................................ [ 36%]
+........................................................................ [ 72%]
+.......................................................                  [100%]
+=============================== warnings summary ===============================
+tests/test_execution_modes.py::test_skip_benchmark_suppresses_all_timing_calls
+  /home/mparsict/projects/me/exlightnet/.venv/lib/python3.11/site-packages/matplotlib/_fontconfig_pattern.py:64: PyparsingDeprecationWarning: 'oneOf' deprecated - use 'one_of'
+    prop = Group((name + Suppress("=") + comma_separated(value)) | oneOf(_CONSTANTS))
+
+tests/test_execution_modes.py::test_skip_benchmark_suppresses_all_timing_calls
+tests/test_execution_modes.py::test_skip_benchmark_suppresses_all_timing_calls
+tests/test_execution_modes.py::test_skip_benchmark_suppresses_all_timing_calls
+tests/test_execution_modes.py::test_skip_benchmark_suppresses_all_timing_calls
+tests/test_execution_modes.py::test_skip_benchmark_suppresses_all_timing_calls
+tests/test_execution_modes.py::test_skip_benchmark_suppresses_all_timing_calls
+  /home/mparsict/projects/me/exlightnet/.venv/lib/python3.11/site-packages/matplotlib/_fontconfig_pattern.py:85: PyparsingDeprecationWarning: 'parseString' deprecated - use 'parse_string'
+    parse = parser.parseString(pattern)
+
+tests/test_execution_modes.py::test_skip_benchmark_suppresses_all_timing_calls
+tests/test_execution_modes.py::test_skip_benchmark_suppresses_all_timing_calls
+tests/test_execution_modes.py::test_skip_benchmark_suppresses_all_timing_calls
+tests/test_execution_modes.py::test_skip_benchmark_suppresses_all_timing_calls
+tests/test_execution_modes.py::test_skip_benchmark_suppresses_all_timing_calls
+tests/test_execution_modes.py::test_skip_benchmark_suppresses_all_timing_calls
+  /home/mparsict/projects/me/exlightnet/.venv/lib/python3.11/site-packages/matplotlib/_fontconfig_pattern.py:89: PyparsingDeprecationWarning: 'resetCache' deprecated - use 'reset_cache'
+    parser.resetCache()
+
+tests/test_execution_modes.py::test_skip_benchmark_suppresses_all_timing_calls
+  /home/mparsict/projects/me/exlightnet/.venv/lib/python3.11/site-packages/matplotlib/_mathtext.py:45: PyparsingDeprecationWarning: 'enablePackrat' deprecated - use 'enable_packrat'
+    ParserElement.enablePackrat()
+
+tests/test_explain.py: 909 warnings
+  /home/mparsict/projects/me/exlightnet/.venv/lib/python3.11/site-packages/shap/plots/colors/_colorconv.py:819: DeprecationWarning: Converting `np.inexact` or `np.floating` to a dtype is deprecated. The current result is `float64` which is not strictly correct.
+    if np.issubdtype(dtype_in, np.dtype(dtype).type):
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+- generated xml file: /home/mparsict/projects/me/exlightnet/artifacts/stats_cpu_v1/verification/pytest.xml -
+============================= slowest 12 durations =============================
+2.93s call     tests/test_prepared.py::test_real_split42_export_preserves_frozen_cache_without_fitting
+2.76s call     tests/test_recovery.py::test_extracted_archive_can_rebuild_missing_array_cache
+1.51s call     tests/test_data.py::test_real_split_if_present
+0.88s call     tests/test_benchmark_pass.py::test_benchmark_pass_only_updates_timing_from_cached_models
+0.61s call     tests/test_explain.py::test_quantization_stability_uses_paired_gradient_samples
+0.43s call     tests/test_prepared.py::test_default_split_preserves_original_indices_and_general_seeds
+0.40s call     tests/test_publication.py::test_notebook_generator_defaults_to_full_without_publishing
+0.33s call     tests/test_execution_modes.py::test_skip_benchmark_suppresses_all_timing_calls
+0.28s call     tests/test_explain.py::test_shap_additivity_tiny_linear_model
+0.20s call     tests/test_prepared.py::test_export_uses_only_training_rows_and_refuses_overwrite
+0.18s call     tests/test_parallel_pipeline.py::test_real_worker_processes_overlap_and_finish_before_aggregation[3072]
+0.18s call     tests/test_study_stats.py::test_complete_b5_selects_by_validation_even_when_test_prefers_other_lr
+199 passed, 923 warnings in 15.50s

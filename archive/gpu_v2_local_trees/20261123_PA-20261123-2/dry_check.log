@@ -1,0 +1,8 @@
+B1: 120 selected tree runs on CPU; no neural timing probe required.
+{'new_completed': 0, 'stopped_count': 0, 'stopped': [], 'elapsed_seconds': 0.0002653150004334748, 'root': '/tmp/exlightnet-tree-dry-1ozitgjl/B1/gpu_v2'}
+B1 planned output: /home/mparsict/projects/me/exlightnet/archive/gpu_v2_local_trees/20261123_PA-20261123-2/B1
+B1 planned ZIP: /home/mparsict/projects/me/exlightnet/archive/gpu_v2_local_trees/20261123_PA-20261123-2/B1/gpu_v2.zip
+B2: 40 selected tree runs on CPU; no neural timing probe required.
+{'new_completed': 0, 'stopped_count': 0, 'stopped': [], 'elapsed_seconds': 0.00019079000048805028, 'root': '/tmp/exlightnet-tree-dry-1ozitgjl/B2/gpu_v2'}
+B2 planned output: /home/mparsict/projects/me/exlightnet/archive/gpu_v2_local_trees/20261123_PA-20261123-2/B2
+B2 planned ZIP: /home/mparsict/projects/me/exlightnet/archive/gpu_v2_local_trees/20261123_PA-20261123-2/B2/gpu_v2.zip

@@ -1,0 +1,186 @@
+{
+  "verified_at": "2026-11-17T13:16:50.426650+00:00",
+  "gates": [
+    {
+      "stage": "A",
+      "gate": "Immutable evidence",
+      "status": "PASS",
+      "evidence": {
+        "files_checked": 916,
+        "changed": []
+      }
+    },
+    {
+      "stage": "A",
+      "gate": "Paired t/CI agrees with SciPy",
+      "status": "PASS",
+      "evidence": "artifacts/stats_cpu_v1/verification/final/pytest.xml"
+    },
+    {
+      "stage": "A",
+      "gate": "No active legacy SD flags",
+      "status": "PASS",
+      "evidence": {
+        "violations": [],
+        "excluded": [
+          "results/",
+          "archive/",
+          "authoritative brief/instruction docs"
+        ]
+      }
+    },
+    {
+      "stage": "A",
+      "gate": "Mode captions and status recovery",
+      "status": "PASS",
+      "evidence": "artifacts/stats_cpu_v1/verification/final/pytest.xml"
+    },
+    {
+      "stage": "A",
+      "gate": "Generated statistical values trace to checksummed files",
+      "status": "PASS",
+      "evidence": {
+        "tables_checked": [
+          "model_summary",
+          "paired_tests",
+          "flow_bootstrap",
+          "paired_flow_bootstrap",
+          "per_class_f1",
+          "sensitivity",
+          "training_dynamics",
+          "correlations",
+          "binary_caps",
+          "per_seed_macro_f1"
+        ],
+        "manifest": "artifacts/stats_cpu_v1/statistics_manifest.json",
+        "method": "source/table SHA and rendering tests; no freehand new metric values"
+      }
+    },
+    {
+      "stage": "A",
+      "gate": "Executed cached notebook",
+      "status": "PASS",
+      "evidence": "artifacts/stats_cpu_v1/verification/final/notebook_restart/notebook_execution.json"
+    },
+    {
+      "stage": "A",
+      "gate": "Full pytest suite",
+      "status": "PASS",
+      "evidence": {
+        "tests": 199,
+        "xml": "artifacts/stats_cpu_v1/verification/final/pytest.xml"
+      }
+    },
+    {
+      "stage": "B",
+      "gate": "Canonical CPU default compatibility",
+      "status": "PASS",
+      "evidence": {
+        "method": "read-only validated original CPU cache hit; no retraining or inference",
+        "fingerprint": "b49fbe2ba153504e2811f7abf991a5d71f5c8e1d682c5af7ba660f3291bf567e",
+        "macro_f1": 0.8354536030948337,
+        "retrained": "NOT RUN: prohibited by local experiment budget"
+      }
+    },
+    {
+      "stage": "B",
+      "gate": "Sampler-frequency equivalence",
+      "status": "PASS",
+      "evidence": "artifacts/stats_cpu_v1/verification/final/pytest.xml"
+    },
+    {
+      "stage": "B",
+      "gate": "Prepared split42 matches canonical fingerprint",
+      "status": "PASS",
+      "evidence": {
+        "fingerprint": "dfba90bd116f9288bc72a837160516984ba773b11904e98561c80cda7dedcf5c",
+        "evidence": "artifacts/stats_cpu_v1/prepared_export_checks.json"
+      }
+    },
+    {
+      "stage": "B",
+      "gate": "CPU smoke, ZIP restore, idempotent resume and aggregation",
+      "status": "PASS",
+      "evidence": {
+        "seconds": 10.875827761999972,
+        "evidence": "artifacts/stats_cpu_v1/smoke/control.json",
+        "aggregate": "artifacts/stats_gpu_v2_smoke_verified/aggregation_manifest.json"
+      }
+    },
+    {
+      "stage": "B",
+      "gate": "Mixed campaigns rejected; within-campaign device exception explicit",
+      "status": "PASS",
+      "evidence": "artifacts/stats_cpu_v1/verification/final/pytest.xml"
+    },
+    {
+      "stage": "B",
+      "gate": "Real studies remain PENDING; protocol verbatim",
+      "status": "PASS",
+      "evidence": "REPORT_stats_v2.md"
+    },
+    {
+      "stage": "B",
+      "gate": "Full pytest suite",
+      "status": "PASS",
+      "evidence": {
+        "tests": 199,
+        "xml": "artifacts/stats_cpu_v1/verification/final/pytest.xml"
+      }
+    }
+  ],
+  "synthetic_unit_tests": {
+    "cases": 4,
+    "fits": 5,
+    "epochs": 7,
+    "pytest_seconds": 1.3810000000000002,
+    "scope": "this full-suite invocation; earlier focused checks retained separately",
+    "details": [
+      {
+        "test": "test_benchmark_pass_only_updates_timing_from_cached_models",
+        "pytest_seconds": 0.929,
+        "synthetic_training": "true",
+        "fits": "1",
+        "epochs": "1",
+        "train_rows_per_fit": "4"
+      },
+      {
+        "test": "test_skip_benchmark_suppresses_all_timing_calls",
+        "pytest_seconds": 0.316,
+        "synthetic_training": "true",
+        "fits": "1",
+        "epochs": "1",
+        "train_rows_per_fit": "4"
+      },
+      {
+        "test": "test_changed_checkpoint_cannot_reuse_test_metrics",
+        "pytest_seconds": 0.038,
+        "synthetic_training": "true",
+        "fits": "1",
+        "epochs": "1",
+        "train_rows_per_fit": "4"
+      },
+      {
+        "test": "test_deterministic_training_restores_checkpoint",
+        "pytest_seconds": 0.098,
+        "synthetic_training": "true",
+        "fits": "2",
+        "epochs": "4",
+        "train_rows_per_fit": "24"
+      }
+    ]
+  },
+  "real_smoke": {
+    "runs": 2,
+    "epochs": 4,
+    "seconds": 10.875827761999972
+  },
+  "not_run": [
+    "CUDA execution",
+    "real gpu_v2 studies B1-B5",
+    "GPU probe/determinism",
+    "all benchmark reruns",
+    "supplementary frozen-model latency"
+  ],
+  "immutable_changes": []
+}

@@ -1,0 +1,1 @@
+campaign,study,arm,task,model,checkpoint,device,device_label,n,sample_label,macro_f1_mean,macro_f1_sd,macro_f1_seed42,zero_seed_variance,best_val_macro_f1_mean,epochs_run_mean,n_epoch_observed,n_hit_cap,unstable

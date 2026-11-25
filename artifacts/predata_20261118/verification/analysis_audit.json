@@ -1,0 +1,70 @@
+{
+  "status": "PASS",
+  "raw_files_verified": 1047,
+  "raw_files_changed": [],
+  "analysis_manifest_sha256": "fe377d0aa33d7c11dcb8ba2da3f674476bbe4f92ec9bdf50b2eb7553ef1c31a7",
+  "output_files_verified": 12,
+  "phi_shape": [
+    259,
+    40,
+    12
+  ],
+  "class_support": [
+    1162,
+    80,
+    14199,
+    5,
+    622,
+    4,
+    300,
+    151,
+    389,
+    302,
+    1216,
+    38
+  ],
+  "stratified_counts": [
+    25,
+    25,
+    25,
+    5,
+    25,
+    4,
+    25,
+    25,
+    25,
+    25,
+    25,
+    25
+  ],
+  "earlier_random300_counts": [
+    16,
+    0,
+    232,
+    0,
+    11,
+    0,
+    6,
+    3,
+    3,
+    5,
+    22,
+    2
+  ],
+  "exact_background_reused": true,
+  "equal_class_rankings_rederived": true,
+  "per_class_top10_rederived": true,
+  "random_permutations_per_class": 20,
+  "deletion_k0_reuses_cached_predictions": true,
+  "k10_contrast_rederived": true,
+  "method": "GradientExplainer",
+  "additivity_max_abs": 3.3370019332892307,
+  "additivity_mean_abs": 0.2966468941682444,
+  "warning": [
+    "unrecognized nn.Module: AdaptiveMaxPool1d"
+  ],
+  "model_calls_during_audit": 0,
+  "training": "NOT RUN",
+  "benchmark": "NOT RUN",
+  "CUDA": "NOT RUN"
+}

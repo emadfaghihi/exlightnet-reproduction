@@ -1,0 +1,71 @@
+{
+  "gates": [
+    {
+      "stage": "Pre-data",
+      "gate": "PA-1 stopping endpoints",
+      "status": "PASS",
+      "evidence": "Original declaration preserved; both endpoint/threshold/degenerate/disagreement tests pass. Real B3 data: PENDING."
+    },
+    {
+      "stage": "Pre-data",
+      "gate": "PA-2 seed-major and completeness",
+      "status": "PASS",
+      "evidence": "All 603 B1/B2/B3 plan prefixes and unchanged plan/fingerprint multisets tested; incomplete study blocks excluded in pure regressions."
+    },
+    {
+      "stage": "Pre-data",
+      "gate": "PA-3 independent tree sessions",
+      "status": "PASS",
+      "evidence": "CPU-only selector, no CUDA/probe, all RF/XGB seeds, shard merge and legacy resume/claimed-receipt regressions pass. Actual hosted fitting: NOT RUN."
+    },
+    {
+      "stage": "Pre-data",
+      "gate": "PA-4 three-file handoff",
+      "status": "PASS",
+      "evidence": "HOSTED_HANDOFF.json/.md bind each SHA and TESTED/NOT TESTED statement; offline install/import/help pass. Hosted notebook/CUDA: NEVER EXECUTED."
+    },
+    {
+      "stage": "Final analysis",
+      "gate": "PA-5 stratified SHAP",
+      "status": "PASS",
+      "evidence": "CPU 259 flows, prior 200 backgrounds, 12 checked outputs, 20 random orders per class and k10 contrast; approximate additivity reported. All 1047 prior evidence hashes unchanged."
+    },
+    {
+      "stage": "Optional",
+      "gate": "PA-6 leakage PROXY B6",
+      "status": "NOT RUN",
+      "evidence": "Optional runner/export/study deferred. No campaign-disjoint validation claim."
+    }
+  ],
+  "synthetic_unit_tests": {
+    "cases": 4,
+    "fits": 5,
+    "epochs": 7,
+    "pytest_seconds": 1.968
+  },
+  "real_smoke": {
+    "runs": "NOT RUN in this follow-up",
+    "epochs": "NOT RUN",
+    "seconds": "NOT RUN"
+  },
+  "suite": {
+    "passed": 253,
+    "seconds": 24.96,
+    "exit_code": 0
+  },
+  "RUN": [
+    "253 CPU tests; 4 tiny synthetic-training cases",
+    "CPU stratified SHAP/deletion final analysis",
+    "10 prepared split validations",
+    "cached report notebook, fresh-kernel restart",
+    "offline source install/import/help"
+  ],
+  "NOT_RUN": [
+    "new real-data smoke/training",
+    "benchmark",
+    "CUDA",
+    "Kaggle notebook execution",
+    "real B1-B5",
+    "optional B6"
+  ]
+}

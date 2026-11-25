@@ -1,0 +1,7 @@
+{
+  "prior_execution": "artifacts/predata_20261118/analysis_execution.json",
+  "preserved_output": "artifacts/final_analysis/stratified_shap_20261118_attempt1_interrupted",
+  "reason": "NumPy expected_logits metadata serialization fixed after premature readiness; interrupted own process before saving attribution cache",
+  "old_inputs_unchanged": true,
+  "retry_policy": "fresh implementation signature, identical declared sample/background/model; no model selection"
+}

@@ -1,0 +1,17 @@
+{
+  "status": "complete",
+  "install_network": "disabled (--no-index --no-deps --no-build-isolation)",
+  "build_tool": "system Python3.11 pip23 because task venv has no pip/build backend",
+  "runtime_interpreter": "3.11.2",
+  "installed_module_path": "/tmp/exlightnet-offline-hosted-smoke/exlightnet/campaign.py",
+  "prepared_fingerprint": "dfba90bd116f9288bc72a837160516984ba773b11904e98561c80cda7dedcf5c",
+  "study_plan_counts": {
+    "B1": 330,
+    "B2": 90,
+    "B3": 180,
+    "B4": 30,
+    "B5": 30
+  },
+  "training": "NOT RUN",
+  "cuda": "NOT RUN"
+}

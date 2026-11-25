@@ -12,6 +12,8 @@
 
 # Diagnostic evidence includes pytest trace formatting; retain it verbatim.
 results/**/*.log -text -whitespace
+artifacts/**/*.log -text -whitespace
+artifacts/**/*.xml -text -whitespace
 
 *.npz binary
 *.pt binary

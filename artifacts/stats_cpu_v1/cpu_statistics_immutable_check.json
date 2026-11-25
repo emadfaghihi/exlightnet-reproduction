@@ -1,0 +1,8 @@
+{
+  "campaign": "cpu_v1",
+  "n_files": 916,
+  "unchanged": true,
+  "changed": [],
+  "baseline_sha256": "3c83954b3ea40b7587b588be51095c04f923f64ccd85e764e95bae3f8fd26e8b",
+  "check_scope": "every pre-existing result/artifact and raw CSV in immutable_before.json"
+}

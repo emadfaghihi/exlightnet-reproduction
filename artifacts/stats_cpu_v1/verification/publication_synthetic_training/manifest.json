@@ -1,0 +1,49 @@
+{
+  "recorded_at": "2026-11-17T12:42:35.009710+00:00",
+  "test": "tests/test_execution_modes.py::test_skip_benchmark_suppresses_all_timing_calls",
+  "suite": "publication focused compatibility verification",
+  "suite_passed": 22,
+  "suite_seconds": 4.66,
+  "synthetic_fit_count": 1,
+  "model": "mlp",
+  "seed": 42,
+  "train_rows": 4,
+  "validation_rows": 4,
+  "test_rows": 4,
+  "feature_count": 40,
+  "max_epochs": 1,
+  "epochs_run": 1,
+  "training_seconds": 0.007573949999823526,
+  "per_case_pytest_wall_seconds": null,
+  "per_case_pytest_wall_status": "UNAVAILABLE: focused pytest run did not request per-case durations",
+  "training_record": {
+    "best_epoch": 1,
+    "best_val_macro_f1": 0.3333333333333333,
+    "epochs_run": 1,
+    "training_seconds": 0.007573949999823526,
+    "config": {
+      "seed": 42,
+      "max_epochs": 1,
+      "batch_size": 512,
+      "patience": 6,
+      "lr": 0.0015,
+      "weight_decay": 0.0001,
+      "alpha_mode": "none",
+      "sampler": "tempered",
+      "threads": 1
+    }
+  },
+  "files": {
+    "training.json": {
+      "source": "/tmp/pytest-of-mparsict/pytest-44/test_skip_benchmark_suppresses0/results/fast/binary/mlp/42/training.json",
+      "sha256": "ee2bf6c7697ecbdbe85be4b297e724abca54a5e55c9d8d73d1b9285643a045e0"
+    },
+    "epochs.csv": {
+      "source": "/tmp/pytest-of-mparsict/pytest-44/test_skip_benchmark_suppresses0/results/fast/binary/mlp/42/epochs.csv",
+      "sha256": "60bad5ee1fd7d4d84cc455f06cad998a3976e5dd6eefedfddd7ebf5c514aae38"
+    }
+  },
+  "benchmark": "NOT RUN: timing entry point replaced with a failure stub; skip_benchmark=True",
+  "real_smoke_included": false,
+  "test_source_sha256": "c28f8b1e1239359cbd4ee9d409d3244701d468029a3cd78cf3a4b05d126c02b0"
+}

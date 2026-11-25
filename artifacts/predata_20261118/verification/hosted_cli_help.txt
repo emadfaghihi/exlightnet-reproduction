@@ -1,0 +1,29 @@
+usage: kaggle_campaign.py [-h] --prepared-dir PREPARED_DIR [--output OUTPUT]
+                          --study {B1,B2,B3,B4,B5,probe,determinism}
+                          [--device {cpu,cuda,auto}]
+                          [--only {all,neural,trees}] [--campaign CAMPAIGN]
+                          [--time-budget-hours TIME_BUDGET_HOURS]
+                          [--zip-every ZIP_EVERY] [--smoke-model SMOKE_MODEL]
+                          [--smoke-task {binary,multiclass}]
+                          [--smoke-seeds SMOKE_SEEDS SMOKE_SEEDS]
+                          [--smoke-epochs SMOKE_EPOCHS]
+                          [--pause-after-first-checkpoint]
+                          [--resume-zip RESUME_ZIP]
+
+options:
+  -h, --help            show this help message and exit
+  --prepared-dir PREPARED_DIR
+  --output OUTPUT
+  --study {B1,B2,B3,B4,B5,probe,determinism}
+  --device {cpu,cuda,auto}
+  --only {all,neural,trees}
+                        select the model family (default: all)
+  --campaign CAMPAIGN
+  --time-budget-hours TIME_BUDGET_HOURS
+  --zip-every ZIP_EVERY
+  --smoke-model SMOKE_MODEL
+  --smoke-task {binary,multiclass}
+  --smoke-seeds SMOKE_SEEDS SMOKE_SEEDS
+  --smoke-epochs SMOKE_EPOCHS
+  --pause-after-first-checkpoint
+  --resume-zip RESUME_ZIP

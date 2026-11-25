@@ -1,0 +1,674 @@
+F.................FFF..FFF.......................FFFFFFFFFFF             [100%]
+=================================== FAILURES ===================================
+_________________ test_no_archives_pending_and_exact_protocol __________________
+
+tmp_path = PosixPath('/tmp/pytest-of-mparsict/pytest-1/test_no_archives_pending_and_e0')
+
+    def test_no_archives_pending_and_exact_protocol(tmp_path):
+        paths=aggregate(tmp_path,[],tmp_path/"not_present")
+        text=Path(paths["report"]).read_text()
+        assert text.count("PENDING: study not run")==5
+        protocol=json.loads(PROTOCOL.read_text())
+        original=protocol["rules_verbatim"]
+        assert "unless fixed-budget (arm b) shows both" in original[-1]
+>       active,history=text.split("### Superseded original stopping-hypothesis rule")
+E       ValueError: not enough values to unpack (expected 2, got 1)
+
+tests/test_study_stats.py:139: ValueError
+____ test_complete_b5_selects_by_validation_even_when_test_prefers_other_lr ____
+
+self = Scope(scope=['Timestamp',
+ 'datetime',
+ 'True',
+ 'False',
+ 'list',
+ 'tuple',
+ 'inf',
+ 'Inf',
+ '__name__',
+ '__doc__',
+...'completed_new_runs',
+ 'expected_b1_references',
+ 'available_b1_references',
+ 'status',
+ 'device_label',
+ 'campaign']
+)
+key = 'row_type', is_local = False
+
+    def resolve(self, key: str, is_local: bool):
+        """
+        Resolve a variable name in a possibly local context.
+    
+        Parameters
+        ----------
+        key : str
+            A variable name
+        is_local : bool
+            Flag indicating whether the variable is local or not (prefixed with
+            the '@' symbol)
+    
+        Returns
+        -------
+        value : object
+            The value of a particular variable
+        """
+        try:
+            # only look for locals in outer scope
+            if is_local:
+                return self.scope[key]
+    
+            # not a local variable so check in resolvers if we have them
+            if self.has_resolvers:
+>               return self.resolvers[key]
+
+.venv/lib/python3.11/site-packages/pandas/core/computation/scope.py:231: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/lib/python3.11/collections/__init__.py:1004: in __getitem__
+    return self.__missing__(key)            # support subclasses that define __missing__
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = DeepChainMap({'study': 0    B1
+1    B3
+2    B2
+3    B4
+4    B5
+Name: study, dtype: object, 'expected_new_runs': 0    3...s
+device_label                          device_label
+campaign                                  campaign
+dtype: object})
+key = 'row_type'
+
+    def __missing__(self, key):
+>       raise KeyError(key)
+E       KeyError: 'row_type'
+
+/usr/lib/python3.11/collections/__init__.py:996: KeyError
+
+During handling of the above exception, another exception occurred:
+
+self = Scope(scope=['Timestamp',
+ 'datetime',
+ 'True',
+ 'False',
+ 'list',
+ 'tuple',
+ 'inf',
+ 'Inf',
+ '__name__',
+ '__doc__',
+...'completed_new_runs',
+ 'expected_b1_references',
+ 'available_b1_references',
+ 'status',
+ 'device_label',
+ 'campaign']
+)
+key = 'row_type', is_local = False
+
+    def resolve(self, key: str, is_local: bool):
+        """
+        Resolve a variable name in a possibly local context.
+    
+        Parameters
+        ----------
+        key : str
+            A variable name
+        is_local : bool
+            Flag indicating whether the variable is local or not (prefixed with
+            the '@' symbol)
+    
+        Returns
+        -------
+        value : object
+            The value of a particular variable
+        """
+        try:
+            # only look for locals in outer scope
+            if is_local:
+                return self.scope[key]
+    
+            # not a local variable so check in resolvers if we have them
+            if self.has_resolvers:
+                return self.resolvers[key]
+    
+            # if we're here that means that we have no locals and we also have
+            # no resolvers
+            assert not is_local and not self.has_resolvers
+            return self.scope[key]
+        except KeyError:
+            try:
+                # last ditch effort we look in temporaries
+                # these are created when parsing indexing expressions
+                # e.g., df[df > 0]
+>               return self.temps[key]
+E               KeyError: 'row_type'
+
+.venv/lib/python3.11/site-packages/pandas/core/computation/scope.py:242: KeyError
+
+The above exception was the direct cause of the following exception:
+
+tmp_path = PosixPath('/tmp/pytest-of-mparsict/pytest-1/test_complete_b5_selects_by_va0')
+
+    def test_complete_b5_selects_by_validation_even_when_test_prefers_other_lr(tmp_path):
+        records=[]
+        for lr,val,wrong in [(.0003,.82,3),(.001,.9,4),(.0015,.85,0)]:
+            for seed in range(42,52):
+                r=evidence(seed,model="std_cnn",study="B5",arm=f"lr_{lr:g}",lr=lr,wrong=wrong)
+                r["best_val_macro_f1"]=val;r["history"][0]["val_macro_f1"]=val
+                records.append(r)
+        z,d=archive(tmp_path,records)
+        paths=aggregate(tmp_path,[z],d)
+        selection=pd.read_csv(paths["lr_selection"])
+        assert set(selection.selected_lr)=={.001}
+        assert selection.set_index("lr").loc[.001,"selected"]
+        assert not selection.set_index("lr").loc[.0015,"selected"]
+>       complete=pd.read_csv(paths["completeness"]).query('row_type == "study"').set_index("study")
+
+tests/test_study_stats.py:264: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.11/site-packages/pandas/core/frame.py:4823: in query
+    res = self.eval(expr, **kwargs)
+.venv/lib/python3.11/site-packages/pandas/core/frame.py:4949: in eval
+    return _eval(expr, inplace=inplace, **kwargs)
+.venv/lib/python3.11/site-packages/pandas/core/computation/eval.py:336: in eval
+    parsed_expr = Expr(expr, engine=engine, parser=parser, env=env)
+.venv/lib/python3.11/site-packages/pandas/core/computation/expr.py:805: in __init__
+    self.terms = self.parse()
+.venv/lib/python3.11/site-packages/pandas/core/computation/expr.py:824: in parse
+    return self._visitor.visit(self.expr)
+.venv/lib/python3.11/site-packages/pandas/core/computation/expr.py:411: in visit
+    return visitor(node, **kwargs)
+.venv/lib/python3.11/site-packages/pandas/core/computation/expr.py:417: in visit_Module
+    return self.visit(expr, **kwargs)
+.venv/lib/python3.11/site-packages/pandas/core/computation/expr.py:411: in visit
+    return visitor(node, **kwargs)
+.venv/lib/python3.11/site-packages/pandas/core/computation/expr.py:420: in visit_Expr
+    return self.visit(node.value, **kwargs)
+.venv/lib/python3.11/site-packages/pandas/core/computation/expr.py:411: in visit
+    return visitor(node, **kwargs)
+.venv/lib/python3.11/site-packages/pandas/core/computation/expr.py:715: in visit_Compare
+    return self.visit(binop)
+.venv/lib/python3.11/site-packages/pandas/core/computation/expr.py:411: in visit
+    return visitor(node, **kwargs)
+.venv/lib/python3.11/site-packages/pandas/core/computation/expr.py:531: in visit_BinOp
+    op, op_class, left, right = self._maybe_transform_eq_ne(node)
+.venv/lib/python3.11/site-packages/pandas/core/computation/expr.py:451: in _maybe_transform_eq_ne
+    left = self.visit(node.left, side="left")
+.venv/lib/python3.11/site-packages/pandas/core/computation/expr.py:411: in visit
+    return visitor(node, **kwargs)
+.venv/lib/python3.11/site-packages/pandas/core/computation/expr.py:541: in visit_Name
+    return self.term_type(node.id, self.env, **kwargs)
+.venv/lib/python3.11/site-packages/pandas/core/computation/ops.py:91: in __init__
+    self._value = self._resolve_name()
+.venv/lib/python3.11/site-packages/pandas/core/computation/ops.py:115: in _resolve_name
+    res = self.env.resolve(local_name, is_local=is_local)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = Scope(scope=['Timestamp',
+ 'datetime',
+ 'True',
+ 'False',
+ 'list',
+ 'tuple',
+ 'inf',
+ 'Inf',
+ '__name__',
+ '__doc__',
+...'completed_new_runs',
+ 'expected_b1_references',
+ 'available_b1_references',
+ 'status',
+ 'device_label',
+ 'campaign']
+)
+key = 'row_type', is_local = False
+
+    def resolve(self, key: str, is_local: bool):
+        """
+        Resolve a variable name in a possibly local context.
+    
+        Parameters
+        ----------
+        key : str
+            A variable name
+        is_local : bool
+            Flag indicating whether the variable is local or not (prefixed with
+            the '@' symbol)
+    
+        Returns
+        -------
+        value : object
+            The value of a particular variable
+        """
+        try:
+            # only look for locals in outer scope
+            if is_local:
+                return self.scope[key]
+    
+            # not a local variable so check in resolvers if we have them
+            if self.has_resolvers:
+                return self.resolvers[key]
+    
+            # if we're here that means that we have no locals and we also have
+            # no resolvers
+            assert not is_local and not self.has_resolvers
+            return self.scope[key]
+        except KeyError:
+            try:
+                # last ditch effort we look in temporaries
+                # these are created when parsing indexing expressions
+                # e.g., df[df > 0]
+                return self.temps[key]
+            except KeyError as err:
+>               raise UndefinedVariableError(key, is_local) from err
+E               pandas.errors.UndefinedVariableError: name 'row_type' is not defined
+
+.venv/lib/python3.11/site-packages/pandas/core/computation/scope.py:244: UndefinedVariableError
+__________ test_b2_pairs_split_seeds_and_bootstraps_within_each_split __________
+
+tmp_path = PosixPath('/tmp/pytest-of-mparsict/pytest-1/test_b2_pairs_split_seeds_and_0')
+
+    def test_b2_pairs_split_seeds_and_bootstraps_within_each_split(tmp_path):
+        records=seed_block("B2",42)+seed_block("B2",43)
+        records.extend(r for r in seed_block("B2",44) if r["task"]=="binary")
+        z,d=archive(tmp_path,records)
+        paths=aggregate(tmp_path,[z],d)
+        paired=pd.read_csv(paths["paired_tests"])
+>       assert set(paired.n_pairs)=={2}
+E       assert {2, 3} == {2}
+E         
+E         Extra items in the left set:
+E         3
+E         Use -v to get more diff
+
+tests/test_study_stats.py:274: AssertionError
+_____ test_device_equivalence_has_side_by_side_ci_without_inference_labels _____
+
+tmp_path = PosixPath('/tmp/pytest-of-mparsict/pytest-1/test_device_equivalence_has_si0')
+
+    def test_device_equivalence_has_side_by_side_ci_without_inference_labels(tmp_path):
+        z,d=archive(tmp_path,seed_block("B1",42)+seed_block("B1",43)+[evidence(44)])
+        directory=tmp_path/"cpu";directory.mkdir()
+        records=[dict(task="binary",model="exlightnet",seed=s,macro_f1=.8+s/10000,
+                      data_fingerprint="a"*64) for s in [42,43,44]]
+        (directory/"results.json").write_text(json.dumps(records))
+        (directory/"manifest.json").write_text(json.dumps({"mode":"full","seeds":list(range(42,47))}))
+        paths=aggregate_studies([z],d,tmp_path/"out",tmp_path/"Report.md",directory/"results.json",protocol_path=PROTOCOL,replicates=25)
+        table=pd.read_csv(paths["device_equivalence"])
+        assert not set(table.columns)&{"p_value","p_holm","interpretation","pass","status"}
+        assert set(table.reference_campaign)=={"cpu_v1"}
+        assert set(table.comparison_campaign)=={"gpu_v2"}
+>       assert set(table.n_pairs)=={2}
+E       assert {3} == {2}
+E         
+E         Extra items in the left set:
+E         3
+E         Extra items in the right set:
+E         2
+E         Use -v to get more diff
+
+tests/test_study_stats.py:293: AssertionError
+______________ test_b1_correlation_bootstrap_resamples_seed_pairs ______________
+
+tmp_path = PosixPath('/tmp/pytest-of-mparsict/pytest-1/test_b1_correlation_bootstrap_0')
+
+    def test_b1_correlation_bootstrap_resamples_seed_pairs(tmp_path):
+        records=[]
+        for seed,length,wrong in [(42,7,3),(43,8,2),(44,9,1)]:
+            block=seed_block("B1",seed)
+            r=next(r for r in block if r["task"]=="binary" and r["model"]=="exlightnet")
+            r["_prediction"]=evidence(wrong=wrong)["_prediction"]
+            best=length-6
+            r["history"]=[dict(epoch=i,train_loss=.2,val_macro_f1=.8 if i==best else .7,lr=.0015,seconds=.1) for i in range(1,length+1)]
+            r["best_epoch"]=best
+            r["epochs_run"]=length;records.extend(block)
+        incomplete=set_history(evidence(45,wrong=5),[.7]*4+[.8]+[.7]*6)
+        records.extend([incomplete,evidence(45,model="mlp")])
+        z,d=archive(tmp_path,records)
+        paths=aggregate(tmp_path,[z],d)
+        table=pd.read_csv(paths["correlations"])
+>       assert table.iloc[0].n==3
+E       assert 4 == 3
+E        +  where 4 = campaign                                                            gpu_v2\nstudy                                      ...2683aa7a3ca2bd8267...\nexecution_environment    {"cuda": "fixture", "cudnn": "fixture", "devic...\nName: 0, dtype: object.n
+
+tests/test_study_stats.py:329: AssertionError
+_______ test_b1_merges_shards_before_admitting_only_complete_seed_blocks _______
+
+tmp_path = PosixPath('/tmp/pytest-of-mparsict/pytest-1/test_b1_merges_shards_before_a0')
+
+    def test_b1_merges_shards_before_admitting_only_complete_seed_blocks(tmp_path):
+        records=seed_block("B1",42)+seed_block("B1",43)
+        records=[r for r in records if not (r["seed"]==43 and r["task"]=="multiclass" and r["model"]=="xgboost")]
+        neural,d=archive(tmp_path,[r for r in records if r["device"]=="cuda"],"neural.zip")
+        trees,_=archive(tmp_path,[r for r in records if r["device"]=="cpu"],"trees.zip")
+        for shard in (neural,trees):
+            paths=aggregate(tmp_path,[shard],d)
+>           assert pd.read_csv(paths["paired_tests"]).empty
+E           AssertionError: assert False
+E            +  where False =   campaign  ...                                        holm_family\n0   gpu_v2  ...  all available predeclared comparis...ared comparisons within t...\n9   gpu_v2  ...  all available predeclared comparisons within t...\n\n[10 rows x 41 columns].empty
+E            +    where   campaign  ...                                        holm_family\n0   gpu_v2  ...  all available predeclared comparis...ared comparisons within t...\n9   gpu_v2  ...  all available predeclared comparisons within t...\n\n[10 rows x 41 columns] = <function read_csv at 0x7f0b66a50180>('/tmp/pytest-of-mparsict/pytest-1/test_b1_merges_shards_before_a0/out/paired_tests.csv')
+E            +      where <function read_csv at 0x7f0b66a50180> = pd.read_csv
+
+tests/test_study_stats.py:343: AssertionError
+_________ test_b3_excludes_seeds_missing_an_unrelated_reference_or_arm _________
+
+tmp_path = PosixPath('/tmp/pytest-of-mparsict/pytest-1/test_b3_excludes_seeds_missing0')
+
+    def test_b3_excludes_seeds_missing_an_unrelated_reference_or_arm(tmp_path):
+        records=sum((seed_block("B3",seed) for seed in [42,43,44]),[])
+        records=[r for r in records if not (
+            (r["seed"]==43 and r["study"]=="B1" and r["model"]=="std_cnn") or
+            (r["seed"]==44 and r["arm"]=="patience10_min15" and r["model"]=="mlp"))]
+        z,d=archive(tmp_path,records)
+        paths=aggregate(tmp_path,[z],d)
+        pairs=pd.read_csv(paths["paired_tests"]).query('study == "B3"')
+>       assert set(pairs.seeds)=={42}
+E       AssertionError: assert {'42,43', '42,43,44', '42,44'} == {42}
+E         
+E         Extra items in the left set:
+E         '42,43,44'
+E         '42,43'
+E         '42,44'
+E         Extra items in the right set:
+E         42
+E         Use -v to get more diff
+
+tests/test_study_stats.py:369: AssertionError
+_______________ test_ratio_at_threshold_is_inclusive[0.75-True] ________________
+
+scale = 0.75, expected = True
+
+    @pytest.mark.parametrize("scale,expected",[(.75,True),(.751,False)])
+    def test_ratio_at_threshold_is_inclusive(scale,expected):
+>       table=hypothesis(PAPER,.5+scale*(PAPER-.25))
+
+tests/test_stopping_amendment.py:34: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_stopping_amendment.py:29: in hypothesis
+    return _hypothesis(results(paper,fixed_last,fixed_best),pd.DataFrame(),AMENDMENT).set_index("endpoint_role")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+summaries = [{'arm': 'paper', 'checkpoints': {'best': {'metrics': {'macro_f1': 0.25}}, 'last': {'metrics': {'macro_f1': 0.99}}}, '..._f1': 0.50146484375}}, 'last': {'metrics': {'macro_f1': 0.50146484375}}}, 'model': 'exlightnet', 'seed': 44, ...}, ...]
+correlations = Empty DataFrame
+Columns: []
+Index: []
+records = {'date': '2026-11-18', 'id': 'PA-20261118-1', 'matched_seeds': [42, 43, 44, 45, 46, 47, ...], 'primary_endpoint': {'ex...tal_arm': 'fixed30', 'experimental_checkpoint': 'last', 'reference_arm': 'paper', 'reference_checkpoint': 'best'}, ...}
+
+    def _hypothesis(summaries,correlations,records):
+        columns=["model","headline_checkpoint","paper_mean","paper_sd","fixed30_mean","fixed30_sd","b1_spearman_rho","directional_condition_met","interpretation"]
+>       if summaries.empty:
+E       AttributeError: 'list' object has no attribute 'empty'
+
+src/exlightnet/study_stats.py:593: AttributeError
+______________ test_ratio_at_threshold_is_inclusive[0.751-False] _______________
+
+scale = 0.751, expected = False
+
+    @pytest.mark.parametrize("scale,expected",[(.75,True),(.751,False)])
+    def test_ratio_at_threshold_is_inclusive(scale,expected):
+>       table=hypothesis(PAPER,.5+scale*(PAPER-.25))
+
+tests/test_stopping_amendment.py:34: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_stopping_amendment.py:29: in hypothesis
+    return _hypothesis(results(paper,fixed_last,fixed_best),pd.DataFrame(),AMENDMENT).set_index("endpoint_role")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+summaries = [{'arm': 'paper', 'checkpoints': {'best': {'metrics': {'macro_f1': 0.25}}, 'last': {'metrics': {'macro_f1': 0.99}}}, '...1': 0.501466796875}}, 'last': {'metrics': {'macro_f1': 0.501466796875}}}, 'model': 'exlightnet', 'seed': 44, ...}, ...]
+correlations = Empty DataFrame
+Columns: []
+Index: []
+records = {'date': '2026-11-18', 'id': 'PA-20261118-1', 'matched_seeds': [42, 43, 44, 45, 46, 47, ...], 'primary_endpoint': {'ex...tal_arm': 'fixed30', 'experimental_checkpoint': 'last', 'reference_arm': 'paper', 'reference_checkpoint': 'best'}, ...}
+
+    def _hypothesis(summaries,correlations,records):
+        columns=["model","headline_checkpoint","paper_mean","paper_sd","fixed30_mean","fixed30_sd","b1_spearman_rho","directional_condition_met","interpretation"]
+>       if summaries.empty:
+E       AttributeError: 'list' object has no attribute 'empty'
+
+src/exlightnet/study_stats.py:593: AttributeError
+________________ test_upper_ratio_interval_threshold_is_strict _________________
+
+    def test_upper_ratio_interval_threshold_is_strict():
+        paper=PAPER.copy()
+        paper[-1]=.5
+>       row=hypothesis(paper,PAPER+.25).loc["PRIMARY"]
+
+tests/test_stopping_amendment.py:45: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_stopping_amendment.py:29: in hypothesis
+    return _hypothesis(results(paper,fixed_last,fixed_best),pd.DataFrame(),AMENDMENT).set_index("endpoint_role")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+summaries = [{'arm': 'paper', 'checkpoints': {'best': {'metrics': {'macro_f1': 0.25}}, 'last': {'metrics': {'macro_f1': 0.99}}}, '...acro_f1': 0.501953125}}, 'last': {'metrics': {'macro_f1': 0.501953125}}}, 'model': 'exlightnet', 'seed': 44, ...}, ...]
+correlations = Empty DataFrame
+Columns: []
+Index: []
+records = {'date': '2026-11-18', 'id': 'PA-20261118-1', 'matched_seeds': [42, 43, 44, 45, 46, 47, ...], 'primary_endpoint': {'ex...tal_arm': 'fixed30', 'experimental_checkpoint': 'last', 'reference_arm': 'paper', 'reference_checkpoint': 'best'}, ...}
+
+    def _hypothesis(summaries,correlations,records):
+        columns=["model","headline_checkpoint","paper_mean","paper_sd","fixed30_mean","fixed30_sd","b1_spearman_rho","directional_condition_met","interpretation"]
+>       if summaries.empty:
+E       AttributeError: 'list' object has no attribute 'empty'
+
+src/exlightnet/study_stats.py:593: AttributeError
+_____ test_ratio_percentile_ci_uses_paired_seed_indices_and_fixed_settings _____
+
+    def test_ratio_percentile_ci_uses_paired_seed_indices_and_fixed_settings():
+        paper=.25+np.arange(15)/512
+        fixed=.5+20*(paper-.25)**2
+>       row=hypothesis(paper,fixed).loc["PRIMARY"]
+
+tests/test_stopping_amendment.py:56: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_stopping_amendment.py:29: in hypothesis
+    return _hypothesis(results(paper,fixed_last,fixed_best),pd.DataFrame(),AMENDMENT).set_index("endpoint_role")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+summaries = [{'arm': 'paper', 'checkpoints': {'best': {'metrics': {'macro_f1': 0.25}}, 'last': {'metrics': {'macro_f1': 0.99}}}, '...0.50030517578125}}, 'last': {'metrics': {'macro_f1': 0.50030517578125}}}, 'model': 'exlightnet', 'seed': 44, ...}, ...]
+correlations = Empty DataFrame
+Columns: []
+Index: []
+records = {'date': '2026-11-18', 'id': 'PA-20261118-1', 'matched_seeds': [42, 43, 44, 45, 46, 47, ...], 'primary_endpoint': {'ex...tal_arm': 'fixed30', 'experimental_checkpoint': 'last', 'reference_arm': 'paper', 'reference_checkpoint': 'best'}, ...}
+
+    def _hypothesis(summaries,correlations,records):
+        columns=["model","headline_checkpoint","paper_mean","paper_sd","fixed30_mean","fixed30_sd","b1_spearman_rho","directional_condition_met","interpretation"]
+>       if summaries.empty:
+E       AttributeError: 'list' object has no attribute 'empty'
+
+src/exlightnet/study_stats.py:593: AttributeError
+____________ test_negative_mean_interval_cannot_support_higher_mean ____________
+
+    def test_negative_mean_interval_cannot_support_higher_mean():
+>       row=hypothesis(PAPER,.125+.5*(PAPER-.25)).loc["PRIMARY"]
+
+tests/test_stopping_amendment.py:65: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_stopping_amendment.py:29: in hypothesis
+    return _hypothesis(results(paper,fixed_last,fixed_best),pd.DataFrame(),AMENDMENT).set_index("endpoint_role")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+summaries = [{'arm': 'paper', 'checkpoints': {'best': {'metrics': {'macro_f1': 0.25}}, 'last': {'metrics': {'macro_f1': 0.99}}}, '...ro_f1': 0.1259765625}}, 'last': {'metrics': {'macro_f1': 0.1259765625}}}, 'model': 'exlightnet', 'seed': 44, ...}, ...]
+correlations = Empty DataFrame
+Columns: []
+Index: []
+records = {'date': '2026-11-18', 'id': 'PA-20261118-1', 'matched_seeds': [42, 43, 44, 45, 46, 47, ...], 'primary_endpoint': {'ex...tal_arm': 'fixed30', 'experimental_checkpoint': 'last', 'reference_arm': 'paper', 'reference_checkpoint': 'best'}, ...}
+
+    def _hypothesis(summaries,correlations,records):
+        columns=["model","headline_checkpoint","paper_mean","paper_sd","fixed30_mean","fixed30_sd","b1_spearman_rho","directional_condition_met","interpretation"]
+>       if summaries.empty:
+E       AttributeError: 'list' object has no attribute 'empty'
+
+src/exlightnet/study_stats.py:593: AttributeError
+___________________ test_zero_paper_sd_makes_ratio_undefined ___________________
+
+    def test_zero_paper_sd_makes_ratio_undefined():
+>       row=hypothesis(np.full(15,.3),np.full(15,.7)).loc["PRIMARY"]
+
+tests/test_stopping_amendment.py:73: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_stopping_amendment.py:29: in hypothesis
+    return _hypothesis(results(paper,fixed_last,fixed_best),pd.DataFrame(),AMENDMENT).set_index("endpoint_role")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+summaries = [{'arm': 'paper', 'checkpoints': {'best': {'metrics': {'macro_f1': 0.3}}, 'last': {'metrics': {'macro_f1': 0.99}}}, 'm... {'metrics': {'macro_f1': 0.7}}, 'last': {'metrics': {'macro_f1': 0.7}}}, 'model': 'exlightnet', 'seed': 44, ...}, ...]
+correlations = Empty DataFrame
+Columns: []
+Index: []
+records = {'date': '2026-11-18', 'id': 'PA-20261118-1', 'matched_seeds': [42, 43, 44, 45, 46, 47, ...], 'primary_endpoint': {'ex...tal_arm': 'fixed30', 'experimental_checkpoint': 'last', 'reference_arm': 'paper', 'reference_checkpoint': 'best'}, ...}
+
+    def _hypothesis(summaries,correlations,records):
+        columns=["model","headline_checkpoint","paper_mean","paper_sd","fixed30_mean","fixed30_sd","b1_spearman_rho","directional_condition_met","interpretation"]
+>       if summaries.empty:
+E       AttributeError: 'list' object has no attribute 'empty'
+
+src/exlightnet/study_stats.py:593: AttributeError
+___________ test_undefined_ratio_draws_cannot_support_the_hypothesis ___________
+
+    def test_undefined_ratio_draws_cannot_support_the_hypothesis():
+        paper=np.full(15,.3)
+        paper[-1]=.4
+>       row=hypothesis(paper,np.full(15,.7)).loc["PRIMARY"]
+
+tests/test_stopping_amendment.py:83: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_stopping_amendment.py:29: in hypothesis
+    return _hypothesis(results(paper,fixed_last,fixed_best),pd.DataFrame(),AMENDMENT).set_index("endpoint_role")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+summaries = [{'arm': 'paper', 'checkpoints': {'best': {'metrics': {'macro_f1': 0.3}}, 'last': {'metrics': {'macro_f1': 0.99}}}, 'm... {'metrics': {'macro_f1': 0.7}}, 'last': {'metrics': {'macro_f1': 0.7}}}, 'model': 'exlightnet', 'seed': 44, ...}, ...]
+correlations = Empty DataFrame
+Columns: []
+Index: []
+records = {'date': '2026-11-18', 'id': 'PA-20261118-1', 'matched_seeds': [42, 43, 44, 45, 46, 47, ...], 'primary_endpoint': {'ex...tal_arm': 'fixed30', 'experimental_checkpoint': 'last', 'reference_arm': 'paper', 'reference_checkpoint': 'best'}, ...}
+
+    def _hypothesis(summaries,correlations,records):
+        columns=["model","headline_checkpoint","paper_mean","paper_sd","fixed30_mean","fixed30_sd","b1_spearman_rho","directional_condition_met","interpretation"]
+>       if summaries.empty:
+E       AttributeError: 'list' object has no attribute 'empty'
+
+src/exlightnet/study_stats.py:593: AttributeError
+_________ test_zero_fixed_sd_has_defined_zero_ratio_when_paper_varies __________
+
+    def test_zero_fixed_sd_has_defined_zero_ratio_when_paper_varies():
+>       row=hypothesis(PAPER,np.full(15,.7)).loc["PRIMARY"]
+
+tests/test_stopping_amendment.py:92: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_stopping_amendment.py:29: in hypothesis
+    return _hypothesis(results(paper,fixed_last,fixed_best),pd.DataFrame(),AMENDMENT).set_index("endpoint_role")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+summaries = [{'arm': 'paper', 'checkpoints': {'best': {'metrics': {'macro_f1': 0.25}}, 'last': {'metrics': {'macro_f1': 0.99}}}, '... {'metrics': {'macro_f1': 0.7}}, 'last': {'metrics': {'macro_f1': 0.7}}}, 'model': 'exlightnet', 'seed': 44, ...}, ...]
+correlations = Empty DataFrame
+Columns: []
+Index: []
+records = {'date': '2026-11-18', 'id': 'PA-20261118-1', 'matched_seeds': [42, 43, 44, 45, 46, 47, ...], 'primary_endpoint': {'ex...tal_arm': 'fixed30', 'experimental_checkpoint': 'last', 'reference_arm': 'paper', 'reference_checkpoint': 'best'}, ...}
+
+    def _hypothesis(summaries,correlations,records):
+        columns=["model","headline_checkpoint","paper_mean","paper_sd","fixed30_mean","fixed30_sd","b1_spearman_rho","directional_condition_met","interpretation"]
+>       if summaries.empty:
+E       AttributeError: 'list' object has no attribute 'empty'
+
+src/exlightnet/study_stats.py:593: AttributeError
+____ test_both_directions_of_endpoint_disagreement_are_inconclusive[False] _____
+
+swap = False
+
+    @pytest.mark.parametrize("swap",[False,True])
+    def test_both_directions_of_endpoint_disagreement_are_inconclusive(swap):
+        fixed_supported=.5+.5*(PAPER-.25)
+        fixed_unsupported=.125+.5*(PAPER-.25)
+        last,best=(fixed_unsupported,fixed_supported) if swap else (fixed_supported,fixed_unsupported)
+>       table=hypothesis(PAPER,last,best)
+
+tests/test_stopping_amendment.py:102: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_stopping_amendment.py:29: in hypothesis
+    return _hypothesis(results(paper,fixed_last,fixed_best),pd.DataFrame(),AMENDMENT).set_index("endpoint_role")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+summaries = [{'arm': 'paper', 'checkpoints': {'best': {'metrics': {'macro_f1': 0.25}}, 'last': {'metrics': {'macro_f1': 0.99}}}, '...ro_f1': 0.1259765625}}, 'last': {'metrics': {'macro_f1': 0.5009765625}}}, 'model': 'exlightnet', 'seed': 44, ...}, ...]
+correlations = Empty DataFrame
+Columns: []
+Index: []
+records = {'date': '2026-11-18', 'id': 'PA-20261118-1', 'matched_seeds': [42, 43, 44, 45, 46, 47, ...], 'primary_endpoint': {'ex...tal_arm': 'fixed30', 'experimental_checkpoint': 'last', 'reference_arm': 'paper', 'reference_checkpoint': 'best'}, ...}
+
+    def _hypothesis(summaries,correlations,records):
+        columns=["model","headline_checkpoint","paper_mean","paper_sd","fixed30_mean","fixed30_sd","b1_spearman_rho","directional_condition_met","interpretation"]
+>       if summaries.empty:
+E       AttributeError: 'list' object has no attribute 'empty'
+
+src/exlightnet/study_stats.py:593: AttributeError
+_____ test_both_directions_of_endpoint_disagreement_are_inconclusive[True] _____
+
+swap = True
+
+    @pytest.mark.parametrize("swap",[False,True])
+    def test_both_directions_of_endpoint_disagreement_are_inconclusive(swap):
+        fixed_supported=.5+.5*(PAPER-.25)
+        fixed_unsupported=.125+.5*(PAPER-.25)
+        last,best=(fixed_unsupported,fixed_supported) if swap else (fixed_supported,fixed_unsupported)
+>       table=hypothesis(PAPER,last,best)
+
+tests/test_stopping_amendment.py:102: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_stopping_amendment.py:29: in hypothesis
+    return _hypothesis(results(paper,fixed_last,fixed_best),pd.DataFrame(),AMENDMENT).set_index("endpoint_role")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+summaries = [{'arm': 'paper', 'checkpoints': {'best': {'metrics': {'macro_f1': 0.25}}, 'last': {'metrics': {'macro_f1': 0.99}}}, '...ro_f1': 0.5009765625}}, 'last': {'metrics': {'macro_f1': 0.1259765625}}}, 'model': 'exlightnet', 'seed': 44, ...}, ...]
+correlations = Empty DataFrame
+Columns: []
+Index: []
+records = {'date': '2026-11-18', 'id': 'PA-20261118-1', 'matched_seeds': [42, 43, 44, 45, 46, 47, ...], 'primary_endpoint': {'ex...tal_arm': 'fixed30', 'experimental_checkpoint': 'last', 'reference_arm': 'paper', 'reference_checkpoint': 'best'}, ...}
+
+    def _hypothesis(summaries,correlations,records):
+        columns=["model","headline_checkpoint","paper_mean","paper_sd","fixed30_mean","fixed30_sd","b1_spearman_rho","directional_condition_met","interpretation"]
+>       if summaries.empty:
+E       AttributeError: 'list' object has no attribute 'empty'
+
+src/exlightnet/study_stats.py:593: AttributeError
+_____ test_missing_seed_is_pending_and_records_b1_descriptive_correlation ______
+
+    def test_missing_seed_is_pending_and_records_b1_descriptive_correlation():
+        records=results(PAPER,.5+.5*(PAPER-.25))
+        records=[r for r in records if not (r["seed"]==56 and r["arm"]=="paper")]
+        correlations=pd.DataFrame([dict(task="multiclass",model="exlightnet",n=12,spearman_rho=.2,ci_low=-.2,ci_high=.5)])
+>       table=_hypothesis(records,correlations,AMENDMENT)
+
+tests/test_stopping_amendment.py:117: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+summaries = [{'arm': 'paper', 'checkpoints': {'best': {'metrics': {'macro_f1': 0.25}}, 'last': {'metrics': {'macro_f1': 0.99}}}, '...ro_f1': 0.5009765625}}, 'last': {'metrics': {'macro_f1': 0.5009765625}}}, 'model': 'exlightnet', 'seed': 44, ...}, ...]
+correlations =          task       model   n  spearman_rho  ci_low  ci_high
+0  multiclass  exlightnet  12           0.2    -0.2      0.5
+records = {'date': '2026-11-18', 'id': 'PA-20261118-1', 'matched_seeds': [42, 43, 44, 45, 46, 47, ...], 'primary_endpoint': {'ex...tal_arm': 'fixed30', 'experimental_checkpoint': 'last', 'reference_arm': 'paper', 'reference_checkpoint': 'best'}, ...}
+
+    def _hypothesis(summaries,correlations,records):
+        columns=["model","headline_checkpoint","paper_mean","paper_sd","fixed30_mean","fixed30_sd","b1_spearman_rho","directional_condition_met","interpretation"]
+>       if summaries.empty:
+E       AttributeError: 'list' object has no attribute 'empty'
+
+src/exlightnet/study_stats.py:593: AttributeError
+- generated xml file: /home/mparsict/projects/me/exlightnet/artifacts/predata_20261118/statistics_tests_red.xml -
+=========================== short test summary info ============================
+FAILED tests/test_study_stats.py::test_no_archives_pending_and_exact_protocol
+FAILED tests/test_study_stats.py::test_complete_b5_selects_by_validation_even_when_test_prefers_other_lr
+FAILED tests/test_study_stats.py::test_b2_pairs_split_seeds_and_bootstraps_within_each_split
+FAILED tests/test_study_stats.py::test_device_equivalence_has_side_by_side_ci_without_inference_labels
+FAILED tests/test_study_stats.py::test_b1_correlation_bootstrap_resamples_seed_pairs
+FAILED tests/test_study_stats.py::test_b1_merges_shards_before_admitting_only_complete_seed_blocks
+FAILED tests/test_study_stats.py::test_b3_excludes_seeds_missing_an_unrelated_reference_or_arm
+FAILED tests/test_stopping_amendment.py::test_ratio_at_threshold_is_inclusive[0.75-True]
+FAILED tests/test_stopping_amendment.py::test_ratio_at_threshold_is_inclusive[0.751-False]
+FAILED tests/test_stopping_amendment.py::test_upper_ratio_interval_threshold_is_strict
+FAILED tests/test_stopping_amendment.py::test_ratio_percentile_ci_uses_paired_seed_indices_and_fixed_settings
+FAILED tests/test_stopping_amendment.py::test_negative_mean_interval_cannot_support_higher_mean
+FAILED tests/test_stopping_amendment.py::test_zero_paper_sd_makes_ratio_undefined
+FAILED tests/test_stopping_amendment.py::test_undefined_ratio_draws_cannot_support_the_hypothesis
+FAILED tests/test_stopping_amendment.py::test_zero_fixed_sd_has_defined_zero_ratio_when_paper_varies
+FAILED tests/test_stopping_amendment.py::test_both_directions_of_endpoint_disagreement_are_inconclusive[False]
+FAILED tests/test_stopping_amendment.py::test_both_directions_of_endpoint_disagreement_are_inconclusive[True]
+FAILED tests/test_stopping_amendment.py::test_missing_seed_is_pending_and_records_b1_descriptive_correlation
+18 failed, 42 passed in 6.14s

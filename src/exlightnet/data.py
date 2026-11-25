@@ -65,14 +65,17 @@ def validate_data(labels):
     return {"gate": "D1", "pass": True, "actual": actual}
 
 
-def make_split(labels):
+def make_split(labels, split_seed=42):
+    """Stratify 70/15/15; preserve the canonical D2 supports for seed42 only."""
     indices = np.arange(len(labels))
-    train, rest = train_test_split(indices, test_size=.30, random_state=42, stratify=labels)
-    val, test = train_test_split(rest, test_size=.50, random_state=42, stratify=labels[rest])
+    train, rest = train_test_split(indices, test_size=.30, random_state=split_seed, stratify=labels)
+    val, test = train_test_split(rest, test_size=.50, random_state=split_seed, stratify=labels[rest])
     split = {"train": train, "val": val, "test": test}
     counts = {k: dict(Counter(labels[v])) for k, v in split.items()}
     actual = {"sizes": {k: len(v) for k, v in split.items()}, "supports": counts}
     target = {"dos_syn_hping": 14199, "metasploit_brute_force_ssh": 5, "nmap_fin_scan": 4}
-    if list(actual["sizes"].values()) != [86181, 18468, 18468] or any(counts["test"].get(k) != v for k, v in target.items()):
+    if (list(actual["sizes"].values()) != [86181, 18468, 18468]
+            or any(set(part_counts) != set(EXPECTED_COUNTS) for part_counts in counts.values())
+            or (split_seed == 42 and any(counts["test"].get(k) != v for k, v in target.items()))):
         raise GateFailure("D2", actual)
     return split, {"gate": "D2", "pass": True, "actual": actual}

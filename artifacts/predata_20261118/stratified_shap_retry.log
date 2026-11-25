@@ -1,0 +1,5 @@
+Computing FP32 SHAP on the stratified test sample
+Saved attribution checkpoint: /home/mparsict/projects/me/exlightnet/artifacts/final_analysis/stratified_shap_20261118/stratified_shap_values.npz
+Computing per-class deletion curves and random replicates
+Saved deletion checkpoint: /home/mparsict/projects/me/exlightnet/artifacts/final_analysis/stratified_shap_20261118/deletion_replicates.npz
+Stratified final analysis complete; input signature 7e4c451647c975b211ec8baf4be3e44db64a7269003f4c31fd68434616b612f2
