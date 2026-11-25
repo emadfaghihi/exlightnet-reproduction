@@ -1,0 +1,13 @@
+per_run: /home/mparsict/projects/me/exlightnet/artifacts/stats_gpu_v2/per_run.csv
+summaries: /home/mparsict/projects/me/exlightnet/artifacts/stats_gpu_v2/summaries.csv
+paired_tests: /home/mparsict/projects/me/exlightnet/artifacts/stats_gpu_v2/paired_tests.csv
+paired_flow_bootstrap: /home/mparsict/projects/me/exlightnet/artifacts/stats_gpu_v2/paired_flow_bootstrap.csv
+correlations: /home/mparsict/projects/me/exlightnet/artifacts/stats_gpu_v2/correlations.csv
+lr_selection: /home/mparsict/projects/me/exlightnet/artifacts/stats_gpu_v2/lr_selection.csv
+completeness: /home/mparsict/projects/me/exlightnet/artifacts/stats_gpu_v2/completeness.csv
+device_equivalence: /home/mparsict/projects/me/exlightnet/artifacts/stats_gpu_v2/device_equivalence.csv
+early_stopping_hypothesis: /home/mparsict/projects/me/exlightnet/artifacts/stats_gpu_v2/early_stopping_hypothesis.csv
+probe: /home/mparsict/projects/me/exlightnet/artifacts/stats_gpu_v2/probe.csv
+determinism: /home/mparsict/projects/me/exlightnet/artifacts/stats_gpu_v2/determinism.csv
+report: /home/mparsict/projects/me/exlightnet/REPORT_stats_v2.md
+manifest: /home/mparsict/projects/me/exlightnet/artifacts/stats_gpu_v2/aggregation_manifest.json

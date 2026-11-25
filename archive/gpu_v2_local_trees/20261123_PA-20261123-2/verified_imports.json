@@ -1,0 +1,24 @@
+[
+  {
+    "crc": "pass",
+    "device": "cpu",
+    "imported_path": "/home/mparsict/projects/me/exlightnet/imports/gpu_v2/gpu_v2_trees_b1.zip",
+    "path": "/home/mparsict/projects/me/exlightnet/archive/gpu_v2_local_trees/20261123_PA-20261123-2/B1/gpu_v2.zip",
+    "record_count": 120,
+    "sha256": "3487c87246d43171cf74b398c4b9a3805df2a4734c1e9dbcab6b5c4b25e99259",
+    "size": 1330015,
+    "status": "complete",
+    "study": "B1"
+  },
+  {
+    "crc": "pass",
+    "device": "cpu",
+    "imported_path": "/home/mparsict/projects/me/exlightnet/imports/gpu_v2/gpu_v2_trees_b2.zip",
+    "path": "/home/mparsict/projects/me/exlightnet/archive/gpu_v2_local_trees/20261123_PA-20261123-2/B2/gpu_v2.zip",
+    "record_count": 40,
+    "sha256": "68fad246b067ce6d69af105d16d405eaf0a11caeb8589426c9277506d722bb8b",
+    "size": 442716,
+    "status": "complete",
+    "study": "B2"
+  }
+]

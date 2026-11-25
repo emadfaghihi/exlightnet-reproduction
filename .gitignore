@@ -21,14 +21,36 @@ artifacts/cache_arrays.npz
 deliverables.zip
 *.zip
 prepared/
-archive/
+archive/*
 delivery/
+imports/
 *.partial
 .locks/
 *.lock
 artifacts/**/epoch_checkpoint.pt
 artifacts/**/review/source_review.txt
 artifacts/**/review/review_package.txt
+
+# Keep only these small archive receipts visible to Git.
+!/archive/gpu_v2_before_aggregation/
+/archive/gpu_v2_before_aggregation/*
+!/archive/gpu_v2_before_aggregation/20261123_PA-20261123-1/
+/archive/gpu_v2_before_aggregation/20261123_PA-20261123-1/*
+!/archive/gpu_v2_before_aggregation/20261123_PA-20261123-1/INPUT_SHA256SUMS
+!/archive/gpu_v2_before_aggregation/20261123_PA-20261123-1/PREVIOUS_SHA256SUMS
+!/archive/gpu_v2_before_aggregation/20261123_PA-20261123-1/aggregation.log
+!/archive/gpu_v2_before_aggregation/20261123_PA-20261123-2/
+/archive/gpu_v2_before_aggregation/20261123_PA-20261123-2/*
+!/archive/gpu_v2_before_aggregation/20261123_PA-20261123-2/INPUT_SHA256SUMS
+!/archive/gpu_v2_before_aggregation/20261123_PA-20261123-2/PREVIOUS_SHA256SUMS
+!/archive/gpu_v2_before_aggregation/20261123_PA-20261123-2/aggregation.log
+!/archive/gpu_v2_local_trees/
+/archive/gpu_v2_local_trees/*
+!/archive/gpu_v2_local_trees/20261123_PA-20261123-2/
+/archive/gpu_v2_local_trees/20261123_PA-20261123-2/*
+!/archive/gpu_v2_local_trees/20261123_PA-20261123-2/dry_check.log
+!/archive/gpu_v2_local_trees/20261123_PA-20261123-2/state.json
+!/archive/gpu_v2_local_trees/20261123_PA-20261123-2/verified_imports.json
 
 # Credentials and machine-specific agent/editor state.
 .env
