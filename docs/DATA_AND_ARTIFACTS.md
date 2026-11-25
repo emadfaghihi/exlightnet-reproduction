@@ -58,7 +58,7 @@ contains the measured benchmark evidence. [Local-only files](evidence/README.md#
 
 ## Supplementary archives
 
-**External download link:** `<EXTERNAL_DOWNLOAD_LINK>`
+**Download:** the four archives are assets of the GitHub release [thesis-reproduction-v1](https://github.com/emadfaghihi/exlightnet-reproduction/releases/tag/thesis-reproduction-v1): [gpu_v2_part1.zip.zip](https://github.com/emadfaghihi/exlightnet-reproduction/releases/download/thesis-reproduction-v1/gpu_v2_part1.zip.zip), [gpu_v2_colab.zip](https://github.com/emadfaghihi/exlightnet-reproduction/releases/download/thesis-reproduction-v1/gpu_v2_colab.zip), [gpu_v2_trees_b1.zip](https://github.com/emadfaghihi/exlightnet-reproduction/releases/download/thesis-reproduction-v1/gpu_v2_trees_b1.zip), [gpu_v2_trees_b2.zip](https://github.com/emadfaghihi/exlightnet-reproduction/releases/download/thesis-reproduction-v1/gpu_v2_trees_b2.zip). After downloading, `sha256sum <file>` must equal the hash in the table below.
 
 Place these files under `imports/gpu_v2/`. The double extension in
 `gpu_v2_part1.zip.zip` is intentional and preserves the recorded archive
