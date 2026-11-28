@@ -136,3 +136,15 @@ def test_f40_mismatch_stops_before_rf_or_payload_and_records_all_differences(tmp
     for part, difference in (("val", 8), ("test", 4)):
         assert guard[f"x_{part}"]["equal"] is False
         assert guard[f"x_{part}"]["max_abs_difference"] == pytest.approx(difference, abs=5e-6)
+
+
+def test_bad_canonical_checksum_stops_without_claiming_the_output(tmp_path, canonical_inputs):
+    from exlightnet.feature_sets import export_feature_set_inputs
+
+    path = tmp_path / "artifacts/cache_manifest.json"
+    write_json(path, {**read_json(path), "arrays_sha256": "0" * 64})
+
+    with pytest.raises(ValueError, match="Canonical cached-array SHA-256 differs"):
+        export_feature_set_inputs(tmp_path)
+
+    assert not (tmp_path / "experiments/feature_sets_v1/prepared").exists()

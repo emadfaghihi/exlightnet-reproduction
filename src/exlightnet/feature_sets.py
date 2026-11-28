@@ -5,7 +5,7 @@ import hashlib
 from importlib.metadata import version
 import json
 import logging
-from math import lcm
+from math import fsum, lcm
 from pathlib import Path
 import platform
 from time import perf_counter
@@ -125,8 +125,9 @@ def select_feature_sets(train_x, train_y12, candidate_names, f40_indices, class_
         forest.fit(train_x, train_y12)
         importances[str(seed)] = forest.feature_importances_
         del forest
-    mean = np.mean(list(importances.values()), axis=0)
-    mean_ranking = np.argsort(-mean, kind="stable").tolist()
+    # A permutation of the same seed scores must tie in mean importance.
+    mean = [fsum(scores) / len(RF_SEEDS) for scores in zip(*importances.values(), strict=True)]
+    mean_ranking = sorted(range(len(mean)), key=mean.__getitem__, reverse=True)
     per_seed_ranking = {seed: np.argsort(-scores, kind="stable").tolist() for seed, scores in importances.items()}
     retained, removals = pearson_filter(train_x, mean_ranking, candidate_names)
     retained_ranks = {column: rank for rank, column in enumerate(retained, start=1)}
@@ -159,7 +160,7 @@ def select_feature_sets(train_x, train_y12, candidate_names, f40_indices, class_
         },
         "rf": {
             "n_jobs": rf_n_jobs, "seeds": list(RF_SEEDS),
-            "mean_importances": mean.tolist(),
+            "mean_importances": mean,
             "per_seed_importances": {seed: scores.tolist() for seed, scores in importances.items()},
             "mean_ranking": [candidate_names[i] for i in mean_ranking],
             "pearson_cutoff": PEARSON_CUTOFF,
@@ -198,10 +199,8 @@ def export_feature_set_inputs(root, *, rf_n_jobs=1):
     output = root / "experiments" / CAMPAIGN / "prepared"
     if rf_n_jobs < 1:
         raise ValueError("rf_n_jobs must be positive")
-    try:
-        output.mkdir(parents=True)
-    except FileExistsError as exc:
-        raise FileExistsError(f"Campaign prepared output already exists at {output}. Preserve it.") from exc
+    if output.exists():
+        raise FileExistsError(f"Campaign prepared output already exists at {output}. Preserve it.")
 
     artifacts = root / "artifacts"
     canonical = read_json(artifacts / "cache_manifest.json")
@@ -239,10 +238,11 @@ def export_feature_set_inputs(root, *, rf_n_jobs=1):
     class_names = classes.tolist()
     if class_names != read_json(artifacts / "class_names.json"):
         raise ValueError("Train class mapping differs from the canonical mapping")
+    canonical_state = read_json(artifacts / "preprocessor.json")
+    output.mkdir(parents=True)  # Claim the output atomically after verifying the source.
     LOGGER.info("Fitting the canonical binary-MI preprocessor on train")
     preprocessor = FlowPreprocessor(40).fit(train_frame, y2[train_indices])
     candidate_names = preprocessor.candidate_names_
-    canonical_state = read_json(artifacts / "preprocessor.json")
     if preprocessor.selected_names_ != canonical_state["selected_names_"]:
         raise ValueError("Fitted F40 feature names or order differ from the canonical cache")
     if len(candidate_names) != 93 or candidate_names != canonical_state["candidate_names_"]:

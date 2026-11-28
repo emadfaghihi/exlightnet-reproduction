@@ -103,7 +103,7 @@ def test_train_only_selectors_are_deterministic_and_preserve_arm_order(train_inp
     assert first["stopped_arms"] == {}
     rf = first["rf"]
     assert list(rf["per_seed_importances"]) == [str(seed) for seed in RF_SEEDS]
-    np.testing.assert_array_equal(rf["mean_importances"], np.mean(list(rf["per_seed_importances"].values()), axis=0))
+    np.testing.assert_allclose(rf["mean_importances"], np.mean(list(rf["per_seed_importances"].values()), axis=0), rtol=5e-16)
     for flag, ranks in rf["flag_ranks"].items():
         assert ranks["mean_rank"] == rf["mean_ranking"].index(flag) + 1
         for seed, importances in rf["per_seed_importances"].items():
@@ -121,7 +121,12 @@ def test_tied_rf_importances_keep_candidate_order_and_stop_only_short_arms(monke
     seeds = []
 
     class TiedForest:
-        feature_importances_ = np.full(len(names), 1 / len(names))
+        def __init__(self, seed):
+            # The first three features have identical mean importance. Their
+            # summands appear in different orders across the five seeds.
+            top = [(.2, .1, .3), (.3, .2, .1), (.1, .3, .2), (.02, .02, .02), (.02, .02, .02)][seed - 42]
+            self.feature_importances_ = np.full(len(names), (1 - sum(top)) / (len(names) - 3))
+            self.feature_importances_[:3] = top
 
         def set_params(self, *, n_jobs):
             assert n_jobs == 1
@@ -135,7 +140,7 @@ def test_tied_rf_importances_keep_candidate_order_and_stop_only_short_arms(monke
         assert name == "random_forest"
         assert class_count == 12
         seeds.append(seed)
-        return TiedForest()
+        return TiedForest(seed)
 
     monkeypatch.setattr(feature_sets, "build_model", build_forest)
 
