@@ -1,0 +1,119 @@
+{
+  "scope": "synthetic forward and analytical counts",
+  "device": "cpu",
+  "torch": "2.6.0+cpu",
+  "models": [
+    {
+      "length": 8,
+      "classes": 12,
+      "output_shape": [
+        1,
+        12
+      ],
+      "trainable_parameters": 38328,
+      "conv_and_linear_flops": 133056,
+      "w8_weights_only_bytes": 37440,
+      "w8_fp32_scales_bytes": 2976,
+      "w8_fp32_rest_bytes": 5868,
+      "w8_model_array_bytes": 46284
+    },
+    {
+      "length": 8,
+      "classes": 2,
+      "output_shape": [
+        1,
+        2
+      ],
+      "trainable_parameters": 35438,
+      "conv_and_linear_flops": 127296,
+      "w8_weights_only_bytes": 34560,
+      "w8_fp32_scales_bytes": 2936,
+      "w8_fp32_rest_bytes": 5828,
+      "w8_model_array_bytes": 43324
+    },
+    {
+      "length": 40,
+      "classes": 12,
+      "output_shape": [
+        1,
+        12
+      ],
+      "trainable_parameters": 38328,
+      "conv_and_linear_flops": 1349568,
+      "w8_weights_only_bytes": 37440,
+      "w8_fp32_scales_bytes": 2976,
+      "w8_fp32_rest_bytes": 5868,
+      "w8_model_array_bytes": 46284
+    },
+    {
+      "length": 40,
+      "classes": 2,
+      "output_shape": [
+        1,
+        2
+      ],
+      "trainable_parameters": 35438,
+      "conv_and_linear_flops": 1343808,
+      "w8_weights_only_bytes": 34560,
+      "w8_fp32_scales_bytes": 2936,
+      "w8_fp32_rest_bytes": 5828,
+      "w8_model_array_bytes": 43324
+    },
+    {
+      "length": 43,
+      "classes": 12,
+      "output_shape": [
+        1,
+        12
+      ],
+      "trainable_parameters": 38328,
+      "conv_and_linear_flops": 1463616,
+      "w8_weights_only_bytes": 37440,
+      "w8_fp32_scales_bytes": 2976,
+      "w8_fp32_rest_bytes": 5868,
+      "w8_model_array_bytes": 46284
+    },
+    {
+      "length": 43,
+      "classes": 2,
+      "output_shape": [
+        1,
+        2
+      ],
+      "trainable_parameters": 35438,
+      "conv_and_linear_flops": 1457856,
+      "w8_weights_only_bytes": 34560,
+      "w8_fp32_scales_bytes": 2936,
+      "w8_fp32_rest_bytes": 5828,
+      "w8_model_array_bytes": 43324
+    },
+    {
+      "length": 93,
+      "classes": 12,
+      "output_shape": [
+        1,
+        12
+      ],
+      "trainable_parameters": 38328,
+      "conv_and_linear_flops": 3364416,
+      "w8_weights_only_bytes": 37440,
+      "w8_fp32_scales_bytes": 2976,
+      "w8_fp32_rest_bytes": 5868,
+      "w8_model_array_bytes": 46284
+    },
+    {
+      "length": 93,
+      "classes": 2,
+      "output_shape": [
+        1,
+        2
+      ],
+      "trainable_parameters": 35438,
+      "conv_and_linear_flops": 3358656,
+      "w8_weights_only_bytes": 34560,
+      "w8_fp32_scales_bytes": 2936,
+      "w8_fp32_rest_bytes": 5828,
+      "w8_model_array_bytes": 43324
+    }
+  ]
+}
