@@ -744,3 +744,50 @@ training performed was the 160 authorized tree runs. Training tests,
 benchmarking and B6 are **NOT RUN**.
 [Device view](../artifacts/stats_gpu_v2/device_equivalence.csv) ·
 [Statistics report](../REPORT_stats_v2.md)
+
+### 2026-11-28 — `feature_sets_v1` prepared inputs
+
+The authorized exporter ran once from `4787d95` against the canonical
+`data/RT_IOT2022.csv`. It exited 0 on the local Intel Core i5-8500 CPU and
+recorded 80.895 s of exporter wall time. The command used two workers per
+Random Forest and one thread per numerical library. The local supervisor
+recorded timestamps, PID, output and exit status under
+`experiments/feature_sets_v1/export-run/`.
+
+```bash
+.venv/bin/python -u -m scripts.export_feature_set_inputs --rf-jobs 2
+```
+
+The exporter verified the canonical fingerprint, CSV and cache hashes, and
+split-42 indices before fitting. Candidate accounting is
+`consistent (94 - 1 constant = 93)`. Binary MI, the five 12-class Random
+Forests, Pearson filtering, AUC quotas and standardization used training rows
+for all fits and choices. The filter removed 20 features and retained 73.
+All three flags survived, and all six feature sets are ready. The receipt
+records the first previously retained counterpart for each removal.
+
+`experiments/feature_sets_v1/prepared/split_42.npz` contains the compressed
+93-column inputs, both targets and split indices for each partition. It is
+5,627,460 bytes with SHA-256
+`d4be02c181948f66c0187f8f5213dbc63279329158f59ffc9d7930306decdbea`.
+Apply the ordered `metadata.feature_sets[arm].column_indices` from its
+`manifest.json` to each `x` matrix. The manifest's `payload_sha256` binds
+the array members and `metadata` via `exlightnet.prepared.payload_digest`.
+Reopening the archive verified its CRC, hashes, shapes, labels and split
+indices. F40 was bitwise equal to the canonical cache for all three
+partitions with maximum absolute differences of 0. The fixed `cpu_v1`
+inventory check (`sha256sum -c docs/evidence/cpu_v1_SHA256SUMS`) returned
+806 OK before and after the export. The committed receipt is a byte-for-byte
+copy of the local receipt. Model evaluation for the study remains PENDING.
+[Prepared-input receipt](../artifacts/feature_sets_v1/receipt.json)
+
+Ten focused synthetic tests passed in 10.37 s. The CI-equivalent suite
+exited 0 with 274 passed, 1 deselected and 923 dependency deprecation
+warnings in 31.57 s. Its existing invalid-range CLI test exits during
+argument parsing, before any export.
+
+```bash
+env OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1 \
+  MPLCONFIGDIR=/tmp/exlightnet-mpl .venv/bin/python -m pytest -q \
+  -k 'not test_extracted_archive_can_rebuild_missing_array_cache'
+```
