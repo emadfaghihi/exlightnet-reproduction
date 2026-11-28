@@ -34,14 +34,27 @@ ordered features with their data and payload fingerprints. [Canonical cache](../
 | F_RF8 | 8 | First eight columns of that same filtered ranking. |
 | F_CA40 | 40 | Class-aware train-only AUC quotas below, in order of selection. |
 
-**RF importance and correlation.** Fit one baseline RF with the 12-class
-target and `random_state=42` on the 93 encoded train columns. Rank by descending
-impurity importance, breaking ties by canonical candidate order. Compute
-Pearson correlations on the same training matrix. Walk the ranking and retain
-a feature if its absolute correlation with every already-retained feature is
-at most **0.95**. This fixes the removal rule at `abs(r) > 0.95` and gives
-precedence to the earlier-ranked feature. Fix the threshold before computing
-the filter, and record every removal and its retained counterpart. Stop
+**RF importance and correlation.** Fit five Random Forests using the baseline
+recipe, with the 12-class target and `random_state` values 42, 43, 44, 45 and
+46. Fit each forest on the 93 encoded train columns. Average the five
+`feature_importances_` values for each feature and rank by descending mean
+importance, breaking ties by canonical candidate order. In the prepared-input
+receipt, record the rank by mean importance alongside the five per-seed
+ranks for each of `fwd_psh_flag_count`, `flow_fin_flag_count` and
+`fwd_urg_flag_count`. Compute these ranks before correlation filtering, with
+the same tie-break for the per-seed ranks. [Baseline RF recipe](../src/exlightnet/baselines.py)
+
+The Phase 1 RF importance ranking used a single seed (`random_state=42`)
+and remains post-hoc. The diagnostic comparison reported ranks 8 and 9 for
+`flow_fin_flag_count`, at the unfiltered top-eight cutoff. For F_RF40 and
+F_RF8, the campaign applies the filter only to the five-seed ranking by
+mean importance. [Phase 1 diagnostic](../artifacts/diagnostics_feature_sets/REPORT.md)
+
+Compute Pearson correlations on the same training matrix. Walk the ranking
+and retain a feature if its absolute correlation with every already-retained
+feature is at most **0.95**. This fixes the removal rule at `abs(r) > 0.95`
+and gives precedence to the earlier-ranked feature. Fix the threshold before
+computing the filter, and record every removal and its retained counterpart. Stop
 F_RF40 if fewer than 40 candidates remain and F_RF8 if fewer than eight
 remain. Membership of the flags follows the fixed rule. PNet-IDS combines RF
 importance with correlation filtering and leaves the selection target
@@ -131,6 +144,12 @@ equivalent` when the entire CI lies within ±0.01 for 12-class or ±0.002 for
 binary, in absolute metric units. All other comparisons are `inconclusive`.
 Mark unavailable statistics as missing. Lower is better for FPR. Each paired
 comparison uses the same model, device and matched seeds in this campaign.
+
+Paired tests over training seeds quantify variation from training randomness
+alone, with the split and test set held fixed. With only four test flows for
+`nmap_fin_scan` and five for `metasploit_brute_force_ssh`, 12-class macro-F1
+also depends on which flows are in the test set. The conclusions are therefore
+conditional on this split.
 
 ## Architecture and efficiency
 
