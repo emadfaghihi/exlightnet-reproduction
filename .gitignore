@@ -21,6 +21,7 @@ artifacts/cache_arrays.npz
 deliverables.zip
 *.zip
 prepared/
+experiments/
 archive/*
 delivery/
 imports/
